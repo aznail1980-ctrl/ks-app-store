@@ -23,7 +23,7 @@ const MODELS = ["gemini-flash-latest", "gemini-2.5-flash"];
 const REFERER = "https://aznail1980-ctrl.github.io/";       // 키 사용처를 이 사이트로 제한해 둔 경우 통과용
 const FORCE = process.env.FORCE === "true";                 // 바뀐 게 없어도 전부 새로 만들기
 const ONLY = (process.env.ONLY_APP || "").trim();           // 한 앱만 (앱 ID 또는 이름 일부)
-const MAX_SHOTS = 3;
+const MAX_SHOTS = 4;
 const SHOT_WIDTH = 540;                                     // 저장하는 사진 폭(px)
 const SHOT_MAX_BYTES = 150_000;                             // 장당 이보다 크면 더 줄임 (문서 하나 1MB 제한)
 
@@ -109,11 +109,16 @@ async function capture(url) {
         const bad = /삭제|지우|로그아웃|탈퇴|결제|구매|주문|송금|보내|전송|초기화|리셋|공유|신고|delete|remove|logout|log out|sign ?out|pay|buy|order|send|reset|share/i;
         const inNav = el => el.closest('nav, footer, [role="tablist"], [role="navigation"], [class*="tab" i], [class*="nav" i]');
         const seen = new Set(), picks = [];
-        for (const el of document.querySelectorAll('a, button, [role="tab"]')) {
+        // 1순위: 화면 아래쪽 메뉴 막대의 작은 버튼, 2순위: 화면 어디든 '탭'으로 표시된 버튼
+        const all = [...document.querySelectorAll('a, button, [role="tab"]')];
+        const score = el => { const r = el.getBoundingClientRect(); return r.top >= vh * 0.72 ? 0 : 1; };
+        for (const el of all.sort((a, b) => score(a) - score(b))) {
           const r = el.getBoundingClientRect();
-          const txt = (el.innerText || el.getAttribute("aria-label") || "").trim();
-          if (!r.width || !r.height || r.top < vh * 0.72 || r.bottom > vh + 2 || r.width > vw * 0.5) continue;   // 화면 아래쪽의 작은 버튼만
-          if (!inNav(el) || !txt || txt.length > 12 || bad.test(txt) || seen.has(txt)) continue;
+          const txt = (el.innerText || el.getAttribute("aria-label") || el.getAttribute("title") || "").trim();
+          const isTab = el.matches('[role="tab"], [role="tablist"] *');
+          if (!r.width || !r.height || r.bottom > vh + 2 || r.top < 0 || r.width > vw * 0.5) continue;      // 지금 화면에 보이는 작은 버튼만
+          if (!isTab && r.top < vh * 0.72) continue;
+          if (!(isTab || inNav(el)) || !txt || txt.length > 12 || bad.test(txt) || seen.has(txt)) continue;
           if (el.matches('[aria-current="page"], [aria-selected="true"], [disabled]')) continue;                    // 지금 보고 있는 탭은 건너뜀
           if (el.tagName === "A") {
             const href = el.getAttribute("href") || "";
@@ -122,8 +127,8 @@ async function capture(url) {
           }
           seen.add(txt); picks.push(el);
         }
-        picks.slice(0, 4).forEach((el, i) => el.setAttribute("data-ks-tap", String(i)));
-        return Math.min(picks.length, 4);
+        picks.slice(0, 5).forEach((el, i) => el.setAttribute("data-ks-tap", String(i)));
+        return Math.min(picks.length, 5);
       });
       const home = new URL(page.url()).origin;
       for (let i = 0; i < n && raws.length < MAX_SHOTS; i++) {
@@ -163,7 +168,7 @@ async function toWebp(png) {
 }
 
 // ── 2. AI에게 쓰게 하기 ──────────────────────────────────
-async function writeWithAI(ap, images, pageText) {
+async function writeWithAI(ap, images, pageText, { manual = false } = {}) {
   if (!KEY) return null;
   const n = images.length;
   const prompt =
@@ -171,9 +176,12 @@ async function writeWithAI(ap, images, pageText) {
     `- description: 앱 소개 두 문장, 합쳐서 90자 안팎. 친구에게 슬쩍 추천하듯 다정하고 재치 있게. 첫 문장은 무엇을 하는 앱인지, 둘째 문장은 언제 쓰면 좋은지. 과장이나 없는 기능은 쓰지 마세요.\n` +
     `- features: 이 앱으로 할 수 있는 일 3~5개, 각각 12자 이내.\n` +
     `- oneLine: 가이드 맨 위에 둘 한 줄 요약, 30자 이내.\n` +
-    (n ? `- steps: 사진마다 한 줄씩, 정확히 ${n}개. 각 35자 이내. 그 화면에서 무엇을 보고 무엇을 누르면 되는지 쉬운 말로. 사진에 안 보이는 건 쓰지 마세요. 로그인 화면이면 "가입하거나 로그인해서 시작해요"처럼 그대로 안내하세요.\n` : `- steps: 빈 배열.\n`) +
+    (n ? `- shots: 사진마다 하나씩, 정확히 ${n}개, 순서대로. 각각 {"keep": true 또는 false, "step": "설명"}.\n` +
+         `  keep: ${manual ? "모두 true." : "로그인·회원가입·비밀번호 입력 화면, 빈 화면, 로딩 화면, 오류 화면이면 false. 앱의 실제 기능이 보이는 화면이면 true."}\n` +
+         `  step: 그 화면에서 무엇을 보고 무엇을 누르면 되는지 35자 이내의 쉬운 말. 사진에 안 보이는 건 쓰지 마세요. keep이 false면 빈칸.\n`
+       : `- shots: 빈 배열.\n`) +
     `이모지와 마크다운은 쓰지 마세요.\n` +
-    `{"description":"","features":[],"oneLine":"","steps":[]}\n\n` +
+    `{"description":"","features":[],"oneLine":"","shots":[{"keep":true,"step":""}]}\n\n` +
     `[앱 이름] ${ap.name || ""}\n[카테고리] ${ap.category || "기타"}\n[종류] ${ap.apkUrl ? "안드로이드 앱(APK)" : "웹앱"}\n` +
     `[관리자 메모] ${ap.aiMemo || "(없음)"}\n[지금 소개] ${ap.description || "(없음)"}\n[화면 글자 일부] ${pageText || "(없음)"}`;
   const parts = [{ text: prompt }];
@@ -201,7 +209,11 @@ async function writeWithAI(ap, images, pageText) {
           description: tidy(j.description, 300),
           features: (Array.isArray(j.features) ? j.features : []).map(f => tidy(f, 20)).filter(Boolean).slice(0, 5),
           oneLine: tidy(j.oneLine, 60),
-          steps: (Array.isArray(j.steps) ? j.steps : []).map(s => tidy(s, 70)).slice(0, n),
+          // 사진별 판단: 남길지(keep) + 설명(step). 답이 모자라면 남기는 쪽으로
+          shots: Array.from({ length: n }, (_, i) => {
+            const s = Array.isArray(j.shots) ? j.shots[i] : null;
+            return { keep: manual || s?.keep !== false, step: tidy(s?.step ?? j.steps?.[i] ?? "", 70) };
+          }),
         };
       } catch (e) { console.log(`  AI 호출 실패: ${clean(e)}`); await sleep(3000); }
     }
@@ -234,18 +246,23 @@ for (const ap of apps) {
 
     // AI에게 보여 줄 사진: 직접 올린 사진이 있으면 그것, 없으면 방금 찍은 사진
     const images = manual.length ? manual.map(s => s.src) : (cap?.shots || []);
-    const ai = await writeWithAI(ap, images, cap?.text);
+    const ai = await writeWithAI(ap, images, cap?.text, { manual: manual.length > 0 });
+
+    // AI가 '로그인 화면·빈 화면'이라고 한 사진은 뺌 (직접 올린 사진은 모두 남김)
+    const keep = images.map((_, i) => i).filter(i => !ai || ai.shots[i]?.keep !== false);
+    const loginOnly = !manual.length && images.length > 0 && keep.length === 0;
+    const kept = manual.length ? [] : keep.map(i => cap.shots[i]);
 
     // 가이드 저장 (제외 앱은 사진을 저장하지 않음)
     const hasGuide = !off && (images.length > 0);
     if (hasGuide) {
-      const gd = { appId: ap.id, updatedAt: now, status: ai ? "ok" : "no-ai" };
-      if (cap?.shots?.length) gd.shots = cap.shots.map(src => ({ src }));
-      if (ai) { gd.oneLine = ai.oneLine; gd.steps = ai.steps; }
+      const gd = { appId: ap.id, updatedAt: now, status: ai ? "ok" : "no-ai", loginOnly };
+      if (cap?.shots?.length) gd.shots = kept.map(src => ({ src }));   // 로그인 화면뿐이면 빈 목록 (예전 로그인 사진도 지움)
+      if (ai) { gd.oneLine = ai.oneLine; gd.steps = keep.map(i => ai.shots[i]?.step || ""); }
       await gRef.set(gd, { merge: true });                      // merge: 직접 올린 사진(manualShots)은 그대로 둠
     }
     // 앱 문서: 가이드 날짜 + (자동 소개를 켠 앱이면) 소개 바꾸기
-    const upd = { guideStatus: off ? "off" : hasGuide ? "ok" : "none" };
+    const upd = { guideStatus: off ? "off" : loginOnly ? "login" : hasGuide ? "ok" : "none" };
     if (hasGuide) upd.guideAt = now;
     if (ai) {
       upd.autoFp = fp;                                          // AI까지 성공했을 때만 '처리함'으로 기록 → 실패하면 내일 다시
@@ -256,7 +273,7 @@ for (const ap of apps) {
     }
     await db.doc(`apps/${ap.id}`).update(upd);
     stat.updated++;
-    console.log(`${tag(ap.id)} ${off ? "가이드 제외 · " : ""}${hasGuide ? `사진 ${images.length}장` : "사진 없음"}${ai ? " · AI 글 완료" : KEY ? " · AI 실패(내일 다시)" : ""}`);
+    console.log(`${tag(ap.id)} ${off ? "가이드 제외 · " : ""}${manual.length ? `직접 올린 사진 ${manual.length}장` : loginOnly ? "로그인 화면뿐(사진 빼고 직접 올리기 필요)" : hasGuide ? `사진 ${kept.length}장${kept.length < images.length ? ` (로그인 화면 ${images.length - kept.length}장 뺌)` : ""}` : "사진 없음"}${ai ? " · AI 글 완료" : KEY ? " · AI 실패(내일 다시)" : ""}`);
     await sleep(1500);                                          // 무료 사용량 한도를 넘지 않게 천천히
   } catch (e) {
     stat.failed++;

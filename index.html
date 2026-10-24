@@ -363,38 +363,52 @@ body.no-tab .toasts{bottom:calc(var(--safe-b) + 16px)}
 .feature-row{display:flex;gap:var(--s4);align-items:center}
 .feature-txt{min-width:0}
 .feature h2{font-size:var(--t-20);font-weight:800;letter-spacing:-0.02em;line-height:1.3}
-.feature p{color:var(--ink-2);margin-top:var(--s1);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.feature-txt p{color:var(--ink-2);margin-top:var(--s1);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .feature-acts{display:flex;gap:var(--s2);margin-top:var(--s4);flex-wrap:wrap}
 .feature-acts .btn{flex:1 1 140px}
 
-/* 홈 맨 위 앱의 '움직이는 초간단 가이드'
-   휴대폰 틀 안에서 화면 사진이 천천히 내려가며 바뀌고, 옆 설명에 형광펜이 칠해짐.
-   형광펜이 끝까지 칠해지면 다음 장면으로 넘어감 (형광펜 = 진행 막대) */
-.fm{display:grid;grid-template-columns:112px minmax(0,1fr);gap:var(--s4);align-items:center;margin-top:var(--s5);padding-top:var(--s5);border-top:1.5px dashed var(--ink)}
-.fm-dev{position:relative}
-.fm-dev::before{content:"";position:absolute;inset:0;transform:translate(6px,6px) rotate(1.5deg);background:var(--marker);border-radius:18px}   /* 휴대폰 뒤 형광펜 그림자 */
-.fm-phone{position:relative;display:block;width:100%;aspect-ratio:9/16;border:2px solid var(--ink);border-radius:18px;background:var(--paper-2);overflow:hidden;padding:0}
+/* 홈 맨 위 앱의 '움직이는 초간단 가이드' — 필름 무대
+   앱 화면 사진 3~4장이 휴대폰 틀에 담겨 한 줄로 놓이고, 한 장씩 가운데로 미끄러져 와 커짐.
+   설명의 형광펜이 끝까지 칠해지면 다음 장으로 넘어감 (형광펜 = 진행 막대) */
+.fm{margin-top:var(--s5);padding-top:var(--s5);border-top:1.5px dashed var(--ink);display:grid;gap:var(--s3)}
+.fm-stage{position:relative;overflow:hidden;margin:0 calc(-1 * var(--s4));padding:var(--s3) 0 var(--s4);--fm-w:150px}
+.fm-stage.skel{height:calc(var(--fm-w) * 16 / 9 + 28px);margin:0;border-radius:var(--r)}
+.fm-track{display:flex;gap:var(--s3);width:max-content;transition:transform .75s cubic-bezier(.65,0,.25,1)}
+.fm-track.no-anim,.fm-track.no-anim .fm-phone{transition:none}
+.fm-phone{position:relative;flex:0 0 auto;width:var(--fm-w);aspect-ratio:9/16;border:2px solid var(--ink);border-radius:18px;background:var(--paper-2);overflow:hidden;padding:0;
+  transform:scale(.84);opacity:.45;transition:transform .75s cubic-bezier(.65,0,.25,1),opacity .5s,box-shadow .5s}
+.fm-phone.on{transform:scale(1);opacity:1;box-shadow:6px 6px 0 var(--marker)}
 .fm-phone::after{content:"";position:absolute;top:6px;left:50%;width:26%;height:5px;transform:translateX(-50%);border-radius:3px;background:var(--ink);z-index:2}   /* 위쪽 스피커 */
-.fm-phone.skel{border-color:transparent}
-.fm-shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0;opacity:0;transition:opacity .6s ease}
-.fm-shot.on{opacity:1;animation:fm-pan var(--fm-dur,4200ms) ease-in-out forwards}
+.fm-num{position:absolute;left:8px;bottom:8px;z-index:2;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;border:1.5px solid var(--ink);background:var(--paper);font-size:var(--t-12);font-weight:800}
+.fm-phone.on .fm-num{background:var(--marker)}
+.fm-shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0}
+.fm-phone.on .fm-shot{animation:fm-pan var(--fm-dur,4200ms) ease-in-out forwards}
 @keyframes fm-pan{0%,15%{object-position:50% 0}100%{object-position:50% 100%}}
-/* 사진이 한 장일 때 카메라처럼 비추기: 위쪽 확대 / 아래쪽 확대 */
-.fm-shot[data-cam="top"]{object-position:50% 0;transform-origin:50% 8%}
-.fm-shot[data-cam="bottom"]{object-position:50% 100%;transform-origin:50% 92%}
-.fm-shot[data-cam="top"].on,.fm-shot[data-cam="bottom"].on{animation-name:fm-zoom}
-@keyframes fm-zoom{from{transform:scale(1.04)}to{transform:scale(1.5)}}
+/* 사진이 한 장뿐일 때: 같은 사진을 '전체 / 위쪽 확대 / 아래쪽 확대' 세 컷으로 */
+.fm-shot[data-cam="top"]{transform:scale(1.4);transform-origin:50% 6%}
+.fm-shot[data-cam="bottom"]{transform:scale(1.4);transform-origin:50% 94%;object-position:50% 100%}
+.fm-phone.on .fm-shot[data-cam="top"],.fm-phone.on .fm-shot[data-cam="bottom"]{animation-name:fm-zoom}
+@keyframes fm-zoom{from{transform:scale(1.2)}to{transform:scale(1.55)}}
 .fm-splash{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:var(--s2);padding:var(--s3);text-align:center}
 .fm-splash .ico{animation:fm-bob 2.8s ease-in-out infinite}
-.fm-splash b{font-size:var(--t-12);font-weight:800;line-height:1.3}
+.fm-splash b{font-size:var(--t-14);font-weight:800;line-height:1.3}
 @keyframes fm-bob{50%{transform:translateY(-4px) rotate(-2deg)}}
 .fm-side{min-width:0;display:grid;gap:var(--s2)}
 .fm-head{font-size:18px;line-height:1.2;display:flex;gap:var(--s2);align-items:baseline}
 .fm-n{font-family:var(--f-body);font-size:var(--t-12);font-weight:700;color:var(--ink-3);font-variant-numeric:tabular-nums}
-.fm-cap{font-size:17px;font-weight:700;line-height:1.5;letter-spacing:-0.02em;min-height:4.5em}
-.fm-cap span{display:inline;background:linear-gradient(var(--marker),var(--marker)) no-repeat 0 88%/0% 42%;animation:fm-in .45s ease-out both,fm-sweep var(--fm-dur,4200ms) linear .2s forwards}
+.fm-cap{font-size:17px;font-weight:700;line-height:1.5;letter-spacing:-0.02em;min-height:3em}
+.fm-cap span,.fm-step span{background:linear-gradient(var(--marker),var(--marker)) no-repeat 0 88%/0% 42%}
+.fm-cap span{animation:fm-in .45s ease-out both,fm-sweep var(--fm-dur,4200ms) linear .2s forwards}
 @keyframes fm-in{from{opacity:0;transform:translateY(8px)}}
 @keyframes fm-sweep{to{background-size:100% 42%}}
+/* 넓은 화면에서만 보이는 단계 목록 (휴대폰에서는 설명 한 줄 + 점) */
+.fm-steps{display:none;counter-reset:fms}
+.fm-step{display:grid;grid-template-columns:28px minmax(0,1fr);gap:var(--s3);align-items:start;width:100%;text-align:left;padding:var(--s2) 0;color:var(--ink-3);font-weight:600;line-height:1.5;counter-increment:fms;transition:color .3s}
+.fm-step::before{content:counter(fms);width:28px;height:28px;display:grid;place-items:center;border:1.5px solid currentColor;border-radius:50%;font-size:var(--t-14);font-weight:800;margin-top:-2px}
+.fm-step span{padding-top:1px}
+.fm-step.on{color:var(--ink);font-weight:700}
+.fm-step.on::before{background:var(--marker);border-color:var(--ink)}
+.fm-step.on span{animation:fm-sweep var(--fm-dur,4200ms) linear forwards}
 .fm-ctl{display:flex;align-items:center;margin-left:-8px}
 .fm-dot{width:28px;height:44px;display:grid;place-items:center}
 .fm-dot::before{content:"";width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink);transition:width .25s,background-color .25s}
@@ -402,10 +416,11 @@ body.no-tab .toasts{bottom:calc(var(--safe-b) + 16px)}
 .fm-toggle{margin-left:auto}
 .fm-toggle .ic{width:20px;height:20px}
 /* 멈춤: 버튼으로 멈췄거나(is-paused) 화면 밖에 있을 때(is-off) */
-.fm.is-paused .fm-shot.on,.fm.is-off .fm-shot.on{animation-play-state:paused}
+.fm.is-paused .fm-phone.on .fm-shot,.fm.is-off .fm-phone.on .fm-shot,.fm.is-paused .fm-step.on span,.fm.is-off .fm-step.on span{animation-play-state:paused}
 .fm.is-paused .fm-cap span,.fm.is-off .fm-cap span{animation-play-state:running,paused}   /* 글자 나타나기는 끝까지, 형광펜만 멈춤 */
 /* 장면이 하나뿐이거나 '움직임 줄이기'를 켠 기기: 넘기지 않고 형광펜은 다 칠한 채로 */
 .fm.is-still .fm-cap span{animation:fm-in .3s ease-out both;background-size:100% 42%}
+.fm.is-still .fm-step.on span{animation:none;background-size:100% 42%}
 .fm.is-still .fm-toggle{display:none}
 
 .list-head{position:sticky;top:calc(var(--safe-t) + var(--bar-h));z-index:20;background:var(--paper);border-bottom:1.5px solid var(--ink);margin:0 calc(-1 * var(--gut-r)) 0 calc(-1 * var(--gut-l));padding:0 var(--gut-r) 0 var(--gut-l)}
@@ -630,8 +645,11 @@ body.no-tab .toasts{bottom:calc(var(--safe-b) + 16px)}
   .sheet-foot{border-radius:0 0 var(--r-lg) var(--r-lg)}
   .sheet-foot .btn{flex:0 0 auto}
   .cat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .fm{grid-template-columns:150px minmax(0,480px);gap:var(--s6)}
-  .fm-cap{font-size:var(--t-20)}
+  .fm{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);align-items:center;gap:var(--s6)}
+  .fm-stage{margin:0;--fm-w:184px}
+  .fm-cap,.fm-dot{display:none}
+  .fm-steps{display:grid;gap:var(--s1)}
+  .fm-head{font-size:20px}
 }
 @media (min-width:900px){
   .topnav{display:flex}
@@ -658,11 +676,11 @@ body.no-tab .toasts{bottom:calc(var(--safe-b) + 16px)}
   .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .stats a:nth-child(3){border-left:0}
   .stats a:nth-child(n+3){border-top:1px solid var(--hair)}
-  .fm{grid-template-columns:96px minmax(0,1fr);gap:var(--s3)}
+  .fm-stage{--fm-w:132px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
-  .fm-shot.on,.fm-splash .ico{animation:none!important}   /* 사진이 맨 아래로 튀지 않게 첫 위치 그대로 */
+  .fm-phone .fm-shot,.fm-splash .ico{animation:none!important}   /* 사진이 맨 아래로 튀지 않게 첫 위치 그대로 */
 }
 </style>
 </head>
@@ -762,7 +780,7 @@ const ADMIN_EMAILS = ["aznail@hanmail.net"];
 // AI(Gemini) 키는 코드에 넣지 않습니다. 관리 → 설정에서 입력하면 Firestore(config/ai)에 저장됩니다.
 const AI_MODELS = ["gemini-flash-latest", "gemini-2.5-flash"]; // 앞 모델이 없어지면 다음 모델로
 const ASSET_V   = "20261024";  // 일러스트 파일을 고치면 이 값을 바꿔 휴대폰 캐시를 새로 받게 합니다
-const APP_VERSION = "10.24-5"; // 내 정보 맨 아래에 보이는 버전. 고칠 때마다 올리면 새 화면이 떴는지 바로 알 수 있어요
+const APP_VERSION = "10.24-6"; // 내 정보 맨 아래에 보이는 버전. 고칠 때마다 올리면 새 화면이 떴는지 바로 알 수 있어요
 const NEW_DAYS  = 14;          // 며칠 안에 등록한 앱에 '새로 옴' 표시
 const CATS      = ["업무", "소통", "분석", "관리", "기타"];
 const CAT_ICON  = { "업무":"c-work", "소통":"c-talk", "분석":"c-chart", "관리":"c-manage", "기타":"c-etc" };
@@ -1437,20 +1455,21 @@ function homeList(apps) {
   return list.length ? `<ul class="app-list">${list.map(a => appRow(a)).join("")}</ul>` : emptyHTML("cat");
 }
 
-/* ── 홈 맨 위 앱: 움직이는 초간단 가이드 ──
-   가이드 사진이 있으면 → 휴대폰 틀 안에서 사진이 넘어가고 옆에 '따라 해 보기' 설명
-   사진이 없으면       → 앱 아이콘이 둥실거리고 옆에 '이런 걸 해요'(주요 기능)를 하나씩 */
+/* ── 홈 맨 위 앱: 움직이는 초간단 가이드 (필름 무대) ──
+   가이드 사진이 있으면 → 휴대폰 틀 3~4개가 한 줄로 놓이고 한 장씩 가운데로 와 커지며 '따라 해 보기' 설명
+   사진이 한 장이면     → 같은 사진을 '전체 / 위쪽 확대 / 아래쪽 확대' 세 컷으로
+   사진이 없으면       → 앱 아이콘 휴대폰 하나 + '이런 걸 해요'(주요 기능)를 하나씩 */
 const FM_DUR = 4200;                 // 한 장면을 보여 주는 시간 (ms)
+const MAX_GUIDE = 4;                 // 가이드 사진 최대 장수
 const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 let FM = null, FM_IO = null;         // 지금 돌고 있는 장면 정보 / 화면 밖 감지
 function motionScenes(ap, g) {
-  const shots = guideOff(ap) ? [] : guideShots(g).slice(0, 3);
-  if (shots.length > 1) return { kind: "guide", head: "따라 해 보기", scenes: shots.map((s, i) => ({ src: s.src, text: g.steps?.[i] || (i ? `${i + 1}번째 화면` : g.oneLine || "첫 화면") })) };
+  const shots = guideOff(ap) ? [] : guideShots(g).slice(0, MAX_GUIDE);
+  if (shots.length > 1) return { kind: "guide", head: "따라 해 보기", scenes: shots.map((s, i) => ({ src: s.src, shot: i, text: g.steps?.[i] || (i ? `${i + 1}번째 화면` : g.oneLine || "첫 화면") })) };
   if (shots.length) {
-    // 사진이 한 장뿐이면: 카메라가 한 장을 '전체 → 위쪽 확대 → 아래쪽 확대'로 비추며 장면마다 다른 설명
     const texts = [...new Set([g.steps?.[0], g.oneLine, ...(ap.features || [])].map(t => String(t || "").trim()).filter(Boolean))].slice(0, 3);
     if (texts.length < 2) texts.push(ap.apkUrl ? "‘APK 받기’를 눌러 휴대폰에 설치해요" : "‘열기’를 누르면 바로 시작해요");
-    return { kind: "guide", head: "따라 해 보기", scenes: texts.map((t, i) => ({ src: shots[0].src, text: t, cam: ["full", "top", "bottom"][i] })) };
+    return { kind: "guide", head: "따라 해 보기", scenes: texts.map((t, i) => ({ src: shots[0].src, shot: 0, text: t, cam: ["full", "top", "bottom"][i] })) };
   }
   const feats = (ap.features || []).slice(0, 4);
   if (feats.length) return { kind: "feat", head: "이런 걸 해요", scenes: feats.map(t => ({ text: t })) };
@@ -1461,17 +1480,19 @@ function motionScenes(ap, g) {
   return { kind: "feat", head: "이렇게 써요", scenes: [start, ...lines, home].map(t => ({ text: t })) };
 }
 const motionSkel = () =>
-  `<div class="fm" aria-hidden="true"><div class="fm-dev"><span class="fm-phone skel"></span></div><div class="fm-side"><span class="skel" style="width:40%;height:16px"></span><span class="skel" style="width:92%;height:18px"></span><span class="skel" style="width:64%;height:18px"></span></div></div>`;
+  `<div class="fm" aria-hidden="true"><span class="fm-stage skel"></span><div class="fm-side"><span class="skel" style="width:40%;height:16px"></span><span class="skel" style="width:92%;height:18px"></span><span class="skel" style="width:64%;height:18px"></span></div></div>`;
 function motionHTML(ap, m) {
-  const n = m.scenes.length;
-  const phone = m.kind === "guide"
-    ? m.scenes.map((s, i) => `<img class="fm-shot ${i ? "" : "on"}" ${s.cam ? `data-cam="${s.cam}"` : ""} src="${esc(s.src)}" alt="" decoding="async">`).join("")
-    : `<span class="fm-splash">${appIco(ap, 56)}<b>${esc(ap.name)}</b></span>`;
-  return `<div class="fm" style="--fm-dur:${FM_DUR}ms">
-    <div class="fm-dev"><button type="button" class="fm-phone" data-id="${esc(ap.id)}" onclick="App.fmOpen(this.dataset.id)" aria-label="${esc(ap.name)} ${m.kind === "guide" ? "화면 크게 보기" : "자세히 보기"}">${phone}</button></div>
+  const n = m.scenes.length, guide = m.kind === "guide";
+  // 사진이면 장면마다 휴대폰 하나, 사진이 없으면 아이콘 휴대폰 하나
+  const phones = guide
+    ? m.scenes.map((s, i) => `<button type="button" class="fm-phone ${i ? "" : "on"}" data-i="${i}" onclick="App.fmPhone(${i})" aria-label="${i + 1}번째 화면"><img class="fm-shot" ${s.cam ? `data-cam="${s.cam}"` : ""} src="${esc(s.src)}" alt="" decoding="async"><span class="fm-num" aria-hidden="true">${i + 1}</span></button>`).join("")
+    : `<button type="button" class="fm-phone on" data-i="0" onclick="App.fmPhone(0)" aria-label="${esc(ap.name)} 자세히 보기"><span class="fm-splash">${appIco(ap, 64)}<b>${esc(ap.name)}</b></span></button>`;
+  return `<div class="fm" style="--fm-dur:${FM_DUR}ms" data-id="${esc(ap.id)}">
+    <div class="fm-stage"><div class="fm-track no-anim">${phones}</div></div>
     <div class="fm-side">
       <p class="fm-head hand">${m.head}<span class="fm-n">${n > 1 ? `1/${n}` : ""}</span></p>
       <p class="fm-cap"><span>${esc(m.scenes[0].text)}</span></p>
+      <ol class="fm-steps">${m.scenes.map((s, i) => `<li><button type="button" class="fm-step ${i ? "" : "on"}" onclick="App.fmGo(${i})"><span>${esc(s.text)}</span></button></li>`).join("")}</ol>
       ${n > 1 ? `<div class="fm-ctl">${m.scenes.map((s, i) => `<button type="button" class="fm-dot ${i ? "" : "on"}" aria-label="${i + 1}번째 장면 보기" aria-pressed="${!i}" onclick="App.fmGo(${i})"></button>`).join("")}
         <button type="button" class="icon-btn fm-toggle" aria-label="움직임 멈추기" onclick="App.fmToggle(this)">${icon("i-pause")}</button></div>` : ""}
     </div>
@@ -1483,25 +1504,36 @@ async function paintMotion(ap) {
   if (!box.isConnected) return;                     // 그 사이 다른 탭으로 갔으면 그만
   const m = motionScenes(ap, GUIDE_CACHE[ap.id]);
   FM_IO?.disconnect(); FM = null;
-  box.innerHTML = m ? motionHTML(ap, m) : "";
-  if (!m) return;
+  box.innerHTML = motionHTML(ap, m);
   const el = box.querySelector(".fm");
   FM = { el, m, i: 0, id: ap.id };
+  fmCenter();
+  setTimeout(() => el.querySelector(".fm-track")?.classList.remove("no-anim"), 60);   // 처음 자리는 움직임 없이
   if (m.scenes.length < 2 || reducedMotion()) { el.classList.add("is-still"); return; }
-  // 형광펜이 끝까지 칠해지면 다음 장면으로
+  // 형광펜이 끝까지 칠해지면 다음 장면으로 (휴대폰 화면에선 설명 한 줄, 넓은 화면에선 단계 목록의 형광펜)
   el.addEventListener("animationend", e => { if (e.animationName === "fm-sweep" && FM?.el === el) fmShow(FM.i + 1); });
   // 화면 밖으로 스크롤되면 잠깐 멈춤 (배터리 아끼기)
   FM_IO = new IntersectionObserver(([en]) => el.classList.toggle("is-off", !en.isIntersecting), { threshold: .3 });
   FM_IO.observe(el);
 }
+// 지금 장면의 휴대폰이 무대 가운데 오도록 줄을 옆으로 밂
+function fmCenter() {
+  if (!FM?.el.isConnected) return;
+  const stage = FM.el.querySelector(".fm-stage"), track = FM.el.querySelector(".fm-track");
+  const ph = track?.children[FM.i]; if (!ph) return;
+  track.style.transform = `translateX(${Math.round(stage.clientWidth / 2 - (ph.offsetLeft + ph.offsetWidth / 2))}px)`;
+}
+window.addEventListener("resize", debounce(fmCenter, 120));
 function fmShow(i) {
   if (!FM?.el.isConnected) return;
   const { el, m } = FM, n = m.scenes.length;
   FM.i = i = (i + n) % n;
-  el.querySelectorAll(".fm-shot").forEach((s, k) => s.classList.toggle("on", k === i));
+  el.querySelectorAll(".fm-phone").forEach((p, k) => p.classList.toggle("on", k === i));
+  el.querySelectorAll(".fm-step").forEach((p, k) => p.classList.toggle("on", k === i));
   el.querySelectorAll(".fm-dot").forEach((d, k) => { d.classList.toggle("on", k === i); d.setAttribute("aria-pressed", String(k === i)); });
   el.querySelector(".fm-n").textContent = `${i + 1}/${n}`;
   el.querySelector(".fm-cap").innerHTML = `<span>${esc(m.scenes[i].text)}</span>`;   // 새로 그리면 형광펜이 처음부터 칠해짐
+  fmCenter();
 }
 
 /* ── 찾기 ── */
@@ -1619,11 +1651,14 @@ function adminPane(sub) {
 const notAiApps = () => S.apps.filter(a => a.autoDesc !== false && !(a.descBy === "ai" && a.description));
 function appsPane() {
   const hid = S.apps.filter(a => a.hidden).length, todo = notAiApps().length;
+  const loginApps = S.apps.filter(a => a.guideStatus === "login" && !guideOff(a));   // 로그인 화면만 찍혀 사진이 없는 앱
   return `
     ${!S.aiKey ? `<div class="note-box admin-note">${icon("i-alert")}<div><p><b>AI 키가 아직 없어요.</b> 지금은 AI가 앱 소개와 가이드 설명을 쓸 수 없어요.</p>
         <a class="btn btn-ink btn-sm" href="#/admin/settings">설정에서 AI 연결하기</a></div></div>`
       : todo ? `<div class="note-box admin-note">${icon("i-ai")}<div><p><b>직접 쓴 소개가 남은 앱 ${todo}개</b> — 버튼 한 번이면 AI가 전부 새로 써요. 원래 글은 따로 보관돼요.</p>
         <button type="button" class="btn btn-ink btn-sm" onclick="App.aiAll(this)">${icon("i-ai", "ic-sm")}${todo}개 AI로 새로 쓰기</button></div></div>` : ""}
+    ${loginApps.length ? `<div class="note-box admin-note">${icon("i-image")}<div><p><b>로그인해야 보이는 앱 ${loginApps.length}개</b>(${loginApps.map(a => esc(a.name)).join(", ")})는 자동으로 화면을 찍을 수 없어요.
+        휴대폰으로 그 앱 화면을 3~4장 캡처해서 <b>편집 → 사진 고르기</b>로 올려 주세요. 설명은 AI가 붙여요.</p></div></div>` : ""}
     <div class="pane-head"><p>앱 ${S.apps.length}개${hid ? ` · 비공개 ${hid}개` : ""}</p>
       <button type="button" class="btn btn-ink btn-sm" onclick="App.appForm()">${icon("i-plus", "ic-sm")}앱 올리기</button></div>
     ${S.apps.length ? `<ul>${S.apps.map(ap => `
@@ -1632,7 +1667,7 @@ function appsPane() {
         <div class="admin-txt">
           <p class="admin-name">${esc(ap.name)}${ap.featured ? `<span class="badge badge-new">${icon("i-pin", "ic-xs")}추천</span>` : ""}${ap.hidden ? '<span class="badge badge-muted">비공개</span>' : ""}${ap.apkUrl ? '<span class="badge">APK</span>' : ""}</p>
           <p class="admin-meta">${esc(catOf(ap))} · ${ap.apkUrl ? "안드로이드 APK" : esc(domainOf(ap.url) || "주소 없음")}${ap.reviewCount ? ` · 후기 ${ap.reviewCount}` : ""}</p>
-          <p class="admin-meta">${ap.autoDesc === false ? "직접 쓴 소개" : ap.descBy === "ai" && ap.description ? "AI 소개" : "소개 대기"} · ${guideOff(ap) ? "가이드 없음" : ap.guideAt ? `가이드 ${new Date(ts(ap.guideAt)).getMonth() + 1}/${new Date(ts(ap.guideAt)).getDate()}` : "가이드 대기"}</p>
+          <p class="admin-meta">${ap.autoDesc === false ? "직접 쓴 소개" : ap.descBy === "ai" && ap.description ? "AI 소개" : "소개 대기"} · ${guideOff(ap) ? "가이드 없음" : ap.guideStatus === "login" ? "로그인 화면뿐 · 사진 올려 주세요" : ap.guideAt ?`가이드 ${new Date(ts(ap.guideAt)).getMonth() + 1}/${new Date(ts(ap.guideAt)).getDate()}` : "가이드 대기"}</p>
         </div>
         <div class="admin-acts">
           <button type="button" class="btn btn-line btn-sm" data-id="${esc(ap.id)}" onclick="App.appForm(this.dataset.id)">${icon("i-edit", "ic-sm")}편집</button>
@@ -1769,7 +1804,7 @@ async function paintGuide(s, ap) {
   el.innerHTML = t ? esc(t) : `<span class="hint">${S.aiKey === "" ? (isAdmin() ? "AI 키가 아직 없어요. 관리 → 설정에서 연결해 주세요." : "AI 요약은 준비 중이에요.") : "AI가 잠시 쉬고 있어요. 조금 뒤 다시 열어 보세요."}</span>`;
 }
 function guideHTML(ap, g) {
-  const shots = guideShots(g).slice(0, 3), steps = g.steps || [];
+  const shots = guideShots(g).slice(0, MAX_GUIDE), steps = g.steps || [];
   const manual = !!g.manualShots?.length;
   const when = fmtDate(manual ? g.manualAt : g.updatedAt);
   return `<section class="gd" aria-labelledby="h-gd"><span class="tape hand" id="h-gd">초간단 가이드</span>
@@ -1784,7 +1819,7 @@ function guideHTML(ap, g) {
 // 가이드 사진 크게 보기 (좌우 버튼·키보드 화살표·옆으로 밀기)
 function openShots(appId, start = 0) {
   const ap = findApp(appId), g = GUIDE_CACHE[appId];
-  const shots = guideShots(g).slice(0, 3); if (!ap || !shots.length) return;
+  const shots = guideShots(g).slice(0, MAX_GUIDE); if (!ap || !shots.length) return;
   const steps = g.steps || [], n = shots.length;
   let i = Math.min(Math.max(0, start), n - 1);
   const s = openSheet({
@@ -1921,7 +1956,7 @@ function appForm(id) {
         ${listedOff ? `<p class="hint" style="margin-top:4px">이 앱은 가이드를 만들지 않는 앱이에요. (제외 목록: ${GUIDE_EXCLUDE.map(esc).join(", ")})</p>` : `
         <label class="check"><input type="checkbox" id="f-guide" ${ap?.noGuide ? "" : "checked"}>상세 화면에 초간단 가이드 보여주기</label>
         <p class="hint" id="f-guide-st">매일 새벽 앱 화면을 찍어 AI가 한 줄 설명을 붙여요.</p>
-        <div class="field" style="margin-top:16px"><span class="label">가이드 사진 직접 올리기 (선택, 3장까지)</span>
+        <div class="field" style="margin-top:16px"><span class="label">가이드 사진 직접 올리기 (선택, 4장까지)</span>
           <div class="shot-edit" id="f-shots"></div>
           <div><label class="btn btn-line btn-sm" for="f-shot-file">${icon("i-image", "ic-sm")}사진 고르기</label><input id="f-shot-file" type="file" accept="image/*" multiple class="sr-only" onchange="App.shotFiles(this)"></div>
           <p class="hint">로그인해야 보이는 앱이나 안드로이드 앱은 직접 찍은 화면을 올려 주세요. 올린 사진이 있으면 자동으로 찍은 사진 대신 이걸 보여 줘요.</p>
@@ -1945,7 +1980,8 @@ function appForm(id) {
     paintFormShots();
     const st = s.el.querySelector("#f-guide-st");
     if (!st) return;
-    st.textContent = g?.updatedAt ? `마지막 가이드: ${fmtDate(g.updatedAt)} · 자동 사진 ${g.shots?.length || 0}장${g.manualShots?.length ? ` · 직접 올린 사진 ${g.manualShots.length}장` : ""}`
+    st.textContent = g?.loginOnly && !g?.manualShots?.length ? "로그인 화면만 찍혀서 자동 사진은 뺐어요. 휴대폰으로 이 앱 화면을 3~4장 캡처해 아래 ‘사진 고르기’로 올려 주세요."
+      : g?.updatedAt ? `마지막 가이드:${fmtDate(g.updatedAt)} · 자동 사진 ${g.shots?.length || 0}장${g.manualShots?.length ? ` · 직접 올린 사진 ${g.manualShots.length}장` : ""}`
       : g?.manualShots?.length ? `직접 올린 사진 ${g.manualShots.length}장을 보여 주고 있어요. 설명은 다음 새벽 자동 실행 때 붙어요.`
       : "아직 가이드가 없어요. 다음 새벽 자동 실행 때 만들어져요.";
   });
@@ -2215,7 +2251,12 @@ const App = {
     btn.setAttribute("aria-label", paused ? "움직임 다시 켜기" : "움직임 멈추기");
     btn.innerHTML = icon(paused ? "i-play" : "i-pause");
   },
-  fmOpen(id) { FM?.m.kind === "guide" ? openShots(id, FM.i) : openDetail(id); },
+  // 휴대폰을 누르면: 가운데 것이면 크게 보기(사진 없으면 상세), 옆의 것이면 그 장면으로
+  fmPhone(i) {
+    if (!FM) return;
+    if (i !== FM.i) { fmShow(i); return; }
+    FM.m.kind === "guide" ? openShots(FM.id, FM.m.scenes[i].shot) : openDetail(FM.id);
+  },
 
   /* 후기 */
   paintStars(form) { const v = +(form.querySelector('input[name="rv-star"]:checked')?.value || 0); form.querySelectorAll(".star-pick label").forEach((l, i) => l.classList.toggle("on", i < v)); setErr("rv-s1", ""); },
@@ -2308,10 +2349,10 @@ const App = {
     const files = [...(input.files || [])].filter(f => f.type.startsWith("image/"));
     input.value = "";
     if (!files.length) return;
-    const room = 3 - FORM_SHOTS.length;
-    if (room <= 0) { toast("가이드 사진은 3장까지예요. 하나를 빼고 다시 골라 주세요.", "bad"); return; }
+    const room = MAX_GUIDE - FORM_SHOTS.length;
+    if (room <= 0) { toast(`가이드 사진은 ${MAX_GUIDE}장까지예요. 하나를 빼고 다시 골라 주세요.`, "bad"); return; }
     for (const f of files.slice(0, room)) { try { FORM_SHOTS.push(await shrinkShot(f)); } catch { toast("사진 하나를 읽지 못했어요.", "bad"); } }
-    if (files.length > room) toast(`3장까지라 ${room}장만 넣었어요.`);
+    if (files.length > room) toast(`${MAX_GUIDE}장까지라 ${room}장만 넣었어요.`);
     FORM_SHOTS_DIRTY = true; paintFormShots();
   },
   dropShot(i) { FORM_SHOTS.splice(i, 1); FORM_SHOTS_DIRTY = true; paintFormShots(); },
