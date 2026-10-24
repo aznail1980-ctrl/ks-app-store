@@ -670,8 +670,9 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "1062932075520",
   appId:             "1:1062932075520:web:c27809c5aa6f951d8834e5"
 };
-// 관리자 이메일 — 이 이메일로 가입하면 자동으로 관리자. firestore.rules 의 이메일과 같아야 합니다.
-const ADMIN_EMAILS = ["aznail1980@gmail.com"];
+// 관리자 이메일 — 이 이메일로 로그인하면 자동으로 관리자. firestore.rules 의 isAdminEmail() 과 같아야 합니다.
+// ⚠️ 반드시 '이미 가입된' 이메일만 넣으세요. 가입 안 된 이메일을 넣으면 남이 그 이메일로 가입해 관리자가 될 수 있어요.
+const ADMIN_EMAILS = ["aznail@hanmail.net"];
 // AI(Gemini) 키는 코드에 넣지 않습니다. 관리 → 설정에서 입력하면 Firestore(config/ai)에 저장됩니다.
 const AI_MODELS = ["gemini-flash-latest", "gemini-2.5-flash"]; // 앞 모델이 없어지면 다음 모델로
 const ASSET_V   = "20261024";  // 일러스트 파일을 고치면 이 값을 바꿔 휴대폰 캐시를 새로 받게 합니다
@@ -735,7 +736,8 @@ const initial = n => (String(n || "?").trim()[0] || "?").toUpperCase();
 const icon = (name, cls = "") => `<svg class="ic ${cls}" aria-hidden="true"><use href="#${name}"/></svg>`;
 const illu = (name, alt = "") => `<img src="assets/illust/${name}.svg?v=${ASSET_V}" alt="${esc(alt)}" ${alt ? "" : 'aria-hidden="true"'} decoding="async">`;
 const ts = t => t?.seconds ? t.seconds * 1000 : (typeof t === "number" ? t : 0);
-const isAdmin = () => S.meData?.role === "admin";
+const isAdminEmail = email => ADMIN_EMAILS.includes(String(email || "").trim().toLowerCase());
+const isAdmin = () => S.meData?.role === "admin" || isAdminEmail(S.me?.email);
 const isNew = ap => ts(ap.createdAt) > Date.now() - NEW_DAYS * 864e5;
 const catOf = ap => ap.category || "기타";
 const domainOf = u => { try { return new URL(u).hostname; } catch { return ""; } };
@@ -988,7 +990,7 @@ async function ensureUserDoc(user) {
   const ref = doc(db, "users", user.uid);
   const snap = await getDoc(ref);
   if (snap.exists()) return;
-  const admin = ADMIN_EMAILS.includes(user.email);
+  const admin = isAdminEmail(user.email);
   await setDoc(ref, {
     uid: user.uid, email: user.email,
     displayName: user.displayName || (user.email ? user.email.split("@")[0] : "회원"),
@@ -1764,7 +1766,7 @@ const App = {
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, pw);
       await updateProfile(cred.user, { displayName: name });
-      const admin = ADMIN_EMAILS.includes(email);
+      const admin = isAdminEmail(email);
       await setDoc(doc(db, "users", cred.user.uid), { uid: cred.user.uid, email, displayName: name, role: admin ? "admin" : "user", status: admin ? "approved" : "pending", createdAt: serverTimestamp() });
     } catch (e) { const [fid, m] = authMsg(e); fid ? (setErr(fid, m), focusFirstErr(f)) : toast(m, "bad"); }
     finally { SIGNING_UP = false; }
@@ -2037,9 +2039,15 @@ onAuthStateChanged(auth, async user => {
   // 회원 문서를 실시간으로 지켜봄 — 관리자가 승인하면 다시 로그인하지 않아도 바로 들어감
   UNSUB_USER = onSnapshot(doc(db, "users", user.uid), snap => {
     if (!snap.exists()) return;
+    const prevRole = S.meData?.role;
     S.meData = snap.data();
     hideSplash();
+    // 관리자 이메일인데 회원 정보가 아직 '일반 회원'이면 스스로 관리자로 고쳐 둠
+    if (isAdminEmail(user.email) && (S.meData.role !== "admin" || S.meData.status !== "approved")) {
+      updateDoc(doc(db, "users", user.uid), { role: "admin", status: "approved" }).catch(e => console.warn("관리자 지정 실패", e));
+    }
     if (S.meData.status !== LAST_STATUS) { LAST_STATUS = S.meData.status; routeByStatus(); }
+    else if (prevRole && prevRole !== S.meData.role && S.shell) { S.shell = false; enterApp(); }  // 권한이 바뀌면 메뉴 다시 그림
   }, err => { console.warn(err); hideSplash(); toast("회원 정보를 불러오지 못했어요. 새로고침해 주세요.", "bad"); });
 });
 </script>

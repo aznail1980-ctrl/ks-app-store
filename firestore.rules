@@ -11,17 +11,16 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // 관리자 이메일 (index.html 의 ADMIN_EMAILS 와 같아야 함)
-    function isAdminEmail() {
-      return request.auth.token.email == 'aznail1980@gmail.com';
-    }
     // 예전 마스터 계정은 비밀번호가 노출된 적이 있어 완전히 차단 (계정을 지운 뒤에도 그대로 둬도 됨)
     function blocked()  { return request.auth != null && request.auth.token.email == 'aznail@appstore.master'; }
     function signedIn() { return request.auth != null && !blocked(); }
+    // 관리자 이메일 (index.html 의 ADMIN_EMAILS 와 같아야 함)
+    // ⚠️ '이미 가입된' 이메일만 — 가입 안 된 이메일이면 남이 그 이메일로 가입해 관리자가 될 수 있음
+    function isAdminEmail() { return signedIn() && request.auth.token.email == 'aznail@hanmail.net'; }
     function hasMyDoc() { return exists(/databases/$(database)/documents/users/$(request.auth.uid)); }
     function myDoc()    { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
-    function isAdmin()    { return signedIn() && hasMyDoc() && myDoc().role == 'admin'; }
-    function isApproved() { return signedIn() && hasMyDoc() && myDoc().status == 'approved'; }
+    function isAdmin()    { return isAdminEmail() || (signedIn() && hasMyDoc() && myDoc().role == 'admin'); }
+    function isApproved() { return isAdminEmail() || (signedIn() && hasMyDoc() && myDoc().status == 'approved'); }
     function validReview(d) {
       return d.rating is int && d.rating >= 1 && d.rating <= 5
           && d.text is string && d.text.size() > 0 && d.text.size() <= 1000;
