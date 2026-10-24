@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 190" role="img" aria-label="휴대폰 위쪽 다운로드 완료 알림을 누르면 설치 창이 뜨고 설치 버튼을 누르는 그림">
+<!-- 안내: 다운로드 완료 알림 → 탭 → 설치 -->
+<style>
+.o{fill:#fff;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.l{fill:none;stroke:#23211F;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:none;stroke:#23211F;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.r{fill:none;stroke:#23211F;stroke-width:1.2;stroke-linecap:round;opacity:.3}
+.k{fill:#23211F}.y{fill:#FFE14D}
+.yo{fill:#FFE14D;stroke:#23211F;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.tx{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",Roboto,sans-serif;font-size:13px;font-weight:600;fill:#23211F}
+</style>
+<!-- 휴대폰 -->
+<path class="o" d="M42 10Q84 8.6 124 10Q138 11 138.6 26L139 168Q138.4 184 124 184.4Q84 186 42 184.6Q28 184 27.6 168L27 26Q27.6 11 42 10Z"/>
+<!-- 다운로드 완료 알림 -->
+<path class="yo" d="M40 24Q83 23 126 24Q130 24.2 130 28L130 54Q129.8 58 126 58L40 58Q36 57.8 36 54L36 28Q36.2 24 40 24Z"/>
+<path class="l" d="M50 31.6v11M45.6 38.6l4.4 4.4 4.4-4.4M44.6 47h10.8"/>
+<path class="d" d="M64 36h44M64 46h30"/>
+<!-- 누르는 표시 -->
+<circle class="d" cx="108" cy="46" r="7"/>
+<path class="d" style="stroke-dasharray:2 4" d="M108 33a13 13 0 1 1-.1 0"/>
+<path class="r" d="M44 74h76M44 84h60M44 94h72M44 104h48M44 118h70M44 128h56"/>
+<path class="d" d="M70 172Q83 171 96 172"/>
+<!-- 화살표 -->
+<path class="l" d="M132 40C148 42 158 52 164 64"/>
+<path class="l" d="M164 64l-7.4-4.6M164 64l1.6-8.6"/>
+<!-- 설치 창 -->
+<path class="o" d="M172 36Q230 34.6 286 36Q292 36.4 292.4 42L292.8 158Q292.4 164 286 164.4Q230 165.6 172.4 164.2Q166.4 163.8 166.2 158L166 42Q166.4 36.4 172 36Z"/>
+<rect class="o" style="stroke-width:2.2" x="178" y="48" width="26" height="26" rx="7"/>
+<path class="d" d="M184 66c0-4.6 3.2-8.2 7-8.2s7 3.6 7 8.2zM186.6 55l1.6 2.8M195.4 55l-1.6 2.8"/>
+<path class="d" d="M212 56h56M212 66h36"/>
+<text class="tx" x="178" y="97" style="font-weight:700">이 앱을 설치할까요?</text>
+<path class="r" d="M178 110h96M178 120h70"/>
+<text class="tx" x="196" y="150" style="fill:#56524D">취소</text>
+<rect class="yo" x="234" y="134" width="48" height="24" rx="12"/>
+<text class="tx" x="258" y="150.6" text-anchor="middle" style="font-weight:700">설치</text>
+<path class="d" d="M262 166l1.4 6M271 164l3.6 4.6M253 165l-2.6 5"/>
+</svg>

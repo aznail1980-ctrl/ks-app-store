@@ -1,0 +1,14 @@
+# GitHub(공개 저장소)에 올리지 않는 것들
+# 맥 폴더 정보
+.DS_Store
+# Claude 작업 설정·작업 기록 (계정 이메일, 내 컴퓨터 경로가 들어 있음)
+.claude/
+.project/
+# Firebase 배포 기록
+.firebase/
+*.log
+# 큰 설치 파일 (APK는 Dropbox 링크로 배포)
+downloads/
+*.apk
+# 예전 설정 문서 (README.md로 대체)
+설정안내.md

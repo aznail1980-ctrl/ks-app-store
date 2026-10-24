@@ -1,0 +1,85 @@
+rules_version = '2';
+
+// ════════════════════════════════════════════════════════════
+//  Firestore 보안 규칙 — KS 앱스토어
+//  이 규칙이 진짜 보안입니다. 화면(index.html)을 고쳐도 이 규칙을 넘을 수 없습니다.
+//  배포: Firebase 콘솔 > Firestore Database > 규칙 탭에 전체를 붙여넣고 [게시]
+//        또는 터미널에서  firebase deploy --only firestore:rules
+//  2026-10-24: 마스터 계정 제거, 내 후기 고치기·지우기 허용, AI 설정(config) 추가
+// ════════════════════════════════════════════════════════════
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 관리자 이메일 (index.html 의 ADMIN_EMAILS 와 같아야 함)
+    function isAdminEmail() {
+      return request.auth.token.email == 'aznail1980@gmail.com';
+    }
+    function signedIn() { return request.auth != null; }
+    function hasMyDoc() { return exists(/databases/$(database)/documents/users/$(request.auth.uid)); }
+    function myDoc()    { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function isAdmin()    { return signedIn() && hasMyDoc() && myDoc().role == 'admin'; }
+    function isApproved() { return signedIn() && hasMyDoc() && myDoc().status == 'approved'; }
+    function validReview(d) {
+      return d.rating is int && d.rating >= 1 && d.rating <= 5
+          && d.text is string && d.text.size() > 0 && d.text.size() <= 1000;
+    }
+
+    // ──────────────── 회원 ────────────────
+    match /users/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      // 가입: 일반 회원은 반드시 user/pending 으로만, 관리자 이메일만 admin/approved 로 시작
+      allow create: if signedIn() && request.auth.uid == uid && (
+        (request.resource.data.role == 'user' && request.resource.data.status == 'pending')
+        || (isAdminEmail() && request.resource.data.role == 'admin' && request.resource.data.status == 'approved')
+      );
+      // 관리자는 승인·거절 등 전부, 본인은 이름만
+      allow update: if isAdmin() || (
+        request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName'])
+      );
+      allow delete: if isAdmin();
+    }
+
+    // ──────────────── 앱 ────────────────
+    match /apps/{appId} {
+      allow read: if isApproved();
+      allow create, delete: if isAdmin();
+      // 승인 회원은 후기 집계(평균 별점·후기 수)만 바꿀 수 있음
+      allow update: if isAdmin() || (
+        isApproved() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating', 'reviewCount'])
+      );
+    }
+
+    // ──────────────── 후기 ────────────────
+    match /reviews/{reviewId} {
+      allow read: if isApproved();
+      // 새 후기: 본인 이름으로, 앱마다 한 사람 한 개 (문서 이름 = 앱ID_회원ID)
+      allow create: if isApproved()
+        && request.resource.data.userId == request.auth.uid
+        && reviewId == request.resource.data.appId + '_' + request.auth.uid
+        && validReview(request.resource.data);
+      // 고치기: 관리자 또는 본인(작성자·앱은 바꿀 수 없음)
+      allow update: if isAdmin() || (
+        isApproved()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.appId == resource.data.appId
+        && validReview(request.resource.data)
+      );
+      // 지우기: 관리자 또는 본인
+      allow delete: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+    }
+
+    // ──────────────── 설정 (AI 키 등) ────────────────
+    match /config/{id} {
+      allow read: if isApproved();
+      allow write: if isAdmin();
+    }
+
+    // 그 밖의 모든 경로는 막음
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

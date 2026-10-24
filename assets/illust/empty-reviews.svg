@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 200" role="img" aria-label="쪽지 캐릭터가 자기보다 큰 노란 연필을 들고 빈 말풍선에 첫 글을 쓰려는 그림">
+<!-- 빈 화면(후기 없음): 커다란 노란 연필로 빈 말풍선에 첫 줄을 쓰려는 참 -->
+<style>
+.o{fill:#fff;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.l{fill:none;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:none;stroke:#23211F;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.h{fill:none;stroke:#23211F;stroke-width:1.3;stroke-linecap:round}
+.r{fill:none;stroke:#23211F;stroke-width:1.2;stroke-linecap:round;opacity:.28}
+.k{fill:#23211F}.w{fill:#fff}.y{fill:#FFE14D}
+.yo{fill:#FFE14D;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.ds{fill:none;stroke:#23211F;stroke-width:1.8;stroke-linecap:round;stroke-dasharray:2 7}
+.jj path,.jj ellipse,.jj circle,.jj rect{vector-effect:non-scaling-stroke}
+</style>
+
+<!-- 바닥 -->
+<path class="l" d="M10 183Q130 187 250 182"/>
+<path class="h" d="M34 189l-5 7M46 189l-5 7M58 189l-5 7M70 189l-5 7M82 189l-5 7M94 189l-5 7"/>
+
+<!-- 빈 말풍선 -->
+<path class="o" d="M130 28.6Q184 26.6 238 28.4Q248.4 29 248.6 39L249 97Q248.8 107 238.6 107.4L162 108.6L136 130L144 108.4L130.4 108Q120.4 107.6 120.2 97.4L119.8 39Q120.4 29 130 28.6Z"/>
+<path class="ds" d="M136 52H232M136 72H232M140 92H200"/>
+<!-- 작은 하트 낙서 -->
+<path class="d" d="M232 18q-3-4-6-.4q-2.6 3.4 6 8.4q8.6-5 6-8.4q-3-3.6-6 .4z"/>
+
+<!-- 쪽지 (연필 뒤) -->
+<g class="jj" transform="translate(40 112)">
+  <path class="l" d="M17 57.5L16.2 66"/><path class="l" d="M33 57.5L33.8 66"/>
+  <ellipse class="o" cx="14.6" cy="67.4" rx="4.8" ry="2.7"/><ellipse class="o" cx="35.4" cy="67.4" rx="4.8" ry="2.7"/>
+  <path class="l" d="M3.6 34Q-4 40-6 47"/>
+  <path class="l" d="M47.6 30Q54 32 59.7 35"/>
+  <path class="o" d="M3 4Q18 2.6 34 2.2L48.5 15.5Q48 37 47.4 57.6Q25 58.8 3.4 58.2Q2.2 31 3 4Z"/>
+  <path class="r" d="M9 46.5Q24 45.7 41 46.3M9 52Q22 51.5 37 51.9"/>
+  <path class="yo" style="stroke-width:1.9" d="M34 2.4Q33.6 9.5 34.8 15.6Q41.5 15.9 48.3 15.4Z"/>
+  <ellipse class="y" cx="11.6" cy="34.6" rx="3.9" ry="2.3"/><ellipse class="y" cx="37.4" cy="34.6" rx="3.9" ry="2.3"/>
+  <ellipse class="k" cx="19.2" cy="27.2" rx="2.6" ry="3.3"/><ellipse class="k" cx="33" cy="27.2" rx="2.6" ry="3.3"/>
+  <circle class="w" cx="20.1" cy="26" r="1"/><circle class="w" cx="33.9" cy="26" r="1"/>
+  <path class="d" d="M21.6 33.4Q24.5 36.6 27.4 33.4"/>
+  <circle class="o" cx="-6.4" cy="48.2" r="3.2"/>
+</g>
+
+<!-- 커다란 노란 연필 -->
+<g transform="translate(74 186) rotate(-56.6)">
+  <path class="o" style="stroke-width:2.2" d="M0-7.4Q-1.6 0 0 7.4L12 8V-8Z"/>
+  <path class="h" d="M3-5l6 10M7-6l4 7"/>
+  <rect class="o" style="stroke-width:2.2" x="12" y="-8.4" width="10" height="16.8" rx="1"/>
+  <path class="h" d="M15.2-8v16.4M18.6-8.2v16.6"/>
+  <path class="yo" style="stroke-width:2.2" d="M22-8H88V8H22Z"/>
+  <path class="h" d="M22-2.6H88M22 2.6H88"/>
+  <path class="o" style="stroke-width:2.2" d="M88-8L104-2.2V2.2L88 8Z"/>
+  <path class="h" d="M88-8q2.4 2.6 0 5.3t0 5.4t0 5.3"/>
+  <path class="k" d="M104-2.4L112 0L104 2.4Z"/>
+</g>
+<!-- 연필 잡은 손 -->
+<circle class="o" cx="99.7" cy="147" r="3.4"/>
+
+<!-- 반짝임 -->
+<path class="d" d="M70 58v12M64 64h12M65.8 59.8l8.4 8.4M74.2 59.8l-8.4 8.4"/>
+<circle class="k" cx="104" cy="40" r="1.8"/><circle class="k" cx="250" cy="130" r="1.8"/>
+</svg>

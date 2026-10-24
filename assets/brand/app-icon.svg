@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- 휴대폰 홈 화면 아이콘 원본 (PNG로 변환해 사용).
+       안드로이드가 동그랗게 잘라도 쪽지가 잘리지 않도록 가운데 80% 안에 그림 -->
+  <rect width="100" height="100" fill="#FFE14D"/>
+  <!-- 바닥 그림자 빗금 -->
+  <g stroke="#23211F" stroke-width="1.6" stroke-linecap="round" opacity=".55">
+    <path d="M30 82.6l-2.6 3.4M36 82.8l-2.6 3.4M42 82.9l-2.6 3.4M48 83l-2.6 3.4M54 83l-2.6 3.4M60 82.9l-2.6 3.4M66 82.8l-2.6 3.4M72 82.6l-2.6 3.4"/>
+  </g>
+  <g transform="translate(14.2 14.6) scale(1.12)">
+    <path fill="#FFFFFF" stroke="#23211F" stroke-width="3" stroke-linejoin="round" d="M9 8Q25.6 6.4 41 6.6L55 20.6Q55.4 38 54.6 55.4Q32 56.8 9.6 56Q8 32 9 8Z"/>
+    <path fill="#FFE14D" stroke="#23211F" stroke-width="2.3" stroke-linejoin="round" d="M41 7.2Q40.4 14 41.6 20.8Q48.4 21 54.6 20.6Z"/>
+    <rect x="17" y="24.6" width="11" height="11" rx="2.6" fill="#23211F"/>
+    <rect x="32" y="25" width="11" height="11" rx="2.6" fill="none" stroke="#23211F" stroke-width="2.3"/>
+    <rect x="17.2" y="39.4" width="11" height="11" rx="2.6" fill="none" stroke="#23211F" stroke-width="2.3"/>
+    <rect x="32.2" y="39.6" width="11" height="11" rx="2.6" fill="none" stroke="#23211F" stroke-width="2.3"/>
+  </g>
+</svg>

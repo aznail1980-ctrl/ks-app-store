@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 190" role="img" aria-label="아이폰 사파리 아래쪽 공유 버튼을 누르고, 열린 목록에서 홈 화면에 추가를 고르는 그림">
+<!-- 안내: 아이폰 사파리 → 공유 → 홈 화면에 추가 -->
+<style>
+.o{fill:#fff;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.l{fill:none;stroke:#23211F;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:none;stroke:#23211F;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.r{fill:none;stroke:#23211F;stroke-width:1.2;stroke-linecap:round;opacity:.3}
+.k{fill:#23211F}.y{fill:#FFE14D}
+.mk{fill:none;stroke:#FFE14D;stroke-width:9;stroke-linecap:round;stroke-linejoin:round}
+.tx{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;font-size:13px;font-weight:600;fill:#23211F}
+</style>
+<!-- 휴대폰 -->
+<path class="o" d="M44 10Q86 8.6 126 10Q140 11 140.6 26L141 168Q140.4 184 126 184.4Q86 186 44 184.6Q30 184 29.6 168L29 26Q29.6 11 44 10Z"/>
+<path class="d" d="M44 22Q85 21 126 22Q131 22.2 131 27L131 31Q130.8 35.4 126 35.6L44 35.6Q39 35.4 39 31L39 27Q39.2 22.2 44 22Z"/>
+<path class="r" d="M46 50h78M46 60h62M46 70h74M46 80h50"/>
+<path class="d" d="M46 94Q85 93 124 94L124.4 132Q85 133 46.4 132Z"/>
+<path class="r" d="M54 104h40M54 112h56M54 120h30"/>
+<path class="d" d="M34 148Q85 147 136 148"/>
+<!-- 공유 버튼 강조 (형광펜 동그라미) -->
+<path class="mk" d="M73 163C72 150 99 148 99.6 163C100 176 73 179 72.4 166"/>
+<!-- 아래 도구 막대 아이콘들 -->
+<path class="d" d="M47 160l-5 6 5 6"/>
+<path class="d" style="opacity:.4" d="M58 160l5 6-5 6"/>
+<path class="l" d="M80.4 162H78q-1.6 0-1.6 1.6v8.2q0 1.6 1.6 1.6h14q1.6 0 1.6-1.6v-8.2q0-1.6-1.6-1.6h-2.4"/>
+<path class="l" d="M85 168.4V155M80.8 159.2L85 155l4.2 4.2"/>
+<path class="d" d="M106 160.6q4-2 8 0v11q-4-2-8 0zM114 160.6q4-2 8 0"/>
+<path class="d" d="M125 161h7v7h-7zM128 158h7v7"/>
+<!-- 화살표 -->
+<path class="l" d="M102 152C126 138 146 118 166 104"/>
+<path class="l" d="M166 104l-9.4.6M166 104l-3.2 8.6"/>
+<!-- 공유 목록 -->
+<path class="o" d="M176 36Q232 34.6 286 36Q292 36.4 292.4 42L292.8 150Q292.4 156 286 156.4Q232 157.6 176.4 156.2Q170.4 155.8 170.2 150L170 42Q170.4 36.4 176 36Z"/>
+<path class="y" d="M176 78Q230 76.6 287 78L287.6 112Q230 113.4 176.4 112Z"/>
+<path class="r" d="M178 76H286M178 114H286" style="opacity:.45"/>
+<text class="tx" x="184" y="61">복사</text>
+<text class="tx" x="184" y="100" style="font-weight:700">홈 화면에 추가</text>
+<text class="tx" x="184" y="140">북마크 추가</text>
+<path class="d" d="M266 50h9v11h-9zM270 47h9v11"/>
+<path class="l" d="M266 89h14q2 0 2 2v12q0 2-2 2h-14q-2 0-2-2v-12q0-2 2-2zM273 93v8M269 97h8"/>
+<path class="d" d="M266 131q4-2 7 0v10q-3-2-7 0zM273 131q4-2 7 0v10q-3-2-7 0z"/>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="KS 앱스토어 로고">
+  <!-- KS 앱스토어 로고: 모서리가 접힌 쪽지 + 앱 칸 네 개. 형광펜 면을 살짝 어긋나게 깔아 2도 인쇄 느낌 -->
+  <path fill="#FFE14D" d="M13.2 11.8Q29.6 10.2 44.4 10.4L58.4 24.4Q58.8 41.6 58 59Q35.4 60.6 13 59.6Q11.4 35.8 13.2 11.8Z"/>
+  <path fill="#FFFFFF" stroke="#23211F" stroke-width="3.2" stroke-linejoin="round" d="M9 8Q25.6 6.4 41 6.6L55 20.6Q55.4 38 54.6 55.4Q32 56.8 9.6 56Q8 32 9 8Z"/>
+  <path fill="#FFE14D" stroke="#23211F" stroke-width="2.4" stroke-linejoin="round" d="M41 7.2Q40.4 14 41.6 20.8Q48.4 21 54.6 20.6Z"/>
+  <rect x="17" y="24.6" width="11" height="11" rx="2.6" fill="#23211F"/>
+  <rect x="32" y="25" width="11" height="11" rx="2.6" fill="none" stroke="#23211F" stroke-width="2.4"/>
+  <rect x="17.2" y="39.4" width="11" height="11" rx="2.6" fill="none" stroke="#23211F" stroke-width="2.4"/>
+  <rect x="32.2" y="39.6" width="11" height="11" rx="2.6" fill="none" stroke="#23211F" stroke-width="2.4"/>
+</svg>

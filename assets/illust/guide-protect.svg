@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 190" role="img" aria-label="Play 프로텍트 설정에서 기기 스캔 스위치를 손가락으로 눌러 끄는 그림">
+<!-- 안내: Play 프로텍트 → 기기 스캔 스위치 끄기 -->
+<style>
+.o{fill:#fff;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.l{fill:none;stroke:#23211F;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:none;stroke:#23211F;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.r{fill:none;stroke:#23211F;stroke-width:1.2;stroke-linecap:round;opacity:.3}
+.k{fill:#23211F}.y{fill:#FFE14D}
+.mk{fill:none;stroke:#FFE14D;stroke-width:9;stroke-linecap:round;stroke-linejoin:round}
+.tx{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",Roboto,sans-serif;font-size:13px;font-weight:600;fill:#23211F}
+</style>
+<!-- 설정 카드 -->
+<path class="o" d="M38 26Q150 24.4 262 26Q270 26.4 270.4 34L270.8 144Q270.4 152 262 152.4Q150 154 38.4 152.4Q30.4 152 30.2 144L30 34Q30.4 26.4 38 26Z"/>
+<path class="o" style="stroke-width:2.2" d="M54 40l12 4.6v8c0 7.6-5 12.8-12 15.2-7-2.4-12-7.6-12-15.2v-8z"/>
+<path class="d" d="M48.6 53.4l4 4 7.6-8"/>
+<text class="tx" x="76" y="58" style="font-size:14px;font-weight:700">Play 프로텍트</text>
+<path class="r" d="M42 80H258" style="opacity:.45"/>
+<text class="tx" x="44" y="108">Play 프로텍트로 기기 스캔</text>
+<path class="r" d="M44 124h120M44 134h84"/>
+<!-- 스위치 강조 + 끄는 방향 -->
+<path class="mk" d="M206 102C206 84 262 84 262 102C262 120 206 120 206 104"/>
+<rect class="o" style="stroke-width:2.2" x="215" y="92" width="38" height="20" rx="10"/>
+<circle class="o" style="stroke-width:2.2" cx="225" cy="102" r="7"/>
+<path class="d" d="M248 78h-20M228 78l5-4M228 78l5 4"/>
+<!-- 누르는 손가락 -->
+<path class="o" d="M233 152V121Q233 115 237.5 115Q242 115 242 121V143Q250 140 256 143Q262 146 261.6 153L261 165Q260 179 245 179Q229 179 228 165L227.6 155Q227.4 151 233 152Z"/>
+<path class="d" d="M242 145q0 6 1 10M250 144q0 6 1 10"/>
+<path class="d" d="M226 114l-4-4M237.6 108v-5M249 114l4-4"/>
+</svg>

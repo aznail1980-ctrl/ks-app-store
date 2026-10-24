@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KS 앱스토어</title>
+<meta name="description" content="직접 만든 앱을 쪽지 돌리듯 친구·가족과 나눠 쓰는 앱스토어">
+<!-- 경로는 모두 상대경로: GitHub Pages(하위 폴더 주소)에서도 그대로 동작 -->
+<link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="KS 앱스토어">
+
+<!-- 글꼴: 본문 Pretendard(SIL OFL), 큰 제목 Black Han Sans·손글씨 Gaegu(구글 폰트, OFL) -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gaegu:wght@700&display=swap">
+
+<style>
+/* ════════════════════════════════════════════════════════════
+   1. 디자인 기준값 — 이 블록만 바꾸면 앱 전체 분위기가 바뀝니다
+   콘셉트: 스케치북 — 흰 종이 + 먹색 선 + 형광펜 노랑 한 색
+   ════════════════════════════════════════════════════════════ */
+:root{
+  /* 색 */
+  --paper:#FFFFFF;        /* 바탕 */
+  --paper-2:#F5F4F1;      /* 살짝 들어간 면 (안내 상자, 로그인 그림 영역) */
+  --ink:#23211F;          /* 본문 글자·선 */
+  --ink-2:#56524D;        /* 보조 글자 (흰 바탕 대비 7:1) */
+  --ink-3:#6F6A64;        /* 흐린 글자·안내 문구 (흰 바탕 대비 5:1) */
+  --hair:#DDD9D2;         /* 가는 구분선 */
+  --marker:#FFE14D;       /* 형광펜 노랑 — 강조 한 곳에만 */
+  --marker-soft:#FFF3B0;  /* 형광펜 옅게 (승인 대기 등) */
+  --ok:#1E7A4C;  --ok-bg:#E5F3EA;
+  --bad:#C0352B; --bad-bg:#FBEAE8;
+  --skel:#ECE9E3;         /* 불러오는 중 회색 자리 */
+
+  /* 글꼴 */
+  --f-body:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  --f-title:"Black Han Sans",var(--f-body);
+  --f-hand:"Gaegu",var(--f-body);
+
+  /* 글자 크기 (본문 16 기준). 큰 제목만 예외로 더 크게 */
+  --t-12:12px; --t-14:14px; --t-16:16px; --t-20:20px; --t-26:26px; --t-title:36px;
+
+  /* 간격: 4px 배수 */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
+
+  /* 모서리 두 가지만: 버튼·입력칸 12 / 아래에서 올라오는 시트 20 */
+  --r:12px; --r-lg:20px;
+
+  /* 높이 */
+  --bar-h:56px;    /* 상단바 */
+  --tab-h:64px;    /* 휴대폰 하단 탭 */
+
+  /* 노치·홈바 여백 (세이프 에어리어) */
+  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-l:env(safe-area-inset-left,0px);
+  --safe-r:env(safe-area-inset-right,0px);
+  --gut-l:max(16px,var(--safe-l));
+  --gut-r:max(16px,var(--safe-r));
+
+  --float:0 -6px 32px rgba(35,33,31,.16); /* 떠 있는 시트에만 쓰는 그림자 */
+}
+
+/* ════════════════════════════════════════════════════════════
+   2. 기본
+   ════════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden}
+html.is-locked{overflow:hidden}           /* 시트가 열려 있을 때 뒤 화면 스크롤 막기 */
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--f-body);font-size:var(--t-16);line-height:1.6;letter-spacing:-0.01em;
+  word-break:keep-all;overflow-wrap:break-word;   /* 한글은 단어 단위로, 긴 주소는 넘치지 않게 */
+  -webkit-font-smoothing:antialiased;
+  overflow-x:clip;                                 /* hidden이 아닌 clip: 상단바 고정(sticky)이 깨지지 않음 */
+  min-height:100vh;min-height:100dvh;
+}
+/* 노치 영역(상태바 뒤)을 흰색으로 칠해 스크롤 내용이 비치지 않게 */
+body::before{content:"";position:fixed;inset:0 0 auto;height:var(--safe-t);background:var(--paper);z-index:60}
+img,svg{display:block;max-width:100%}
+button,input,textarea,select{font:inherit;color:inherit;letter-spacing:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+a{color:inherit}
+h1,h2,h3,h4,p,ul,ol,dl,dd,figure,fieldset{margin:0;padding:0}
+fieldset{border:0;min-width:0}
+ul,ol{list-style:none}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;word-break:break-all}
+:focus{outline:none}
+/* 키보드로 이동할 때만 보이는 포커스 표시: 먹선 + 노랑 후광 */
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px;box-shadow:0 0 0 6px var(--marker)}
+.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;padding:0;margin:-1px}
+[hidden]{display:none!important}
+
+/* 아이콘 (index.html 맨 아래 SVG 묶음에서 가져옴) */
+.ic{display:inline-block;vertical-align:-0.2em;width:24px;height:24px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ic-sm{width:18px;height:18px}
+.ic-xs{width:14px;height:14px}
+.ic.fill{fill:currentColor}
+/* 검색칸의 브라우저 기본 지우기 버튼 숨김 (직접 만든 지우기 버튼만 사용) */
+input[type="search"]::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none;display:none}
+
+/* 형광펜 밑줄 강조 */
+.mark{background:linear-gradient(transparent 56%,var(--marker) 56%,var(--marker) 92%,transparent 92%);padding:0 .06em}
+mark.hl{background:var(--marker);color:inherit;border-radius:3px;padding:0 1px}
+.title{font-family:var(--f-title);font-weight:400;letter-spacing:-0.01em;line-height:1.14}
+.hand{font-family:var(--f-hand);font-weight:700}
+
+/* ════════════════════════════════════════════════════════════
+   3. 공통 부품
+   ════════════════════════════════════════════════════════════ */
+/* 버튼 — 먹색(가장 중요한 행동 하나) / 선(두 번째) / 글자(취소 등) */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);
+  min-height:48px;padding:0 var(--s5);border-radius:var(--r);border:2px solid var(--ink);
+  font-size:var(--t-16);font-weight:700;line-height:1.2;white-space:nowrap;text-decoration:none;
+  transition:background-color .15s,color .15s,transform .1s;
+}
+.btn:active{transform:translateY(1px)}
+.btn-ink{background:var(--ink);color:#fff}
+.btn-ink:hover{background:#000}
+.btn-line{background:var(--paper);color:var(--ink)}
+.btn-line:hover{background:var(--paper-2)}
+.btn-danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn-text{border-color:transparent;min-height:44px;padding:0 var(--s2);text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px;font-weight:600}
+.btn-sm{min-height:44px;padding:0 var(--s4);font-size:var(--t-14)}
+.btn-block{width:100%}
+.btn[disabled],.btn[aria-busy="true"]{opacity:.6;cursor:not-allowed}
+/* 처리 중 표시: 버튼 앞에 도는 동그라미 */
+.btn[aria-busy="true"]::before{content:"";width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.icon-btn{width:44px;height:44px;display:inline-grid;place-items:center;border-radius:var(--r);color:var(--ink);flex-shrink:0}
+.icon-btn:hover{background:var(--paper-2)}
+
+/* 입력칸 */
+.field{display:grid;gap:var(--s2)}
+.field + .field,.field + .check,.check + .check{margin-top:var(--s4)}
+.label{font-size:var(--t-14);font-weight:700}
+.input,.textarea,.select{
+  width:100%;min-height:48px;padding:0 var(--s4);
+  border:1.5px solid var(--ink);border-radius:var(--r);background:var(--paper);
+  font-size:var(--t-16);transition:box-shadow .15s;
+}
+.textarea{padding:var(--s3) var(--s4);min-height:112px;resize:vertical;line-height:1.6}
+.input::placeholder,.textarea::placeholder{color:var(--ink-3)}
+.input:focus-visible,.textarea:focus-visible,.select:focus-visible{outline:none;box-shadow:0 0 0 4px var(--marker)}
+.input[readonly]{background:var(--paper-2);color:var(--ink-2)}
+.select{appearance:none;-webkit-appearance:none;padding-right:44px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2323211F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6.4 9.4l5.6 5.4 5.7-5.5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;background-size:18px}
+.hint{font-size:var(--t-14);color:var(--ink-3)}
+.err{display:none;align-items:center;gap:6px;font-size:var(--t-14);font-weight:600;color:var(--bad)}
+.has-err .input,.has-err .textarea{border-color:var(--bad)}
+.has-err > .err,.has-err .err{display:flex}
+.pw-wrap{position:relative}
+.pw-wrap .input{padding-right:52px}
+.pw-wrap .icon-btn{position:absolute;right:2px;top:50%;transform:translateY(-50%)}
+.check{display:flex;align-items:center;gap:var(--s3);min-height:44px;font-size:var(--t-16);cursor:pointer}
+.check input{width:22px;height:22px;accent-color:var(--ink);margin:0;flex-shrink:0}
+
+/* 세그먼트(둘 중 하나 고르기) */
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;border:2px solid var(--ink);border-radius:var(--r);overflow:hidden}
+.seg > button,.seg > label{min-height:44px;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:700;color:var(--ink-2);padding:0 var(--s3);cursor:pointer;text-align:center}
+.seg > button + button,.seg > label + input + label{border-left:2px solid var(--ink)}
+.seg > button[aria-selected="true"],.seg input:checked + label{background:var(--ink);color:#fff}
+.seg input{position:absolute;opacity:0;width:1px;height:1px}
+.seg input:focus-visible + label{box-shadow:inset 0 0 0 3px var(--marker)}
+
+/* 작은 표시 */
+.badge{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 var(--s2);border-radius:6px;font-size:var(--t-12);font-weight:700;white-space:nowrap;line-height:1;border:1.5px solid var(--ink);background:var(--paper);vertical-align:middle}
+.badge-new{background:var(--marker)}
+.badge-wait{background:var(--marker-soft);border-color:transparent}
+.badge-ok{color:var(--ok);background:var(--ok-bg);border-color:transparent}
+.badge-bad{color:var(--bad);background:var(--bad-bg);border-color:transparent}
+.badge-muted{color:var(--ink-2);background:var(--paper-2);border-color:transparent}
+
+/* 카테고리 거르기 (밑줄 탭) */
+.tabs{display:flex;gap:var(--s5);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;min-height:48px;min-width:44px;justify-content:center;display:inline-flex;align-items:center;gap:4px;font-size:var(--t-16);font-weight:700;color:var(--ink-3)}
+.tab small{font-size:var(--t-12);font-weight:600;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.tab[aria-pressed="true"]{color:var(--ink)}
+.tab[aria-pressed="true"] span{background:linear-gradient(transparent 58%,var(--marker) 58%,var(--marker) 94%,transparent 94%)}
+
+/* 앱 아이콘: 진짜 앱 아이콘을 손그림 틀 안에 */
+.ico{position:relative;flex-shrink:0;width:var(--sz,52px);height:var(--sz,52px);display:block}
+.ico > img,.ico > .ico-fb{position:absolute;inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);border-radius:24%;object-fit:contain;background:var(--paper)}
+.ico > .ico-fb{display:grid;place-items:center;background:var(--paper-2);color:var(--ink)}
+.ico > .ico-fb .ic{width:46%;height:46%}
+.ico > .ico-emoji{font-size:calc(var(--sz,52px) * .46);line-height:1}
+.ico-frame{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:var(--ink);stroke-width:2;pointer-events:none;overflow:visible}
+
+/* 별 */
+.stars{display:inline-flex;gap:1px;vertical-align:-2px}
+.stars .ic{width:15px;height:15px;stroke-width:1.8}
+.stars .on{fill:var(--ink)}
+
+/* 손그림 동그라미 안 이니셜 (아바타) */
+.avatar{position:relative;width:40px;height:40px;flex-shrink:0;display:grid;place-items:center;font-family:var(--f-title);font-size:18px;line-height:1}
+.avatar svg{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:var(--ink);stroke-width:1.8}
+
+/* 불러오는 중 — 완성될 모양 그대로 회색 자리 */
+.skel{background:var(--skel);border-radius:8px;position:relative;overflow:hidden;display:block}
+.skel::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);animation:shimmer 1.3s infinite}
+@keyframes shimmer{to{transform:translateX(100%)}}
+
+/* 빈 화면 */
+.empty{display:grid;justify-items:center;text-align:center;gap:var(--s2);padding:var(--s7) var(--s4)}
+.empty img{width:min(260px,72%);margin-bottom:var(--s2)}
+.empty-title{font-size:var(--t-20);font-weight:800;letter-spacing:-0.02em}
+.empty p{color:var(--ink-2);max-width:28em}
+.empty .btn{margin-top:var(--s3)}
+.empty-sm{padding:var(--s5) var(--s2)}
+.empty-sm img{width:min(200px,60%)}
+
+/* 섹션 머리 */
+.sec{margin-top:var(--s7)}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s3);padding-bottom:var(--s2);border-bottom:2px solid var(--ink)}
+.sec-head h2,.sec-head h3{font-size:var(--t-20);font-weight:800;letter-spacing:-0.02em}
+.sec-head .more{font-size:var(--t-14);font-weight:600;color:var(--ink-2)}
+
+/* 테이프 라벨 (노란 마스킹 테이프에 손글씨) */
+.tape{
+  display:inline-block;position:absolute;top:-15px;left:20px;padding:2px 14px 3px;
+  background:var(--marker);color:var(--ink);font-size:18px;line-height:1.3;transform:rotate(-2.5deg);
+  clip-path:polygon(0 8%,4% 0,8% 10%,12% 2%,88% 0,92% 9%,96% 1%,100% 8%,100% 92%,96% 100%,92% 91%,88% 100%,12% 98%,8% 90%,4% 100%,0 92%);
+}
+
+/* ════════════════════════════════════════════════════════════
+   4. 앱 뼈대 — 상단바 / 본문 / 휴대폰 하단 탭 / AI 버튼
+   ════════════════════════════════════════════════════════════ */
+.skip{position:absolute;left:-999px;top:0;z-index:300;background:var(--ink);color:#fff;min-height:44px;display:inline-flex;align-items:center;padding:0 var(--s4);border-radius:var(--r)}
+.skip:focus{left:var(--s4);top:calc(var(--safe-t) + var(--s2))}
+
+.topbar{
+  position:sticky;top:var(--safe-t);z-index:50;height:var(--bar-h);
+  background:var(--paper);border-bottom:2px solid var(--ink);
+  display:flex;align-items:center;gap:var(--s4);padding:0 var(--gut-r) 0 var(--gut-l);
+}
+.brand{display:inline-flex;align-items:center;gap:var(--s2);text-decoration:none;min-height:44px;flex-shrink:0}
+.brand img{width:32px;height:32px}
+.brand b{font-size:17px;font-weight:800;letter-spacing:-0.03em}
+.topnav{display:none;margin-left:auto;gap:var(--s1)}
+.topnav a{position:relative;min-height:44px;display:inline-flex;align-items:center;gap:6px;padding:0 var(--s3);border-radius:var(--r);font-weight:700;color:var(--ink-3);text-decoration:none}
+.topnav a:hover{color:var(--ink)}
+.topnav a[aria-current="page"]{color:var(--ink)}
+.topnav a[aria-current="page"] span{background:linear-gradient(transparent 58%,var(--marker) 58%,var(--marker) 94%,transparent 94%)}
+.dot{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--marker);border:1.5px solid var(--ink);font-size:11px;font-weight:800;font-style:normal;color:var(--ink);line-height:1}
+
+.offline{display:flex;align-items:center;gap:var(--s2);padding:var(--s2) var(--gut-r) var(--s2) var(--gut-l);background:var(--ink);color:#fff;font-size:var(--t-14);font-weight:600}
+
+.view{max-width:1040px;margin:0 auto;padding:var(--s5) var(--gut-r) calc(var(--tab-h) + var(--safe-b) + var(--s6)) var(--gut-l)}
+.view:focus{outline:none;box-shadow:none}
+
+.tabbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--paper);border-top:2px solid var(--ink);
+  display:flex;padding:0 max(4px,var(--safe-r)) var(--safe-b) max(4px,var(--safe-l));
+}
+.tabbar a{flex:1;position:relative;min-height:var(--tab-h);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:var(--t-12);font-weight:700;color:var(--ink-3);text-decoration:none}
+.tabbar a[aria-current="page"]{color:var(--ink)}
+.tabbar a[aria-current="page"] .ic{filter:drop-shadow(2.5px 2.5px 0 var(--marker))}
+.tabbar .dot{position:absolute;top:7px;left:calc(50% + 6px)}
+
+/* AI 도우미 버튼 (상단바 오른쪽) */
+.ai-btn{
+  margin-left:auto;flex-shrink:0;display:inline-flex;align-items:center;gap:6px;
+  min-height:44px;padding:0 var(--s3) 0 var(--s1);border:2px solid var(--ink);border-radius:var(--r);
+  background:var(--paper);font-size:var(--t-14);font-weight:800;box-shadow:2px 2px 0 var(--ink);
+}
+.ai-btn img{width:34px;height:34px}
+.ai-btn:hover{background:var(--paper-2)}
+.ai-btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink)}
+
+/* ════════════════════════════════════════════════════════════
+   5. 아래에서 올라오는 시트 (PC에서는 가운데 창) · 토스트
+   ════════════════════════════════════════════════════════════ */
+.scrim{position:fixed;inset:0;z-index:100;background:rgba(35,33,31,.42);opacity:0;transition:opacity .2s}
+.scrim.on{opacity:1}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:101;
+  max-height:calc(100dvh - var(--safe-t) - 24px);display:flex;flex-direction:column;
+  background:var(--paper);border-radius:var(--r-lg) var(--r-lg) 0 0;border-top:2px solid var(--ink);box-shadow:var(--float);
+  transform:translateY(100%);transition:transform .26s cubic-bezier(.2,.8,.2,1);
+}
+.sheet.on{transform:none}
+.sheet-grip{display:flex;justify-content:center;padding-top:var(--s2);color:var(--ink-3)}
+.sheet-grip svg{width:44px;height:8px}
+.sheet-head{display:flex;align-items:center;gap:var(--s3);padding:var(--s1) var(--s3) var(--s1) max(var(--s5),var(--safe-l))}
+.sheet-head h2{flex:1;font-size:var(--t-20);font-weight:800;letter-spacing:-0.02em;line-height:1.3}
+.sheet-head .icon-btn{margin-left:auto}
+.sheet-body{overflow-y:auto;overscroll-behavior:contain;padding:var(--s2) max(var(--s5),var(--safe-r)) calc(var(--s6) + var(--safe-b)) max(var(--s5),var(--safe-l))}
+.sheet-foot{display:flex;gap:var(--s2);justify-content:flex-end;padding:var(--s3) max(var(--s5),var(--safe-r)) calc(var(--s3) + var(--safe-b)) max(var(--s5),var(--safe-l));border-top:1.5px solid var(--hair);background:var(--paper)}
+.sheet-foot .btn{flex:1}
+.sheet-has-foot .sheet-body{padding-bottom:var(--s5)}
+
+.toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--tab-h) + var(--safe-b) + 16px);z-index:200;display:grid;gap:var(--s2);width:min(440px,calc(100vw - 32px));pointer-events:none}
+body.no-tab .toasts{bottom:calc(var(--safe-b) + 16px)}
+.toast{display:flex;align-items:center;gap:var(--s3);background:var(--ink);color:#fff;border-radius:var(--r);padding:var(--s3) var(--s4);font-size:var(--t-14);font-weight:600;line-height:1.5;pointer-events:auto;animation:toastIn .22s ease-out}
+.toast.bad{background:var(--bad)}
+.toast .ic{width:20px;height:20px}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}}
+
+/* ════════════════════════════════════════════════════════════
+   6. 화면별
+   ════════════════════════════════════════════════════════════ */
+/* ── 시작 화면 ── */
+#splash{position:fixed;inset:0;z-index:400;background:var(--paper);display:grid;place-content:center;justify-items:center;gap:var(--s3);transition:opacity .25s}
+#splash.out{opacity:0;pointer-events:none}
+#splash svg{width:84px;height:84px}
+#splash .draw{stroke-dasharray:230;stroke-dashoffset:230;animation:draw 1.1s ease-out forwards}
+#splash .fill-in{opacity:0;animation:fadeIn .4s .8s forwards}
+#splash p{font-size:20px}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fadeIn{to{opacity:1}}
+
+/* ── 로그인 ── */
+.login{min-height:100dvh;display:grid;grid-template-columns:minmax(0,1fr)}
+.login-art{
+  background-color:var(--paper-2);
+  background-image:radial-gradient(circle,var(--hair) 1.2px,transparent 1.4px);background-size:20px 20px;
+  border-bottom:2px solid var(--ink);
+  display:grid;grid-template-columns:minmax(0,1fr) 40%;align-items:end;gap:var(--s2);
+  padding:calc(var(--safe-t) + var(--s6)) var(--gut-r) var(--s4) var(--gut-l);
+}
+.login-title{font-size:clamp(28px,8.6vw,40px)}   /* 휴대폰 폭에 맞춰 두 줄로 */
+.login-lede{display:none}
+.login-illu{width:100%;max-width:420px}
+.login-side{display:flex;justify-content:center;padding:var(--s6) var(--gut-r) calc(var(--s7) + var(--safe-b)) var(--gut-l)}
+.login-form{width:100%;max-width:400px}
+.login-form .brand{margin-bottom:var(--s5)}
+.login-form .seg{margin-bottom:var(--s5)}
+.login-opts{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);flex-wrap:wrap;margin:var(--s2) 0 var(--s4)}
+.login-opts .check{font-size:var(--t-14)}
+.login-note{margin-top:var(--s5);font-size:var(--t-14);color:var(--ink-2)}
+.signup-note{margin:var(--s4) 0;padding:var(--s3) var(--s4);background:var(--paper-2);border-radius:var(--r);font-size:var(--t-14);color:var(--ink-2)}
+
+/* ── 승인 대기 / 입장 불가 ── */
+.status{max-width:560px;margin:0 auto;padding:calc(var(--safe-t) + var(--s7)) var(--gut-r) calc(var(--s7) + var(--safe-b)) var(--gut-l)}
+.status-art{width:min(320px,90%);margin-bottom:var(--s5)}
+.status h1{font-size:34px;margin-bottom:var(--s3)}
+.status-text{font-size:17px;color:var(--ink-2)}
+.status-box{margin-top:var(--s6);padding:var(--s5);border:2px solid var(--ink);border-radius:var(--r);position:relative}
+.status-box h2{font-size:var(--t-20);font-weight:800;margin-bottom:var(--s2)}
+.status-box p{color:var(--ink-2);margin-bottom:var(--s4)}
+.status-acct{margin-top:var(--s6);font-size:var(--t-14);color:var(--ink-3)}
+
+/* ── 홈 ── */
+.home-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:var(--s3);padding-top:var(--s2)}
+.home-hero h1{font-size:var(--t-title)}
+.home-meta{margin-top:var(--s3);color:var(--ink-2);font-variant-numeric:tabular-nums}
+.home-art{position:relative;width:132px}
+.home-art figcaption{position:absolute;top:-6px;right:-2px;font-family:var(--f-hand);font-weight:700;font-size:17px;transform:rotate(-7deg);white-space:nowrap}
+
+.feature{position:relative;margin-top:var(--s7);border:2px solid var(--ink);border-radius:var(--r);padding:var(--s6) var(--s4) var(--s4)}
+.feature-row{display:flex;gap:var(--s4);align-items:center}
+.feature-txt{min-width:0}
+.feature h2{font-size:var(--t-20);font-weight:800;letter-spacing:-0.02em;line-height:1.3}
+.feature p{color:var(--ink-2);margin-top:var(--s1);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.feature-acts{display:flex;gap:var(--s2);margin-top:var(--s4);flex-wrap:wrap}
+.feature-acts .btn{flex:1 1 140px}
+
+.list-head{position:sticky;top:calc(var(--safe-t) + var(--bar-h));z-index:20;background:var(--paper);border-bottom:1.5px solid var(--ink);margin:0 calc(-1 * var(--gut-r)) 0 calc(-1 * var(--gut-l));padding:0 var(--gut-r) 0 var(--gut-l)}
+.app-list{display:grid}
+.app-row{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) 0;border-bottom:1.5px solid var(--ink)}
+.app-main{flex:1;min-width:0;display:flex;align-items:center;gap:var(--s3);text-align:left;min-height:64px;border-radius:var(--r);padding:2px 0}
+.app-main:hover .app-name b{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px}
+.app-txt{min-width:0;flex:1;display:grid;gap:1px}
+.app-name{display:flex;align-items:center;gap:6px;min-width:0}
+.app-name b{font-size:var(--t-16);font-weight:800;letter-spacing:-0.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-meta{font-size:var(--t-14);color:var(--ink-3);display:flex;gap:4px;align-items:center;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.app-meta > span{display:inline-flex;align-items:center;gap:2px}
+.app-desc{font-size:var(--t-14);color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-act{flex-shrink:0}
+.list-count{padding:var(--s3) 0 0;font-size:var(--t-14);color:var(--ink-2)}
+
+/* ── 찾기 ── */
+.search-box{position:sticky;top:calc(var(--safe-t) + var(--bar-h));z-index:20;background:var(--paper);margin:calc(-1 * var(--s5)) calc(-1 * var(--gut-r)) 0 calc(-1 * var(--gut-l));padding:var(--s4) var(--gut-r) 0 var(--gut-l)}
+.search-field{position:relative;display:flex;align-items:center}
+.search-field > .ic{position:absolute;left:14px;pointer-events:none}
+.search-field .input{padding-left:48px;padding-right:52px;min-height:52px;border-width:2px;font-size:17px}
+.search-field .icon-btn{position:absolute;right:4px}
+.search-box .tabs{border-bottom:1.5px solid var(--ink);margin:var(--s2) calc(-1 * var(--gut-r)) 0 calc(-1 * var(--gut-l));padding:0 var(--gut-r) 0 var(--gut-l)}
+.recent{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s3)}
+.recent-chip{display:inline-flex;align-items:center;border:1.5px solid var(--ink);border-radius:var(--r);min-height:44px}
+.recent-chip button:first-child{padding:0 var(--s2) 0 var(--s4);min-height:40px;font-weight:600}
+.recent-chip .icon-btn{width:40px;height:40px}
+.cat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3);margin-top:var(--s3)}
+.cat-card{display:flex;align-items:center;gap:var(--s3);min-height:64px;padding:0 var(--s4);border:1.5px solid var(--ink);border-radius:var(--r);text-align:left;font-weight:700}
+.cat-card:hover{background:var(--paper-2)}
+.cat-card small{margin-left:auto;font-weight:600;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+/* ── 앱 상세 (시트 안) ── */
+.dt-head{display:flex;gap:var(--s4);align-items:center}
+.dt-name{font-size:var(--t-26);font-weight:800;letter-spacing:-0.03em;line-height:1.2}
+.dt-sub{font-size:var(--t-14);color:var(--ink-2);margin-top:var(--s1);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.dt-acts{display:flex;gap:var(--s2);margin-top:var(--s5);flex-wrap:wrap}
+.dt-acts .btn{flex:1 1 150px}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:var(--s5);border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
+.facts div{padding:var(--s3) var(--s2);text-align:center;display:grid;gap:2px}
+.facts div + div{border-left:1px solid var(--hair)}
+.facts b{font-size:var(--t-20);font-weight:800;font-variant-numeric:tabular-nums;line-height:1.3}
+.facts span{font-size:var(--t-12);color:var(--ink-3)}
+.ai-note{position:relative;margin-top:var(--s7);padding:var(--s5) var(--s4) var(--s4);border:1.5px dashed var(--ink);border-radius:var(--r)}
+.ai-note p{color:var(--ink)}
+.ai-note .skel{height:14px;margin-top:8px}
+.dt-sec{margin-top:var(--s6)}
+.dt-sec > h3{font-size:var(--t-16);font-weight:800;margin-bottom:var(--s2)}
+.dt-desc{white-space:pre-wrap}
+.feat-list li{display:flex;gap:var(--s2);align-items:flex-start;padding:4px 0}
+.feat-list .ic{width:20px;height:20px;margin-top:2px}
+.url-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-weight:600;word-break:break-all}
+.note-box{display:flex;gap:var(--s3);align-items:flex-start;padding:var(--s4);background:var(--paper-2);border-radius:var(--r);font-size:var(--t-14);color:var(--ink-2)}
+.note-box .ic{color:var(--ink)}
+.note-box b{color:var(--ink)}
+
+/* 후기 */
+.rv-sum{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s5);align-items:center;padding:var(--s4) 0}
+.rv-avg{display:grid;justify-items:center;gap:2px}
+.rv-avg b{font-family:var(--f-title);font-weight:400;font-size:var(--t-title);line-height:1}
+.rv-avg span{font-size:var(--t-12);color:var(--ink-3)}
+.rv-bars{display:grid;gap:5px}
+.rv-bar{display:grid;grid-template-columns:12px minmax(0,1fr);gap:var(--s2);align-items:center;font-size:var(--t-12);color:var(--ink-3);font-variant-numeric:tabular-nums}
+.rv-bar i{display:block;height:8px;border-radius:4px;background:var(--paper-2);overflow:hidden}
+.rv-bar i b{display:block;height:100%;background:var(--ink);border-radius:4px}
+.rv-form{margin-top:var(--s4);padding:var(--s4);border:1.5px solid var(--ink);border-radius:var(--r)}
+.rv-form legend{margin-bottom:var(--s1)}
+.star-pick{display:flex;gap:2px}
+.star-pick input{position:absolute;opacity:0;width:1px;height:1px}
+.star-pick label{width:44px;height:44px;display:grid;place-items:center;cursor:pointer;border-radius:var(--r)}
+.star-pick svg{width:34px;height:34px;fill:var(--paper);stroke:var(--ink);stroke-width:1.8;stroke-linejoin:round;transition:transform .1s}
+.star-pick label.on svg{fill:var(--marker)}
+.star-pick label:hover svg{transform:scale(1.08)}
+.star-pick input:focus-visible + label{outline:2px solid var(--ink);box-shadow:0 0 0 5px var(--marker)}
+.rv-form-foot{display:flex;gap:var(--s2);justify-content:flex-end;margin-top:var(--s4)}
+.rv-mine{margin-top:var(--s4);padding:var(--s4);background:var(--paper-2);border-radius:var(--r)}
+.rv-mine-head{display:flex;align-items:center;gap:var(--s2);font-weight:700;font-size:var(--t-14)}
+.rv-mine-acts{display:flex;gap:var(--s2);margin-top:var(--s2)}
+.rv-list{margin-top:var(--s3)}
+.rv-item{padding:var(--s4) 0;border-bottom:1px solid var(--hair)}
+.rv-who{display:flex;align-items:center;gap:var(--s2);font-size:var(--t-14)}
+.rv-who b{font-weight:700}
+.rv-who time{margin-left:auto;color:var(--ink-3);font-size:var(--t-12)}
+.rv-text{margin-top:var(--s2);white-space:pre-wrap}
+.rv-admin{margin-top:var(--s1)}
+
+/* ── 내 정보 ── */
+.me-head{display:flex;align-items:center;gap:var(--s4);padding-top:var(--s2)}
+.me-head .avatar{width:72px;height:72px;font-size:32px}
+.me-name{font-size:var(--t-26);font-weight:800;letter-spacing:-0.03em;line-height:1.25}
+.me-mail{color:var(--ink-2);font-size:var(--t-14);word-break:break-all}
+.me-form{display:grid;gap:var(--s3);margin-top:var(--s4)}
+.me-form .btn{justify-self:start}
+.my-rv{display:grid}
+.my-rv-item{display:block;width:100%;text-align:left;padding:var(--s4) 0;border-bottom:1px solid var(--hair)}
+.my-rv-item b{font-weight:800}
+.my-rv-item p{color:var(--ink-2);margin-top:var(--s1);white-space:pre-wrap}
+.sec-text{margin-top:var(--s3);color:var(--ink-2)}
+.sec-text + .btn{margin-top:var(--s4)}
+
+/* ── 관리 ── */
+.page-title{font-size:var(--t-title);margin-bottom:var(--s5)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+.stats div{padding:var(--s3) var(--s2);display:grid;gap:2px}
+.stats div + div{border-left:1px solid var(--hair)}
+.stats dt{font-size:var(--t-12);color:var(--ink-3);font-weight:600}
+.stats dd{font-size:var(--t-26);font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2}
+.stats .is-wait dd{background:linear-gradient(transparent 55%,var(--marker) 55%,var(--marker) 90%,transparent 90%);justify-self:start}
+.subnav{display:flex;gap:var(--s5);overflow-x:auto;margin-top:var(--s5);border-bottom:1.5px solid var(--ink);scrollbar-width:none}
+.subnav a{min-height:48px;display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--ink-3);text-decoration:none;flex-shrink:0}
+.subnav a[aria-current="page"]{color:var(--ink)}
+.subnav a[aria-current="page"] > span:first-child{background:linear-gradient(transparent 58%,var(--marker) 58%,var(--marker) 94%,transparent 94%)}
+.pane-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding:var(--s4) 0}
+.pane-head p{color:var(--ink-2);font-size:var(--t-14)}
+.pane-title{font-size:var(--t-16);font-weight:800;margin:var(--s5) 0 var(--s1)}
+.admin-row{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--hair)}
+.admin-row.is-hidden .admin-txt{color:var(--ink-2)}
+.admin-txt{flex:1;min-width:0}
+.admin-name{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:800}
+.admin-meta{font-size:var(--t-14);color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-acts{display:flex;gap:var(--s1);flex-shrink:0;align-items:center}
+.user-acts{display:flex;gap:var(--s2);flex-wrap:wrap}
+.menu-list{display:grid}
+.menu-item{display:flex;align-items:center;gap:var(--s3);min-height:56px;padding:0 var(--s2);border-bottom:1px solid var(--hair);text-align:left;font-weight:600}
+.menu-item:last-child{border-bottom:0}
+.menu-item:hover{background:var(--paper-2)}
+.menu-danger{color:var(--bad)}
+.set-sec{padding:var(--s5) 0;border-bottom:1px solid var(--hair)}
+.set-sec h2{font-size:var(--t-20);font-weight:800;margin-bottom:var(--s2)}
+.set-sec > p{color:var(--ink-2)}
+.set-sec form{margin-top:var(--s4)}
+.set-row{display:flex;gap:var(--s2);flex-wrap:wrap;margin-top:var(--s3)}
+.howto{margin-top:var(--s4)}
+.howto summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
+.howto ol{list-style:decimal;padding-left:1.4em;color:var(--ink-2);display:grid;gap:var(--s1)}
+.ico-edit{display:flex;gap:var(--s4);align-items:center}
+.ico-edit-ctl{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
+.form-kind{margin-top:var(--s4)}
+.form-kind legend{margin-bottom:var(--s2)}
+
+/* ── 안내 시트 ── */
+.guide-art{width:100%;max-width:360px;margin:var(--s2) auto var(--s4);display:block}
+.steps{display:grid;gap:var(--s3);counter-reset:st}
+.steps li{display:grid;grid-template-columns:32px minmax(0,1fr);gap:var(--s3);align-items:start;counter-increment:st}
+.steps li::before{content:counter(st);width:32px;height:32px;display:grid;place-items:center;border:2px solid var(--ink);border-radius:50%;font-weight:800;font-variant-numeric:tabular-nums}
+.steps li span{padding-top:4px}
+.guide-box{margin-top:var(--s5);padding:var(--s4);border:2px solid var(--ink);border-radius:var(--r);position:relative}
+.guide-box h3{font-size:var(--t-16);font-weight:800;margin:var(--s2) 0}
+.guide-box .steps li::before{border-width:1.5px;width:28px;height:28px;font-size:var(--t-14)}
+.guide-box .steps li{grid-template-columns:28px minmax(0,1fr)}
+.lede{color:var(--ink-2);margin-bottom:var(--s2)}
+
+/* ── AI 도우미 ── */
+.chat-intro{display:flex;gap:var(--s3);align-items:center;color:var(--ink-2);font-size:var(--t-14);padding-bottom:var(--s3);border-bottom:1px solid var(--hair)}
+.chat-intro img{width:52px;height:52px;flex-shrink:0}
+.chat-log{display:grid;gap:var(--s3);padding:var(--s4) 0}
+.msg{max-width:88%;padding:var(--s3) var(--s4);border-radius:var(--r);white-space:pre-wrap;line-height:1.6}
+.msg-bot{justify-self:start;background:var(--paper-2);border-bottom-left-radius:4px}
+.msg-me{justify-self:end;background:var(--ink);color:#fff;border-bottom-right-radius:4px}
+.msg-wait{color:var(--ink-3)}
+.msg-apps{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s2)}
+.msg-app{display:inline-flex;align-items:center;gap:var(--s2);min-height:44px;padding:0 var(--s3) 0 var(--s1);border:1.5px solid var(--ink);border-radius:var(--r);background:var(--paper);font-weight:700;font-size:var(--t-14);white-space:normal}
+.chat-suggest{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.chat-suggest button{min-height:44px;padding:0 var(--s4);border:1.5px solid var(--ink);border-radius:var(--r);font-size:var(--t-14);font-weight:600}
+.chat-form{display:flex;gap:var(--s2);width:100%}
+.chat-form .input{flex:1}
+.chat-form .btn{flex:0 0 auto;padding:0 var(--s4)}
+
+.confirm-text{color:var(--ink-2);padding-bottom:var(--s2)}
+
+/* ════════════════════════════════════════════════════════════
+   7. 넓은 화면 (PC·태블릿)
+   ════════════════════════════════════════════════════════════ */
+@media (min-width:768px){
+  .sheet{
+    left:50%;right:auto;bottom:auto;top:50%;width:min(600px,calc(100vw - 48px));max-height:min(88dvh,880px);
+    border-radius:var(--r-lg);border:2px solid var(--ink);
+    transform:translate(-50%,-46%);opacity:0;transition:transform .22s cubic-bezier(.2,.8,.2,1),opacity .18s;
+  }
+  .sheet.on{transform:translate(-50%,-50%);opacity:1}
+  .sheet-grip{display:none}
+  .sheet-head{padding-top:var(--s3)}
+  .sheet-foot{border-radius:0 0 var(--r-lg) var(--r-lg)}
+  .sheet-foot .btn{flex:0 0 auto}
+  .cat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (min-width:900px){
+  .topnav{display:flex}
+  .tabbar{display:none}
+  .view{padding-bottom:var(--s8)}
+  .toasts{bottom:24px}
+  .ai-btn{margin-left:var(--s3)}
+  .home-hero h1{font-size:52px}
+  .home-art{width:250px}
+  .home-art figcaption{font-size:20px}
+  .app-list{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s7)}
+  .feature-acts .btn{flex:0 0 auto;min-width:180px}
+  .login{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
+  .login-art{grid-template-columns:minmax(0,1fr);align-content:center;justify-items:start;border-bottom:0;border-right:2px solid var(--ink);padding:var(--s8)}
+  .login-title{font-size:56px}
+  .login-lede{display:block;font-size:var(--t-20);color:var(--ink-2);margin-top:var(--s4)}
+  .login-illu{margin-top:var(--s6);max-width:480px}
+  .login-side{align-items:center}
+  .page-title{font-size:46px}
+}
+@media (max-width:360px){
+  .home-art{width:104px}
+  .home-hero h1{font-size:31px}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stats div:nth-child(3){border-left:0}
+  .stats div:nth-child(n+3){border-top:1px solid var(--hair)}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body class="no-tab">
+
+<!-- 시작 화면: 로고가 손으로 그려지듯 나타남 -->
+<div id="splash" role="status">
+  <svg viewBox="0 0 64 64" aria-hidden="true">
+    <path class="fill-in" fill="#FFE14D" d="M13.2 11.8Q29.6 10.2 44.4 10.4L58.4 24.4Q58.8 41.6 58 59Q35.4 60.6 13 59.6Q11.4 35.8 13.2 11.8Z"/>
+    <path class="draw" fill="none" stroke="#23211F" stroke-width="3.2" stroke-linejoin="round" d="M9 8Q25.6 6.4 41 6.6L55 20.6Q55.4 38 54.6 55.4Q32 56.8 9.6 56Q8 32 9 8Z"/>
+    <path class="fill-in" fill="#FFE14D" stroke="#23211F" stroke-width="2.4" stroke-linejoin="round" d="M41 7.2Q40.4 14 41.6 20.8Q48.4 21 54.6 20.6Z"/>
+    <g class="fill-in"><rect x="17" y="24.6" width="11" height="11" rx="2.6" fill="#23211F"/><rect x="32" y="25" width="11" height="11" rx="2.6" fill="none" stroke="#23211F" stroke-width="2.4"/><rect x="17.2" y="39.4" width="11" height="11" rx="2.6" fill="none" stroke="#23211F" stroke-width="2.4"/><rect x="32.2" y="39.6" width="11" height="11" rx="2.6" fill="none" stroke="#23211F" stroke-width="2.4"/></g>
+  </svg>
+  <p class="hand">앱 서랍 여는 중…</p>
+</div>
+
+<div id="root"></div>
+<div id="sheets"></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<noscript><p style="padding:24px">이 앱스토어는 자바스크립트를 켜야 쓸 수 있어요.</p></noscript>
+
+<!-- ════════════════════════════════════════════════════════════
+     직접 그린 아이콘 묶음 (손그림 선, 24×24). 사용법: <svg class="ic"><use href="#i-home"/></svg>
+     ════════════════════════════════════════════════════════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<defs>
+  <!-- 앱 아이콘용 손그림 틀 / 아바타 동그라미 / 별점용 별 -->
+  <symbol id="frame" viewBox="0 0 64 64"><path vector-effect="non-scaling-stroke" d="M15 3.4C27 2.5 39.5 2.4 50.2 3.5C58.2 4.4 60.6 8.2 60.8 15.2C61.4 27.2 61.3 39.2 60.6 49.7C60 57.9 56.5 60.6 49.6 60.9C37.6 61.6 25.8 61.4 14.5 60.8C6.7 60.2 3.6 57 3.3 49.9C2.7 37.6 2.8 25.7 3.4 14.7C3.9 6.9 7.3 3.9 15 3.4Z"/></symbol>
+  <symbol id="circle-hand" viewBox="0 0 40 40"><path vector-effect="non-scaling-stroke" d="M20.5 2.6C30.4 2.4 37.6 10 37.4 20.2C37.2 30.3 29.8 37.6 19.8 37.4C9.9 37.2 2.6 29.6 2.8 19.6C3 9.8 10.6 2.8 20.5 2.6Z"/></symbol>
+  <symbol id="star-hand" viewBox="0 0 40 40"><path d="M20 3.6L24.9 14.2L36.4 15.3L27.8 23.2L30.4 34.8L20.1 28.8L9.8 34.9L12.3 23.3L3.6 15.5L15.2 14.1Z"/></symbol>
+
+  <!-- 화면 아이콘 -->
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4.4 11.3L12 4.4l7.7 6.8"/><path d="M6.2 10.2v9.1c0 .5.3.8.8.8H10v-5.5h4.1v5.5h3c.5 0 .8-.3.8-.8v-9.2"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><path d="M10.9 4.5c3.7-.1 6.4 2.8 6.3 6.4-.1 3.6-3 6.3-6.5 6.2-3.6-.1-6.2-3-6.1-6.4.1-3.4 2.8-6.1 6.3-6.2z"/><path d="M15.7 15.9l4.6 4.5"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M12 4.2c2.2-.1 3.9 1.7 3.8 4-.1 2.2-1.8 3.9-3.9 3.8-2.2-.1-3.7-1.8-3.6-4 .1-2.1 1.6-3.7 3.7-3.8z"/><path d="M4.9 20c.8-3.6 3.7-5.6 7.2-5.5 3.4.1 6.2 2.1 7 5.6"/></symbol>
+  <symbol id="i-admin" viewBox="0 0 24 24"><path d="M4.5 7.2l7.8-.2M17.2 6.9h2.3M4.7 16.9l1.3.1M10.5 17.1l8.8.2"/><path d="M14.7 4.9c1.2 0 2.1 1 2.1 2.1 0 1.2-1 2.1-2.2 2.1-1.1 0-2-1-2-2.1 0-1.2.9-2.1 2.1-2.1zM8.2 14.9c1.2 0 2.1.9 2.1 2.1 0 1.2-1 2.1-2.1 2.1-1.2 0-2.1-1-2.1-2.1 0-1.2 1-2.1 2.1-2.1z"/></symbol>
+  <symbol id="i-open" viewBox="0 0 24 24"><path d="M13.4 4.6l6.1-.1-.1 6"/><path d="M19.3 4.7l-8.6 8.5"/><path d="M17.5 13.6v4.6c0 1-.8 1.8-1.8 1.8H6c-1 0-1.8-.8-1.8-1.8V8.4c0-1 .8-1.8 1.8-1.8h4.5"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12.1 4.3l-.1 10.6"/><path d="M7.6 10.6l4.4 4.5 4.6-4.4"/><path d="M4.5 15.5v2.7c0 1 .8 1.8 1.8 1.8h11.5c1 0 1.8-.8 1.8-1.8v-2.8"/></symbol>
+  <symbol id="i-addhome" viewBox="0 0 24 24"><path d="M6.3 4.4h11.5c1 0 1.8.8 1.8 1.8v11.6c0 1-.8 1.8-1.8 1.8H6.2c-1 0-1.8-.8-1.8-1.8V6.2c0-1 .9-1.8 1.9-1.8z"/><path d="M12 8.3v7.4M8.3 12.1l7.4-.1"/></symbol>
+  <symbol id="i-android" viewBox="0 0 24 24"><path d="M5.4 17.2c0-3.9 3-7 6.6-7s6.6 3.1 6.6 7z"/><path d="M8.3 7.4l1.4 2.4M15.7 7.4l-1.4 2.4"/><path d="M9.5 13.9h.1M14.4 13.9h.1"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.6l2.6 5.6 6.1.6-4.6 4.2 1.4 6.1-5.5-3.2-5.4 3.2 1.3-6.1-4.6-4.1 6.1-.7z"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6.2 6.1l11.7 11.8M17.8 6.3L6.3 17.8"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M15.2 5.1l3.7 3.7-9.8 9.8-4.6.9.9-4.6z"/><path d="M13.3 7l3.7 3.7"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.8 12.1c2.2-4 5.4-6.1 9.2-6.1s7 2.1 9.2 6c-2.2 4-5.4 6-9.2 6s-7-2-9.2-5.9z"/><path d="M12 9.2c1.6 0 2.8 1.3 2.8 2.9 0 1.5-1.3 2.8-2.9 2.8-1.5 0-2.7-1.3-2.7-2.9 0-1.5 1.2-2.8 2.8-2.8z"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M4.4 4.4l15.2 15.3"/><path d="M9.8 6.4c.7-.2 1.4-.3 2.2-.3 3.8 0 7 2.1 9.2 6-.7 1.2-1.4 2.2-2.3 3M16.4 16.9c-1.3.8-2.8 1.2-4.4 1.2-3.8 0-7-2-9.2-5.9.9-1.6 2-2.9 3.2-3.8"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.6 6.9l14.8-.1"/><path d="M9.3 6.8V5.1c0-.5.4-.8.8-.8h3.8c.5 0 .8.4.8.8v1.7"/><path d="M6.5 7l.9 11.6c.1.9.8 1.5 1.7 1.5h5.8c.9 0 1.6-.7 1.7-1.5l.9-11.6"/><path d="M10.3 10.6l.2 5.7M13.7 10.6l-.2 5.7"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M3.8 11.6L20.2 4.3l-5.3 15.9-3.4-6.6z"/><path d="M11.5 13.6l8.6-9.2"/></symbol>
+  <symbol id="i-ai" viewBox="0 0 24 24"><path d="M10.5 3.8c.6 3.6 2.3 5.4 6 6-3.7.6-5.4 2.4-6 6-.6-3.6-2.4-5.4-6-6 3.6-.6 5.4-2.4 6-6z"/><path d="M18 14.6c.3 1.7 1.1 2.5 2.7 2.8-1.6.3-2.4 1.1-2.7 2.8-.3-1.7-1.1-2.5-2.8-2.8 1.7-.3 2.5-1.1 2.8-2.8z"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9.6 4.4H6.1c-1 0-1.8.8-1.8 1.8v11.6c0 1 .8 1.8 1.8 1.8h3.5"/><path d="M14.6 7.7l4.4 4.4-4.4 4.3"/><path d="M18.8 12.1H9.4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.8 12.6l4.4 4.3 9.9-10.1"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9.2 5.3l6.6 6.7-6.7 6.7"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12.1 4.6l-.1 14.8M4.6 12.1l14.8-.1"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><path d="M5.5 12h.1M12 12.1h.1M18.5 11.9h.1" stroke-width="3.4"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12.1 3.6c4.7 0 8.4 3.8 8.3 8.5 0 4.6-3.8 8.3-8.5 8.2-4.6 0-8.2-3.8-8.2-8.4.1-4.6 3.8-8.3 8.4-8.3z"/><path d="M12 7.8v5"/><path d="M12 16.2h.1" stroke-width="2.8"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><path d="M12.1 3.6c4.7 0 8.4 3.8 8.3 8.5 0 4.6-3.8 8.3-8.5 8.2-4.6 0-8.2-3.8-8.2-8.4.1-4.6 3.8-8.3 8.4-8.3z"/><path d="M12 11v5.2"/><path d="M12 7.8h.1" stroke-width="2.8"/></symbol>
+  <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M4.4 4.4l15.2 15.3"/><path d="M8.9 15.6c1.8-1.3 4.4-1.3 6.2 0M5.6 12.2c1.6-1.4 3.4-2.2 5.3-2.5M18.4 12.2c-.6-.5-1.3-1-2-1.4M2.6 8.8c1.3-1.2 2.7-2.1 4.3-2.7M21.4 8.8C18.9 6.5 15.6 5.3 12 5.4"/><path d="M12 19.2h.1" stroke-width="2.8"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10.4 13.6c1.4 1.5 3.6 1.6 5.1.2l3-3c1.4-1.4 1.4-3.7 0-5.1-1.4-1.4-3.6-1.4-5 0l-1.2 1.2"/><path d="M13.6 10.4c-1.4-1.5-3.6-1.6-5.1-.2l-3 3c-1.4 1.4-1.4 3.7 0 5.1 1.4 1.4 3.6 1.4 5 0l1.2-1.2"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M9.4 4.4h5.3l-.8 5.2 3.4 3.2H6.7l3.4-3.2z"/><path d="M12 12.8l-.1 7"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><path d="M9.2 8.6h9c.6 0 1.1.5 1.1 1.1v9c0 .6-.5 1.1-1.1 1.1h-9c-.6 0-1.1-.5-1.1-1.1v-9c0-.6.5-1.1 1.1-1.1z"/><path d="M15.6 8.4V5.8c0-.6-.5-1.1-1.1-1.1H5.6c-.6 0-1.1.5-1.1 1.1v8.9c0 .6.5 1.1 1.1 1.1h2.4"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><path d="M5.6 4.6h12.8c.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1H5.6c-.6 0-1.1-.5-1.1-1.1V5.7c0-.6.5-1.1 1.1-1.1z"/><path d="M4.7 16.4l4.4-4.5 3.5 3.4 2.4-2.3 4.4 4.3"/><path d="M15.2 8.6h.1" stroke-width="2.8"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.4 12.2c-.1 4-3.4 7.2-7.4 7.2-4.1 0-7.4-3.3-7.4-7.4S7.9 4.6 12 4.6c2.4 0 4.6 1.2 6 3"/><path d="M18.4 3.8l-.1 4.2-4.2-.1"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.6l7 2.8v5.2c0 4.3-2.9 7.6-7 9-4.1-1.4-7-4.7-7-9V6.4z"/><path d="M8.9 12l2.3 2.3 4-4.3"/></symbol>
+  <symbol id="i-share-ios" viewBox="0 0 24 24"><path d="M8.4 8.6H6.6c-.9 0-1.6.7-1.6 1.6v8.2c0 .9.7 1.6 1.6 1.6h10.8c.9 0 1.6-.7 1.6-1.6v-8.2c0-.9-.7-1.6-1.6-1.6h-1.8"/><path d="M12 3.8v10.4M8.6 7.1L12 3.8l3.4 3.3"/></symbol>
+  <symbol id="i-dots-v" viewBox="0 0 24 24"><path d="M12 5.5v.1M12.1 12v.1M11.9 18.5v.1" stroke-width="3.4"/></symbol>
+
+  <!-- 카테고리 + 아이콘이 없는 앱의 기본 그림 -->
+  <symbol id="c-work" viewBox="0 0 24 24"><path d="M4.6 8.4h14.8c.6 0 1 .4 1 1v8.8c0 .6-.4 1-1 1H4.6c-.6 0-1-.4-1-1V9.4c0-.6.4-1 1-1z"/><path d="M9 8.3V6.4c0-.6.5-1.1 1.1-1.1h3.8c.6 0 1.1.5 1.1 1.1v1.9"/><path d="M3.8 13.1c5.4 1.6 11 1.6 16.4 0"/></symbol>
+  <symbol id="c-talk" viewBox="0 0 24 24"><path d="M4.4 5h9.8c.7 0 1.2.5 1.2 1.2v5.5c0 .7-.5 1.2-1.2 1.2H9.2l-3.3 2.5v-2.5H4.4c-.7 0-1.2-.5-1.2-1.2V6.2C3.2 5.5 3.7 5 4.4 5z"/><path d="M17.8 9.2h1.8c.7 0 1.2.5 1.2 1.2v5.5c0 .7-.5 1.2-1.2 1.2h-1.4v2.4l-3.2-2.4h-3.5c-.7 0-1.2-.5-1.2-1.2v-.6"/></symbol>
+  <symbol id="c-chart" viewBox="0 0 24 24"><path d="M4.3 19.6l15.5-.1"/><path d="M7 19.4v-5.6M11 19.5V8.6M15 19.4v-8M19 19.4V5.4"/></symbol>
+  <symbol id="c-manage" viewBox="0 0 24 24"><path d="M14.6 4.3a4.6 4.6 0 0 0-4.9 6.3l-5.2 5.2a1.8 1.8 0 0 0 2.6 2.6l5.2-5.3a4.6 4.6 0 0 0 6.3-4.9l-2.8 2.7-2.6-.5-.5-2.6z"/></symbol>
+  <symbol id="c-etc" viewBox="0 0 24 24"><path d="M12 4.2l3.6 6.1H8.4z"/><path d="M5.4 13.6h5.4v5.6H5.4z"/><path d="M16.4 13.5c1.6 0 2.9 1.3 2.9 2.9s-1.3 2.9-2.9 2.9-2.9-1.3-2.9-2.9 1.3-2.9 2.9-2.9z"/></symbol>
+  <symbol id="c-note" viewBox="0 0 24 24"><path d="M5.6 3.8h8.6l4.3 4.3v11c0 .6-.5 1.1-1.1 1.1H5.6c-.6 0-1.1-.5-1.1-1.1V4.9c0-.6.5-1.1 1.1-1.1z"/><path d="M14.1 3.9v4.3h4.3"/></symbol>
+</defs>
+</svg>
+
+<!-- ════════════════════════════════════════════════════════════
+     앱 동작 (ES 모듈)
+     ════════════════════════════════════════════════════════════ -->
+<script type="module">
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  1. 설정                                                   ║
+   ╚══════════════════════════════════════════════════════════╝ */
+// Firebase 웹 설정 — 원래 공개돼도 되는 값입니다(보안은 Firestore 규칙이 담당).
+const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyDoDyPUrQG334wM9bQ_zOQC-7PT6sYx8g4",
+  authDomain:        "ks-app-store.firebaseapp.com",
+  projectId:         "ks-app-store",
+  storageBucket:     "ks-app-store.firebasestorage.app",
+  messagingSenderId: "1062932075520",
+  appId:             "1:1062932075520:web:c27809c5aa6f951d8834e5"
+};
+// 관리자 이메일 — 이 이메일로 가입하면 자동으로 관리자. firestore.rules 의 이메일과 같아야 합니다.
+const ADMIN_EMAILS = ["aznail1980@gmail.com"];
+// AI(Gemini) 키는 코드에 넣지 않습니다. 관리 → 설정에서 입력하면 Firestore(config/ai)에 저장됩니다.
+const AI_MODELS = ["gemini-flash-latest", "gemini-2.5-flash"]; // 앞 모델이 없어지면 다음 모델로
+const ASSET_V   = "20261024";  // 일러스트 파일을 고치면 이 값을 바꿔 휴대폰 캐시를 새로 받게 합니다
+const NEW_DAYS  = 14;          // 며칠 안에 등록한 앱에 '새로 옴' 표시
+const CATS      = ["업무", "소통", "분석", "관리", "기타"];
+const CAT_ICON  = { "업무":"c-work", "소통":"c-talk", "분석":"c-chart", "관리":"c-manage", "기타":"c-etc" };
+const REMEMBER_KEY = "ks_saved_email";
+const RECENT_KEY   = "ks_recent_search";
+const MOVED_KEY    = "ks_moved_seen";
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  2. Firebase                                               ║
+   ╚══════════════════════════════════════════════════════════╝ */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  sendPasswordResetEmail, updateProfile, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, onSnapshot, collection,
+  getDocs, addDoc, updateDoc, deleteDoc, query, where, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const fbApp = initializeApp(FIREBASE_CONFIG);
+const auth  = getAuth(fbApp);
+const db    = getFirestore(fbApp);
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  3. 상태                                                   ║
+   ╚══════════════════════════════════════════════════════════╝ */
+const S = {
+  me: null, meData: null,          // 로그인한 사람 (인증 정보 / 회원 문서)
+  apps: [], appsLoaded: false,     // 앱 목록
+  users: [], allReviews: [],       // 관리자용
+  reviews: {},                     // 앱별 후기 { 앱ID: [...] }
+  shell: false, tab: "home", rendered: null,
+  cat: "전체", q: "",
+  authMode: "login",
+  aiKey: undefined,                // undefined: 아직 안 읽음 / '': 없음
+  rvEdit: null,                    // 고치는 중인 후기의 앱 ID
+  dirty: false,                    // 시트에서 바뀐 내용이 있어 목록을 다시 그려야 하는지
+};
+let UNSUB_USER = null, LAST_STATUS = null, SIGNING_UP = false;
+let FORM_ICON = "";                // 앱 폼에서 고른 아이콘 (이모지 / 이미지 주소 / 올린 이미지)
+let CHAT_BUSY = false;
+const AI_CACHE = {};
+const CHAT_LOG = [];
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  4. 작은 도우미 함수                                       ║
+   ╚══════════════════════════════════════════════════════════╝ */
+const $  = s => document.querySelector(s);
+const gv = id => (document.getElementById(id)?.value ?? "");
+// 사용자가 입력한 글을 화면에 넣을 때 반드시 거치는 함수 (해킹 방지)
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+function safeUrl(u) {
+  try { const x = new URL(u); return (x.protocol === "http:" || x.protocol === "https:") ? u : "#"; }
+  catch { return "#"; }
+}
+const initial = n => (String(n || "?").trim()[0] || "?").toUpperCase();
+const icon = (name, cls = "") => `<svg class="ic ${cls}" aria-hidden="true"><use href="#${name}"/></svg>`;
+const illu = (name, alt = "") => `<img src="assets/illust/${name}.svg?v=${ASSET_V}" alt="${esc(alt)}" ${alt ? "" : 'aria-hidden="true"'} decoding="async">`;
+const ts = t => t?.seconds ? t.seconds * 1000 : (typeof t === "number" ? t : 0);
+const isAdmin = () => S.meData?.role === "admin";
+const isNew = ap => ts(ap.createdAt) > Date.now() - NEW_DAYS * 864e5;
+const catOf = ap => ap.category || "기타";
+const domainOf = u => { try { return new URL(u).hostname; } catch { return ""; } };
+function fmtDate(t) {
+  const n = ts(t); if (!n) return "";
+  const d = new Date(n), now = new Date();
+  return (d.getFullYear() !== now.getFullYear() ? `${d.getFullYear()}년 ` : "") + `${d.getMonth() + 1}월 ${d.getDate()}일`;
+}
+const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} },
+};
+// 기기 판별
+const UA = navigator.userAgent || "";
+const isIOS = () => /iPad|iPhone|iPod/.test(UA) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const isAndroid = () => /Android/i.test(UA);
+const isInApp = () => /KAKAOTALK|NAVER|; ?wv\)|FBAN|FBAV|FB_IAB|Instagram|Line\/|BAND|DaumApps|everytimeApp/i.test(UA);
+const isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+// 검색어를 형광펜으로 표시
+function hl(text, q) {
+  const s = String(text ?? ""); if (!q) return esc(s);
+  const i = s.toLowerCase().indexOf(q.toLowerCase());
+  if (i < 0) return esc(s);
+  return esc(s.slice(0, i)) + `<mark class="hl">${esc(s.slice(i, i + q.length))}</mark>` + esc(s.slice(i + q.length));
+}
+// Dropbox·구글 드라이브 공유 링크를 '바로 받기' 주소로 바꿈
+function directApkUrl(url) {
+  let u = (url || "").trim();
+  if (/dropbox\.com/i.test(u)) {
+    u = u.replace(/\/\/(www\.)?dropbox\.com/i, "//dl.dropboxusercontent.com").replace(/([?&])dl=0/i, "$1dl=1");
+    if (!/[?&]dl=/i.test(u)) u += (u.includes("?") ? "&" : "?") + "dl=1";
+  }
+  const gd = u.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
+  if (gd) u = `https://drive.google.com/uc?export=download&id=${gd[1]}`;
+  return u;
+}
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  5. 알림(토스트) · 입력칸 오류 · 처리 중 버튼             ║
+   ╚══════════════════════════════════════════════════════════╝ */
+function toast(msg, type = "") {
+  const el = document.createElement("div");
+  el.className = `toast ${type}`;
+  el.setAttribute("role", type === "bad" ? "alert" : "status");
+  el.innerHTML = icon(type === "bad" ? "i-alert" : "i-check") + `<span>${esc(msg)}</span>`;
+  $("#toasts").appendChild(el);
+  setTimeout(() => el.remove(), type === "bad" ? 5000 : 3200);
+}
+// 입력칸 바로 아래에 오류 이유를 적음
+function setErr(id, msg) {
+  const inp = document.getElementById(id);
+  const f = inp?.closest(".field, fieldset"); if (!f) return;
+  f.classList.toggle("has-err", !!msg);
+  const e = f.querySelector(".err span"); if (e) e.textContent = msg || "";
+  inp.setAttribute("aria-invalid", msg ? "true" : "false");
+}
+function clearErrs(scope) {
+  scope?.querySelectorAll(".has-err").forEach(f => f.classList.remove("has-err"));
+  scope?.querySelectorAll("[aria-invalid]").forEach(i => i.setAttribute("aria-invalid", "false"));
+}
+const focusFirstErr = scope => scope?.querySelector('.has-err input, .has-err textarea, .has-err select')?.focus();
+// 버튼을 누르면 처리하는 동안 잠그고 도는 표시 (연타로 두 번 실행되는 것 방지)
+async function busy(btn, fn) {
+  if (btn?.getAttribute("aria-busy") === "true") return;
+  btn?.setAttribute("aria-busy", "true"); if (btn) btn.disabled = true;
+  try { return await fn(); }
+  finally { if (btn?.isConnected) { btn.removeAttribute("aria-busy"); btn.disabled = false; } }
+}
+// 입력칸 HTML (이름표 + 칸 + 도움말 + 오류 자리)
+function field({ id, label, type = "text", value = "", placeholder = "", hint = "", auto = "", extra = "", textarea = false, pw = false }) {
+  const desc = [hint ? `${id}-h` : "", `${id}-e`].filter(Boolean).join(" ");
+  const input = textarea
+    ? `<textarea class="textarea" id="${id}" placeholder="${esc(placeholder)}" aria-describedby="${desc}" ${extra}>${esc(value)}</textarea>`
+    : `<input class="input" id="${id}" type="${type}" value="${esc(value)}" placeholder="${esc(placeholder)}" ${auto ? `autocomplete="${auto}"` : ""} aria-describedby="${desc}" ${extra}>`;
+  const body = pw
+    ? `<div class="pw-wrap">${input}<button type="button" class="icon-btn" aria-label="비밀번호 보기" aria-pressed="false" onclick="App.togglePw(this,'${id}')">${icon("i-eye")}</button></div>`
+    : input;
+  return `<div class="field"><label class="label" for="${id}">${label}</label>${body}${hint ? `<p class="hint" id="${id}-h">${hint}</p>` : ""}<p class="err" id="${id}-e">${icon("i-alert", "ic-sm")}<span></span></p></div>`;
+}
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  6. 시트(아래에서 올라오는 창) — 뒤로가기로 닫힘           ║
+   ╚══════════════════════════════════════════════════════════╝ */
+const SHEETS = [];
+let SHEET_SEQ = 0, IGNORE_POP = 0;
+const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
+
+function openSheet({ kind, title, hideTitle = false, body, foot = "", url = null, push = true, onClose }) {
+  const id = ++SHEET_SEQ;
+  const wrap = document.createElement("div");
+  wrap.className = "sheet-wrap"; wrap.dataset.sheet = id;
+  wrap.innerHTML = `
+    <div class="scrim"></div>
+    <section class="sheet ${foot ? "sheet-has-foot" : ""}" role="dialog" aria-modal="true" aria-labelledby="sh-${id}" tabindex="-1">
+      <div class="sheet-grip" aria-hidden="true"><svg viewBox="0 0 44 8"><path d="M2 4Q7 .6 12 4T22 4T32 4T42 4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+      <header class="sheet-head"><h2 id="sh-${id}" class="${hideTitle ? "sr-only" : ""}">${esc(title)}</h2><button type="button" class="icon-btn" data-close aria-label="닫기">${icon("i-close")}</button></header>
+      <div class="sheet-body">${body}</div>
+      ${foot ? `<footer class="sheet-foot">${foot}</footer>` : ""}
+    </section>`;
+  $("#sheets").appendChild(wrap);
+  const s = { id, kind, el: wrap, onClose, prevFocus: document.activeElement };
+  SHEETS.push(s);
+  wrap.querySelector(".scrim").addEventListener("click", () => closeSheet(id));
+  wrap.querySelector("[data-close]").addEventListener("click", () => closeSheet(id));
+  document.documentElement.classList.add("is-locked");
+  if (push) history.pushState({ sheet: id }, "", url || location.href);
+  else history.replaceState({ sheet: id }, "", url || location.href);
+  requestAnimationFrame(() => {
+    wrap.querySelector(".scrim").classList.add("on");
+    wrap.querySelector(".sheet").classList.add("on");
+    const first = wrap.querySelector(".sheet-body " + FOCUSABLE.split(",").join(", .sheet-body "));
+    (matchMedia("(min-width:768px)").matches && first ? first : wrap.querySelector(".sheet")).focus({ preventScroll: true });
+  });
+  return s;
+}
+function removeSheetEl(s) {
+  const sh = s.el.querySelector(".sheet"), sc = s.el.querySelector(".scrim");
+  sh?.classList.remove("on"); sc?.classList.remove("on");
+  setTimeout(() => s.el.remove(), 260);
+}
+// fromPop: 사용자가 휴대폰 뒤로가기를 눌러 닫힌 경우
+function closeSheet(id, { fromPop = false } = {}) {
+  const i = SHEETS.findIndex(s => s.id === id); if (i < 0) return;
+  const closing = SHEETS.splice(i);
+  closing.slice().reverse().forEach(s => { removeSheetEl(s); try { s.onClose?.(); } catch (e) { console.warn(e); } });
+  if (!fromPop) { IGNORE_POP++; history.go(-closing.length); }
+  if (!SHEETS.length) document.documentElement.classList.remove("is-locked");
+  const back = closing[0]?.prevFocus; if (back?.isConnected) back.focus?.({ preventScroll: true });
+}
+function closeAllSheets() {
+  SHEETS.splice(0).forEach(s => s.el.remove());
+  document.documentElement.classList.remove("is-locked");
+}
+const topSheet = kind => [...SHEETS].reverse().find(s => !kind || s.kind === kind);
+window.addEventListener("popstate", () => {
+  if (IGNORE_POP > 0) { IGNORE_POP--; return; }
+  const top = SHEETS[SHEETS.length - 1];
+  if (top) closeSheet(top.id, { fromPop: true });
+});
+// Esc로 닫기, Tab 키가 창 밖으로 나가지 않게 가두기
+document.addEventListener("keydown", e => {
+  const top = SHEETS[SHEETS.length - 1]; if (!top) return;
+  if (e.key === "Escape") { e.preventDefault(); closeSheet(top.id); return; }
+  if (e.key !== "Tab") return;
+  const f = [...top.el.querySelectorAll(FOCUSABLE)].filter(x => x.offsetParent !== null);
+  if (!f.length) return;
+  const first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+});
+// 확인 창 (브라우저 기본 confirm 대신)
+function confirmSheet({ title, text, ok = "확인", danger = false }) {
+  return new Promise(res => {
+    let done = false;
+    const s = openSheet({
+      kind: "confirm", title, body: `<p class="confirm-text">${text}</p>`,
+      foot: `<button type="button" class="btn btn-line" data-no>취소</button><button type="button" class="btn ${danger ? "btn-danger" : "btn-ink"}" data-yes>${esc(ok)}</button>`,
+      onClose: () => { if (!done) { done = true; res(false); } }
+    });
+    s.el.querySelector("[data-yes]").onclick = () => { done = true; res(true); closeSheet(s.id); };
+    s.el.querySelector("[data-no]").onclick = () => closeSheet(s.id);
+  });
+}
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  7. 화면 주소 (#/ · #/search · #/me · #/admin · #/app/ID)  ║
+   ╚══════════════════════════════════════════════════════════╝ */
+function parseHash() {
+  const p = (location.hash || "").replace(/^#\/?/, "").split("/").filter(Boolean);
+  if (p[0] === "app" && p[1]) return { tab: S.tab || "home", app: decodeURIComponent(p[1]) };
+  if (p[0] === "search") return { tab: "search" };
+  if (p[0] === "me") return { tab: "me" };
+  if (p[0] === "admin") return { tab: "admin", sub: p[1] || "apps" };
+  return { tab: "home" };
+}
+async function route() {
+  if (!S.shell) return;
+  const r = parseHash();
+  if (r.app) { if (!topSheet("detail")) openDetail(r.app, { replace: true }); return; }
+  if (r.tab === "admin" && !isAdmin()) { location.replace("#/"); return; }
+  const key = r.tab + "/" + (r.sub || "");
+  if (S.rendered === key) return;
+  await renderTab(r.tab, r.sub);
+}
+window.addEventListener("hashchange", route);
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  8. 데이터 (Firestore)                                     ║
+   ╚══════════════════════════════════════════════════════════╝ */
+async function loadApps(force = false) {
+  if (S.appsLoaded && !force) return S.apps;
+  const snap = await getDocs(collection(db, "apps"));
+  S.apps = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => ts(b.createdAt) - ts(a.createdAt));   // 새로 들어온 앱이 위로
+  S.appsLoaded = true;
+  return S.apps;
+}
+const visibleApps = () => S.apps.filter(a => !a.hidden);
+const findApp = id => S.apps.find(a => a.id === id);
+// 홈 맨 위 한 개: 관리자가 지정한 추천 → 없으면 평점 1위 → 후기가 없으면 가장 최근 앱
+function pickFeatured() {
+  const v = visibleApps(); if (!v.length) return null;
+  const f = v.find(a => a.featured); if (f) return { ap: f, label: "이번 주 추천" };
+  const rated = v.filter(a => a.reviewCount > 0).sort((a, b) => (b.rating || 0) - (a.rating || 0) || (b.reviewCount || 0) - (a.reviewCount || 0));
+  if (rated.length) return { ap: rated[0], label: "평점이 가장 높은 앱" };
+  return { ap: v[0], label: "새로 들어온 앱" };
+}
+async function loadReviews(appId) {
+  const snap = await getDocs(query(collection(db, "reviews"), where("appId", "==", appId)));
+  const revs = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ts(b.createdAt) - ts(a.createdAt));
+  S.reviews[appId] = revs;
+  return revs;
+}
+async function loadMyReviews() {
+  const snap = await getDocs(query(collection(db, "reviews"), where("userId", "==", S.me.uid)));
+  return snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ts(b.createdAt) - ts(a.createdAt));
+}
+async function loadAllReviews() {
+  const snap = await getDocs(collection(db, "reviews"));
+  S.allReviews = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ts(b.createdAt) - ts(a.createdAt));
+  return S.allReviews;
+}
+async function loadUsers() {
+  const snap = await getDocs(collection(db, "users"));
+  S.users = snap.docs.map(d => ({ uid: d.id, ...d.data() }));
+  return S.users;
+}
+// 후기를 바꾼 뒤 앱의 평균 별점·후기 수를 다시 계산
+async function recalc(appId) {
+  const revs = await loadReviews(appId);
+  const n = revs.length;
+  const avg = n ? Math.round(revs.reduce((s, r) => s + (r.rating || 0), 0) / n * 10) / 10 : 0;
+  try { await updateDoc(doc(db, "apps", appId), { rating: avg, reviewCount: n }); } catch (e) { console.warn("평점 갱신 권한 없음", e); }
+  const ap = findApp(appId); if (ap) { ap.rating = avg; ap.reviewCount = n; }
+  S.dirty = true;
+}
+async function saveReview(appId, rating, text, existing) {
+  const name = S.meData?.displayName || "회원";
+  if (existing) await updateDoc(doc(db, "reviews", existing.id), { rating, text, userName: name, updatedAt: serverTimestamp() });
+  else await setDoc(doc(db, "reviews", `${appId}_${S.me.uid}`), { appId, userId: S.me.uid, userName: name, rating, text, createdAt: serverTimestamp() });
+  await recalc(appId);
+}
+async function removeReview(r) {
+  await deleteDoc(doc(db, "reviews", r.id));
+  await recalc(r.appId);
+}
+async function ensureUserDoc(user) {
+  const ref = doc(db, "users", user.uid);
+  const snap = await getDoc(ref);
+  if (snap.exists()) return;
+  const admin = ADMIN_EMAILS.includes(user.email);
+  await setDoc(ref, {
+    uid: user.uid, email: user.email,
+    displayName: user.displayName || (user.email ? user.email.split("@")[0] : "회원"),
+    role: admin ? "admin" : "user", status: admin ? "approved" : "pending", createdAt: serverTimestamp()
+  });
+}
+async function loadAiKey(force = false) {
+  if (S.aiKey !== undefined && !force) return S.aiKey;
+  try { const d = await getDoc(doc(db, "config", "ai")); S.aiKey = (d.exists() && d.data().geminiKey) || ""; }
+  catch { S.aiKey = ""; }
+  return S.aiKey;
+}
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  9. AI (Gemini)                                            ║
+   ╚══════════════════════════════════════════════════════════╝ */
+const cleanAi = t => String(t || "").replace(/\*\*|__|`/g, "").replace(/^#+\s*/gm, "").replace(/^\s*[-*]\s+/gm, "· ").trim();
+// 결과 문자열 / 실패하면 null
+async function gemini(prompt) {
+  const key = await loadAiKey(); if (!key) return null;
+  for (const m of AI_MODELS) {
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${encodeURIComponent(key)}`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      });
+      const data = await res.json();
+      const t = data?.candidates?.[0]?.content?.parts?.map(p => p.text || "").join("").trim();
+      if (t) return cleanAi(t);
+      const msg = data?.error?.message || "";
+      if (res.status === 404 || /not found|no longer|deprecated|unsupported/i.test(msg)) continue; // 다음 모델로
+      console.warn("AI 응답 오류", res.status, msg);
+      return null;
+    } catch (e) { console.warn("AI 호출 실패", e); return null; }
+  }
+  return null;
+}
+// 앱 소개를 바꾸면 요약도 다시 만들도록 내용으로 꼬리표를 만듦
+function aiKeyOf(ap) {
+  const s = [ap.name, ap.description, (ap.features || []).join(",")].join("|");
+  let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) | 0;
+  return String(h);
+}
+async function summaryFor(ap, { force = false } = {}) {
+  const k = aiKeyOf(ap);
+  if (!force && ap.aiSummary && ap.aiSummaryKey === k) return ap.aiSummary;
+  if (!force && AI_CACHE[ap.id]?.k === k) return AI_CACHE[ap.id].t;
+  const t = await gemini(
+    `다음 앱을 처음 보는 사람에게 소개하듯 한국어 두 문장으로 요약해 주세요. 무엇을 할 수 있는지 중심으로, 과장 없이, 마크다운 없이 평문으로.\n\n` +
+    `앱 이름: ${ap.name}\n설명: ${ap.description || ""}\n주요 기능: ${(ap.features || []).join(", ")}`
+  );
+  if (!t) return null;
+  AI_CACHE[ap.id] = { k, t };
+  // 관리자가 볼 때 만든 요약은 저장해 두어 다른 사람은 기다리지 않고 바로 봄
+  if (isAdmin()) { try { await updateDoc(doc(db, "apps", ap.id), { aiSummary: t, aiSummaryKey: k }); ap.aiSummary = t; ap.aiSummaryKey = k; } catch {} }
+  return t;
+}
+async function recommend(msg) {
+  const list = visibleApps().map(a =>
+    `- ${a.name} | ${catOf(a)} | ${a.apkUrl ? "안드로이드 앱" : "웹앱"} | ${a.description || ""} | 기능: ${(a.features || []).join(", ")}`
+  ).join("\n");
+  const history = CHAT_LOG.slice(-6).map(m => `${m.who === "me" ? "사용자" : "도우미"}: ${m.text}`).join("\n");
+  return gemini(
+    `당신은 'KS 앱스토어'의 도우미입니다. 아래 목록에 있는 앱만 추천하세요. 목록에 없는 앱은 지어내지 마세요. ` +
+    `맞는 앱이 없으면 없다고 솔직히 말하세요. 앱 이름은 목록에 적힌 그대로 쓰세요. 한국어로 3~4문장, 친근하게, 마크다운 없이.\n\n` +
+    `[앱 목록]\n${list || "(등록된 앱 없음)"}\n\n[지난 대화]\n${history || "(없음)"}\n\n[사용자 질문]\n${msg}`
+  );
+}
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  10. 공통 조각 (아이콘 틀, 별, 앱 줄, 빈 화면)             ║
+   ╚══════════════════════════════════════════════════════════╝ */
+// 앱 아이콘: 직접 지정(이모지/이미지) → 앱 주소에서 자동으로 찾기 → 카테고리 그림
+function appIco(ap, sz = 52) {
+  const fb = `<span class="ico-fb">${icon(CAT_ICON[catOf(ap)] || "c-note")}</span>`;
+  const ci = ap.customIcon || "";
+  let inner = fb;
+  if (ci && !/^(https?:|data:image\/)/i.test(ci)) inner = `<span class="ico-fb ico-emoji" aria-hidden="true">${esc(ci)}</span>`;
+  else if (ci) inner = fb + `<img src="${esc(ci)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`;
+  else if (ap.url) {
+    try {
+      const o = new URL(ap.url).origin;
+      const rest = [`${o}/favicon.svg`, `${o}/favicon.png`, `${o}/favicon.ico`,
+        `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(o)}&size=256`];
+      inner = fb + `<img src="${esc(o)}/apple-touch-icon.png" alt="" loading="lazy" referrerpolicy="no-referrer" data-srcs="${esc(JSON.stringify(rest))}" onerror="App.icoNext(this)" onload="App.icoCheck(this)">`;
+    } catch {}
+  }
+  return `<span class="ico" style="--sz:${sz}px">${inner}<svg class="ico-frame" viewBox="0 0 64 64" aria-hidden="true"><use href="#frame"/></svg></span>`;
+}
+function starsRow(v) {
+  const full = Math.round(v || 0);
+  return `<span class="stars" aria-hidden="true">${[1, 2, 3, 4, 5].map(i => `<svg class="ic ${i <= full ? "on" : ""}"><use href="#i-star"/></svg>`).join("")}</span>`;
+}
+function ratingMeta(ap) {
+  const n = ap.reviewCount || 0;
+  return n ? `<span aria-label="별점 ${ap.rating.toFixed(1)}점, 후기 ${n}개">${icon("i-star", "ic-xs fill")}${ap.rating.toFixed(1)} (${n})</span>` : "";
+}
+// 가장 중요한 행동: 웹앱은 '열기'(새 창), APK는 '받기'
+function primaryAction(ap, cls = "btn btn-ink") {
+  return ap.apkUrl
+    ? `<button type="button" class="${cls}" data-id="${esc(ap.id)}" onclick="App.getApk(this.dataset.id)">${icon("i-download")}APK 받기</button>`
+    : `<a class="${cls}" href="${esc(safeUrl(ap.url))}" target="_blank" rel="noopener">${icon("i-open")}열기<span class="sr-only"> (새 창)</span></a>`;
+}
+function appRow(ap, q = "") {
+  const apk = !!ap.apkUrl;
+  const act = apk
+    ? `<button type="button" class="btn btn-line btn-sm app-act" data-id="${esc(ap.id)}" onclick="App.getApk(this.dataset.id)" aria-label="${esc(ap.name)} 받기">${icon("i-download", "ic-sm")}받기</button>`
+    : `<a class="btn btn-line btn-sm app-act" href="${esc(safeUrl(ap.url))}" target="_blank" rel="noopener" aria-label="${esc(ap.name)} 열기 (새 창)">${icon("i-open", "ic-sm")}열기</a>`;
+  return `<li class="app-row">
+    <button type="button" class="app-main" data-id="${esc(ap.id)}" onclick="App.openDetail(this.dataset.id)">
+      ${appIco(ap, 52)}
+      <span class="app-txt">
+        <span class="app-name"><b>${hl(ap.name, q)}</b></span>
+        <span class="app-meta">${isNew(ap) ? '<span class="badge badge-new">새로 옴</span>' : ""}${apk ? '<span class="badge">APK</span>' : ""}${ap.hidden ? '<span class="badge badge-muted">비공개</span>' : ""}<span>${esc(catOf(ap))}</span>${ap.reviewCount ? '<span aria-hidden="true">·</span>' : ""}${ratingMeta(ap)}</span>
+        <span class="app-desc">${hl(ap.description || "소개가 곧 올라와요.", q)}</span>
+      </span>
+    </button>
+    ${act}
+  </li>`;
+}
+function emptyHTML(kind, extra = "") {
+  const M = {
+    apps:    ["empty-apps",    "아직 진열된 앱이 없어요", isAdmin() ? "관리 화면에서 첫 앱을 올려 보세요." : "앱이 올라오면 여기에 가장 먼저 보여요.", isAdmin() ? `<a class="btn btn-ink" href="#/admin">${icon("i-plus")}앱 올리러 가기</a>` : ""],
+    search:  ["empty-search",  `‘${esc(extra)}’에 맞는 앱이 없어요`, "다른 말로 찾아보거나 AI 도우미에게 하고 싶은 일을 물어보세요.", `<button type="button" class="btn btn-line" onclick="App.openChat()">${icon("i-ai")}AI에게 묻기</button>`],
+    cat:     ["empty-search",  "이 카테고리에는 아직 앱이 없어요", "다른 카테고리를 골라 보세요.", ""],
+    offline: ["offline",       "목록을 불러오지 못했어요", "인터넷 연결을 확인한 뒤 다시 시도해 주세요.", `<button type="button" class="btn btn-ink" onclick="App.retry()">${icon("i-refresh")}다시 시도</button>`],
+  }[kind];
+  return `<div class="empty">${illu(M[0])}<p class="empty-title">${M[1]}</p><p>${M[2]}</p>${M[3]}</div>`;
+}
+function catList(apps) {
+  const present = new Set(apps.map(catOf));
+  return ["전체", ...CATS.filter(c => present.has(c)), ...[...present].filter(c => !CATS.includes(c))];
+}
+function catTabs(apps) {
+  return `<div class="tabs" role="group" aria-label="카테고리로 거르기">${catList(apps).map(c => {
+    const n = c === "전체" ? apps.length : apps.filter(a => catOf(a) === c).length;
+    return `<button type="button" class="tab" aria-pressed="${S.cat === c}" data-cat="${esc(c)}" onclick="App.setCat(this.dataset.cat)"><span>${esc(c)}</span><small>${n}</small></button>`;
+  }).join("")}</div>`;
+}
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  11. 로그인 · 승인 대기 · 입장 불가                       ║
+   ╚══════════════════════════════════════════════════════════╝ */
+const root = $("#root");
+function hideSplash() { const s = $("#splash"); if (!s || s.classList.contains("out")) return; s.classList.add("out"); setTimeout(() => s.remove(), 300); }
+
+function renderLogin() {
+  document.body.classList.add("no-tab");
+  const login = S.authMode === "login";
+  const saved = store.get(REMEMBER_KEY) || "";
+  const form = login ? `
+      ${field({ id: "au-email", label: "이메일", type: "email", value: saved, placeholder: "name@example.com", auto: "username", extra: 'inputmode="email" autocapitalize="off"' })}
+      ${field({ id: "au-pw", label: "비밀번호", type: "password", placeholder: "비밀번호", auto: "current-password", pw: true })}
+      <div class="login-opts">
+        <label class="check"><input type="checkbox" id="au-remember" ${saved ? "checked" : ""}>이메일 기억하기</label>
+        <button type="button" class="btn btn-text" onclick="App.resetPw(this)">비밀번호를 잊었어요</button>
+      </div>
+      <button type="submit" class="btn btn-ink btn-block">로그인</button>`
+    : `
+      ${field({ id: "au-name", label: "이름", placeholder: "후기에 보일 이름", auto: "name", extra: 'maxlength="30"' })}
+      ${field({ id: "au-email", label: "이메일", type: "email", placeholder: "name@example.com", auto: "email", extra: 'inputmode="email" autocapitalize="off"' })}
+      ${field({ id: "au-pw", label: "비밀번호", type: "password", placeholder: "6자 이상", auto: "new-password", hint: "6자 이상으로 정해 주세요.", pw: true })}
+      ${field({ id: "au-pw2", label: "비밀번호 확인", type: "password", placeholder: "한 번 더 입력", auto: "new-password", pw: true })}
+      <p class="signup-note">가입 신청을 보내면 관리자가 확인한 뒤 들어올 수 있어요.</p>
+      <button type="submit" class="btn btn-ink btn-block">가입 신청 보내기</button>`;
+  root.innerHTML = `
+  <main class="login">
+    <section class="login-art">
+      <div>
+        <h1 class="title login-title"><span class="mark">우리끼리</span><br>쓰는 앱 모음</h1>
+        <p class="login-lede">직접 만든 앱을 쪽지 돌리듯<br>친구·가족과 나눠 쓰는 곳이에요.</p>
+      </div>
+      <img class="login-illu" src="assets/illust/login-hero.svg?v=${ASSET_V}" alt="쪽지 캐릭터가 종이비행기에 앱을 실어 친구의 휴대폰으로 날려 보내는 그림">
+    </section>
+    <section class="login-side">
+      <div class="login-form">
+        <div class="brand"><img src="assets/brand/logo.svg?v=${ASSET_V}" alt=""><b>KS 앱스토어</b></div>
+        <div class="seg" role="tablist" aria-label="로그인 또는 가입">
+          <button type="button" role="tab" aria-selected="${login}" onclick="App.authMode('login')">로그인</button>
+          <button type="button" role="tab" aria-selected="${!login}" onclick="App.authMode('signup')">가입 신청</button>
+        </div>
+        <form id="auth-form" novalidate onsubmit="event.preventDefault(); App.${login ? "login" : "signup"}(this.querySelector('[type=submit]'))">${form}</form>
+        <p class="login-note">${login ? "처음이세요? 위에서 ‘가입 신청’을 눌러 주세요. 관리자가 확인하면 바로 들어올 수 있어요." : "이미 계정이 있으면 위에서 ‘로그인’을 눌러 주세요."}</p>
+      </div>
+    </section>
+  </main>`;
+  if (matchMedia("(min-width:900px)").matches) setTimeout(() => document.getElementById(login ? (saved ? "au-pw" : "au-email") : "au-name")?.focus(), 60);
+}
+
+function renderStatus(type) {
+  closeAllSheets(); S.shell = false;
+  document.body.classList.add("no-tab");
+  const wait = type === "pending";
+  root.innerHTML = `
+  <main class="status">
+    <img class="status-art" src="assets/illust/${wait ? "status-pending" : "status-closed"}.svg?v=${ASSET_V}"
+      alt="${wait ? "깃발을 올린 우체통 안에서 쪽지가 빼꼼 내다보며 기다리는 그림" : "달 팻말이 걸린 문 앞에서 쪽지가 차를 마시며 쉬는 그림"}">
+    <h1 class="title">${wait ? "가입 신청을 보냈어요" : "지금은 들어올 수 없어요"}</h1>
+    <p class="status-text">${wait
+      ? "관리자가 확인하면 이 화면이 저절로 바뀌어요. 창을 닫아도 괜찮아요. 다음에 들어오면 바로 열려요."
+      : "가입 신청이 승인되지 않았어요. 잘못된 것 같다면 앱스토어를 소개해 준 분께 알려 주세요."}</p>
+    ${wait ? `<div class="status-box">
+      <span class="tape hand">기다리는 동안</span>
+      <h2>홈 화면에 아이콘 두기</h2>
+      <p>이 앱스토어를 휴대폰 홈 화면에 두면, 승인된 뒤 앱처럼 바로 열 수 있어요.</p>
+      <button type="button" class="btn btn-line" onclick="App.guideStore()">${icon("i-addhome")}방법 보기</button>
+    </div>` : ""}
+    <p class="status-acct">${esc(S.me?.email || "")} 계정으로 신청함</p>
+    <button type="button" class="btn btn-text" onclick="App.logout(this)">다른 계정으로 들어가기</button>
+  </main>`;
+}
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  12. 앱 뼈대와 탭 화면                                     ║
+   ╚══════════════════════════════════════════════════════════╝ */
+function navItems() {
+  const items = [["home", "#/", "i-home", "홈"], ["search", "#/search", "i-search", "찾기"], ["me", "#/me", "i-user", "내 정보"]];
+  if (isAdmin()) items.push(["admin", "#/admin", "i-admin", "관리"]);
+  return items.map(([k, h, ic, t]) => `<a href="${h}" data-tab="${k}">${icon(ic)}<span>${t}</span>${k === "admin" ? '<i class="dot" data-pending hidden></i>' : ""}</a>`).join("");
+}
+function shellHTML() {
+  return `
+  <a class="skip" href="#view" onclick="event.preventDefault(); document.getElementById('view').focus()">본문으로 건너뛰기</a>
+  <header class="topbar">
+    <a class="brand" href="#/"><img src="assets/brand/logo.svg?v=${ASSET_V}" alt="" width="32" height="32"><b>KS 앱스토어</b></a>
+    <nav class="topnav" aria-label="주 메뉴">${navItems()}</nav>
+    <!-- AI 도우미: 목록의 버튼을 가리지 않도록 떠 있는 버튼 대신 상단바에 -->
+    <button type="button" class="ai-btn" onclick="App.openChat()"><img src="assets/illust/ai-helper.svg?v=${ASSET_V}" alt=""><span>AI에게 묻기</span></button>
+  </header>
+  <div class="offline" id="offline" role="status" ${navigator.onLine ? "hidden" : ""}>${icon("i-wifi-off")}<span>인터넷 연결이 끊겼어요. 다시 연결되면 이어서 쓸 수 있어요.</span></div>
+  <main id="view" class="view" tabindex="-1"></main>
+  <nav class="tabbar" aria-label="주 메뉴">${navItems()}</nav>`;
+}
+function setNav(tab) {
+  document.querySelectorAll("[data-tab]").forEach(a => a.dataset.tab === tab ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
+}
+function setPending(n) {
+  document.querySelectorAll("[data-pending]").forEach(d => { d.hidden = !n; d.textContent = n; d.setAttribute("aria-label", `승인 대기 ${n}명`); });
+}
+async function refreshPending() { try { await loadUsers(); setPending(S.users.filter(u => u.status === "pending").length); } catch {} }
+
+async function enterApp() {
+  document.body.classList.remove("no-tab");
+  if (!S.shell) { root.innerHTML = shellHTML(); S.shell = true; S.rendered = null; }
+  const r = parseHash();
+  if (r.app) { history.replaceState(null, "", "#/"); await renderTab("home"); openDetail(r.app); }
+  else await route();
+  if (isAdmin()) refreshPending();
+  movedNotice();
+}
+
+async function renderTab(tab, sub) {
+  S.tab = tab; S.rendered = tab + "/" + (sub || "");
+  setNav(tab);
+  window.scrollTo(0, 0);
+  document.title = { home: "KS 앱스토어", search: "찾기 · KS 앱스토어", me: "내 정보 · KS 앱스토어", admin: "관리 · KS 앱스토어" }[tab] || "KS 앱스토어";
+  if (tab === "search") return renderSearch();
+  if (tab === "me") return renderMe();
+  if (tab === "admin") return renderAdmin(sub || "apps");
+  return renderHome();
+}
+
+/* ── 홈 ── */
+const skelRows = n => Array.from({ length: n }, () => `<li class="app-row"><span class="skel" style="width:52px;height:52px;border-radius:14px"></span><span style="flex:1;display:grid;gap:8px"><span class="skel" style="width:45%;height:14px"></span><span class="skel" style="width:75%;height:12px"></span></span></li>`).join("");
+async function renderHome() {
+  const v = $("#view");
+  if (!S.appsLoaded) v.innerHTML = `<div class="skel" style="width:60%;height:40px;margin:8px 0 12px"></div><div class="skel" style="width:40%;height:16px"></div><ul class="app-list" style="margin-top:48px">${skelRows(5)}</ul>`;
+  try { await loadApps(); } catch (e) { console.warn(e); v.innerHTML = emptyHTML("offline"); return; }
+  const apps = visibleApps();
+  const fresh = apps.filter(isNew).length;
+  const f = pickFeatured();
+  if (!catList(apps).includes(S.cat)) S.cat = "전체";
+  v.innerHTML = `
+    <section class="home-hero">
+      <div>
+        <h1 class="title"><span class="mark">우리끼리</span><br>쓰는 앱 모음</h1>
+        <p class="home-meta">${apps.length ? `앱 ${apps.length}개${fresh ? ` · 새로 온 앱 ${fresh}개` : ""}` : "첫 앱을 기다리는 중"}</p>
+      </div>
+      <figure class="home-art">${illu("hero-plane", "노란 목도리를 한 쪽지가 종이비행기를 타고 앱을 배달하는 그림")}<figcaption aria-hidden="true">친구에게 슝!</figcaption></figure>
+    </section>
+    ${f ? `
+    <section class="feature" aria-labelledby="ft-name">
+      <span class="tape hand">${f.label}</span>
+      <div class="feature-row">${appIco(f.ap, 64)}<div class="feature-txt"><h2 id="ft-name">${esc(f.ap.name)}</h2><p>${esc(f.ap.description || "")}</p></div></div>
+      <div class="feature-acts">${primaryAction(f.ap)}<button type="button" class="btn btn-line" data-id="${esc(f.ap.id)}" onclick="App.openDetail(this.dataset.id)">자세히 보기</button></div>
+    </section>` : ""}
+    <section class="sec" aria-labelledby="h-all">
+      <div class="sec-head"><h2 id="h-all">전체 앱</h2></div>
+      ${apps.length ? `<div class="list-head">${catTabs(apps)}</div><div id="home-list">${homeList(apps)}</div>` : emptyHTML("apps")}
+    </section>`;
+}
+function homeList(apps) {
+  const list = S.cat === "전체" ? apps : apps.filter(a => catOf(a) === S.cat);
+  return list.length ? `<ul class="app-list">${list.map(a => appRow(a)).join("")}</ul>` : emptyHTML("cat");
+}
+
+/* ── 찾기 ── */
+function renderSearch() {
+  const v = $("#view");
+  v.innerHTML = `
+    <div class="search-box">
+      <form role="search" onsubmit="event.preventDefault(); App.saveRecent(); document.getElementById('q').blur()">
+        <label for="q" class="sr-only">앱 찾기</label>
+        <div class="search-field">${icon("i-search")}<input id="q" class="input" type="search" placeholder="앱 이름이나 하는 일로 찾기" value="${esc(S.q)}" autocomplete="off" enterkeyhint="search" oninput="App.onSearch(this.value)">
+        <button type="button" class="icon-btn" id="q-clear" aria-label="검색어 지우기" onclick="App.clearSearch()" ${S.q ? "" : "hidden"}>${icon("i-close")}</button></div>
+      </form>
+      <div id="search-cats"></div>
+    </div>
+    <div id="search-out" aria-live="polite"></div>`;
+  paintSearch(true);
+  // PC에서만 검색칸에 바로 커서 (휴대폰은 자판이 갑자기 올라오지 않게)
+  const autoFocus = () => { if (matchMedia("(min-width:900px)").matches) $("#q")?.focus({ preventScroll: true }); };
+  if (S.appsLoaded) setTimeout(autoFocus, 50);
+  loadApps().then(() => { paintSearch(true); autoFocus(); }).catch(() => { $("#search-out").innerHTML = emptyHTML("offline"); });
+}
+function paintSearch(withCats = false) {
+  const out = $("#search-out"); if (!out) return;
+  if (!S.appsLoaded) { out.innerHTML = `<ul class="app-list" style="margin-top:16px">${skelRows(4)}</ul>`; return; }
+  const apps = visibleApps();
+  if (withCats || !$("#search-cats").innerHTML) $("#search-cats").innerHTML = catTabs(apps);
+  const q = S.q.trim();
+  if (!q && S.cat === "전체") {
+    const recent = JSON.parse(store.get(RECENT_KEY) || "[]");
+    out.innerHTML = `
+      ${recent.length ? `<section class="sec" style="margin-top:32px"><div class="sec-head"><h2>최근 찾은 말</h2><button type="button" class="btn btn-text more" onclick="App.clearRecent()">모두 지우기</button></div>
+        <div class="recent">${recent.map(w => `<span class="recent-chip"><button type="button" data-q="${esc(w)}" onclick="App.useRecent(this.dataset.q)">${esc(w)}</button><button type="button" class="icon-btn" data-q="${esc(w)}" onclick="App.delRecent(this.dataset.q)" aria-label="${esc(w)} 지우기">${icon("i-close", "ic-sm")}</button></span>`).join("")}</div></section>` : ""}
+      <section class="sec" style="margin-top:32px"><div class="sec-head"><h2>카테고리로 둘러보기</h2></div>
+        <div class="cat-grid">${catList(apps).filter(c => c !== "전체").map(c => `<button type="button" class="cat-card" data-cat="${esc(c)}" onclick="App.setCat(this.dataset.cat)">${icon(CAT_ICON[c] || "c-note")}<span>${esc(c)}</span><small>${apps.filter(a => catOf(a) === c).length}개</small></button>`).join("") || `<p class="hint">아직 앱이 없어요.</p>`}</div>
+      </section>`;
+    return;
+  }
+  const kw = q.toLowerCase();
+  const res = apps.filter(a => (S.cat === "전체" || catOf(a) === S.cat) && (!kw ||
+    a.name?.toLowerCase().includes(kw) || a.description?.toLowerCase().includes(kw) ||
+    catOf(a).toLowerCase().includes(kw) || (a.features || []).some(f => f.toLowerCase().includes(kw))));
+  const label = [q ? `‘${esc(q)}’` : "", S.cat !== "전체" ? esc(S.cat) : ""].filter(Boolean).join(" · ");
+  out.innerHTML = res.length
+    ? `<p class="list-count">${label} 앱 ${res.length}개</p><ul class="app-list">${res.map(a => appRow(a, q)).join("")}</ul>`
+    : emptyHTML(q ? "search" : "cat", q);
+}
+
+/* ── 내 정보 ── */
+async function renderMe() {
+  const v = $("#view"), m = S.meData || {};
+  v.innerHTML = `
+    <section class="me-head">
+      <span class="avatar">${esc(initial(m.displayName))}<svg viewBox="0 0 40 40" aria-hidden="true"><use href="#circle-hand"/></svg></span>
+      <div><h1 class="me-name">${esc(m.displayName || "")}</h1><p class="me-mail">${esc(S.me?.email || "")}</p>
+        <span class="badge ${isAdmin() ? "badge-new" : "badge-muted"}">${isAdmin() ? "관리자" : "회원"}</span></div>
+    </section>
+    <section class="sec" aria-labelledby="h-name">
+      <div class="sec-head"><h2 id="h-name">보여질 이름</h2></div>
+      <form class="me-form" novalidate onsubmit="event.preventDefault(); App.saveName(this.querySelector('[type=submit]'))">
+        ${field({ id: "me-name", label: "이름", value: m.displayName || "", hint: "후기를 남기면 이 이름이 보여요. 30자까지.", extra: 'maxlength="30" autocomplete="name"' })}
+        <button type="submit" class="btn btn-ink">이름 저장</button>
+      </form>
+    </section>
+    <section class="sec" aria-labelledby="h-myrv">
+      <div class="sec-head"><h2 id="h-myrv">내가 쓴 후기</h2><span class="more" id="my-rv-n"></span></div>
+      <div id="my-rv" class="my-rv"><ul class="app-list">${skelRows(2)}</ul></div>
+    </section>
+    <section class="sec" aria-labelledby="h-home">
+      <div class="sec-head"><h2 id="h-home">홈 화면에 두기</h2></div>
+      <p class="sec-text">${isStandalone() ? "지금 홈 화면 아이콘으로 열고 계세요. 다른 기기에도 두려면 아래 방법을 보세요." : "이 앱스토어를 휴대폰 홈 화면에 두면 앱처럼 바로 열 수 있어요."}</p>
+      <button type="button" class="btn btn-line" onclick="App.guideStore()">${icon("i-addhome")}방법 보기</button>
+    </section>
+    <section class="sec">
+      <button type="button" class="btn btn-line btn-block" onclick="App.logout(this)">${icon("i-logout")}로그아웃</button>
+    </section>`;
+  try {
+    const [mine] = await Promise.all([loadMyReviews(), loadApps()]);
+    const box = $("#my-rv"); if (!box) return;
+    $("#my-rv-n").textContent = mine.length ? `${mine.length}개` : "";
+    box.innerHTML = mine.length
+      ? mine.map(r => { const ap = findApp(r.appId); return `<button type="button" class="my-rv-item" data-id="${esc(r.appId)}" onclick="App.openDetail(this.dataset.id)"><b>${esc(ap?.name || "내려간 앱")}</b> ${starsRow(r.rating)}<span class="sr-only">별 5개 중 ${r.rating}개</span><p>${esc(r.text)}</p></button>`; }).join("")
+      : `<p class="sec-text">아직 남긴 후기가 없어요. 써 본 앱이 있다면 한 줄이라도 남겨 주세요.</p>`;
+  } catch { const box = $("#my-rv"); if (box) box.innerHTML = `<p class="sec-text">후기를 불러오지 못했어요.</p>`; }
+}
+
+/* ── 관리 ── */
+async function renderAdmin(sub) {
+  const v = $("#view");
+  v.innerHTML = `<div class="skel" style="width:30%;height:44px;margin-bottom:24px"></div><div class="skel" style="height:72px"></div><ul class="app-list" style="margin-top:24px">${skelRows(4)}</ul>`;
+  try { await Promise.all([loadApps(true), loadUsers(), loadAllReviews(), loadAiKey(true)]); }
+  catch (e) { console.warn(e); v.innerHTML = emptyHTML("offline"); return; }
+  const pend = S.users.filter(u => u.status === "pending").length;
+  setPending(pend);
+  const tabs = [["apps", "앱"], ["users", "회원"], ["reviews", "후기"], ["settings", "설정"]];
+  v.innerHTML = `
+    <h1 class="title page-title">관리</h1>
+    <dl class="stats">
+      <div><dt>앱</dt><dd>${S.apps.length}</dd></div>
+      <div><dt>회원</dt><dd>${S.users.filter(u => u.status === "approved").length}</dd></div>
+      <div class="${pend ? "is-wait" : ""}"><dt>승인 대기</dt><dd>${pend}</dd></div>
+      <div><dt>후기</dt><dd>${S.allReviews.length}</dd></div>
+    </dl>
+    <nav class="subnav" aria-label="관리 메뉴">${tabs.map(([k, t]) => `<a href="#/admin${k === "apps" ? "" : "/" + k}" ${sub === k ? 'aria-current="page"' : ""}><span>${t}</span>${k === "users" && pend ? `<span class="badge badge-wait">대기 ${pend}</span>` : ""}${k === "settings" && !S.aiKey ? `<span class="badge badge-wait">AI 키 필요</span>` : ""}</a>`).join("")}</nav>
+    <div id="admin-pane">${adminPane(sub)}</div>`;
+}
+function adminPane(sub) {
+  if (sub === "users") return usersPane();
+  if (sub === "reviews") return reviewsPane();
+  if (sub === "settings") return settingsPane();
+  return appsPane();
+}
+function appsPane() {
+  const hid = S.apps.filter(a => a.hidden).length;
+  return `
+    <div class="pane-head"><p>앱 ${S.apps.length}개${hid ? ` · 비공개 ${hid}개` : ""}</p>
+      <button type="button" class="btn btn-ink btn-sm" onclick="App.appForm()">${icon("i-plus", "ic-sm")}앱 올리기</button></div>
+    ${S.apps.length ? `<ul>${S.apps.map(ap => `
+      <li class="admin-row ${ap.hidden ? "is-hidden" : ""}">
+        ${appIco(ap, 44)}
+        <div class="admin-txt">
+          <p class="admin-name">${esc(ap.name)}${ap.featured ? `<span class="badge badge-new">${icon("i-pin", "ic-xs")}추천</span>` : ""}${ap.hidden ? '<span class="badge badge-muted">비공개</span>' : ""}${ap.apkUrl ? '<span class="badge">APK</span>' : ""}</p>
+          <p class="admin-meta">${esc(catOf(ap))} · ${ap.apkUrl ? "안드로이드 APK" : esc(domainOf(ap.url) || "주소 없음")}${ap.reviewCount ? ` · 후기 ${ap.reviewCount}` : ""}</p>
+        </div>
+        <div class="admin-acts">
+          <button type="button" class="btn btn-line btn-sm" data-id="${esc(ap.id)}" onclick="App.appForm(this.dataset.id)">${icon("i-edit", "ic-sm")}편집</button>
+          <button type="button" class="icon-btn" data-id="${esc(ap.id)}" onclick="App.appMore(this.dataset.id)" aria-label="${esc(ap.name)} 더 보기">${icon("i-more")}</button>
+        </div>
+      </li>`).join("")}</ul>` : emptyHTML("apps")}`;
+}
+function userRow(u, acts) {
+  return `<li class="admin-row">
+    <span class="avatar">${esc(initial(u.displayName))}<svg viewBox="0 0 40 40" aria-hidden="true"><use href="#circle-hand"/></svg></span>
+    <div class="admin-txt"><p class="admin-name">${esc(u.displayName || "(이름 없음)")}${u.role === "admin" ? '<span class="badge badge-new">관리자</span>' : ""}</p>
+      <p class="admin-meta">${esc(u.email || "")}${u.createdAt ? ` · ${fmtDate(u.createdAt)} 가입` : ""}</p></div>
+    <div class="user-acts">${acts}</div></li>`;
+}
+function usersPane() {
+  const pend = S.users.filter(u => u.status === "pending");
+  const ok = S.users.filter(u => u.status === "approved");
+  const no = S.users.filter(u => u.status === "rejected");
+  const me = S.me?.uid;
+  return `
+    ${pend.length ? `<h2 class="pane-title">승인 기다리는 사람 ${pend.length}</h2><ul>${pend.map(u => userRow(u,
+      `<button type="button" class="btn btn-ink btn-sm" data-uid="${esc(u.uid)}" onclick="App.setUser(this.dataset.uid,'approved',this)">${icon("i-check", "ic-sm")}들여보내기</button>
+       <button type="button" class="btn btn-line btn-sm" data-uid="${esc(u.uid)}" onclick="App.setUser(this.dataset.uid,'rejected',this)">거절</button>`)).join("")}</ul>`
+      : `<p class="pane-head"><span class="hint">지금 승인을 기다리는 사람은 없어요.</span></p>`}
+    <h2 class="pane-title">회원 ${ok.length}</h2>
+    <ul>${ok.map(u => userRow(u, u.uid === me || u.role === "admin" ? "" :
+      `<button type="button" class="btn btn-text" data-uid="${esc(u.uid)}" onclick="App.setUser(this.dataset.uid,'rejected',this)">내보내기</button>`)).join("")}</ul>
+    ${no.length ? `<h2 class="pane-title">거절한 사람 ${no.length}</h2><ul>${no.map(u => userRow(u,
+      `<button type="button" class="btn btn-line btn-sm" data-uid="${esc(u.uid)}" onclick="App.setUser(this.dataset.uid,'approved',this)">다시 들여보내기</button>`)).join("")}</ul>` : ""}`;
+}
+function reviewItem(r, { withApp = false } = {}) {
+  const ap = withApp ? findApp(r.appId) : null;
+  return `<li class="rv-item">
+    <div class="rv-who"><span class="avatar" style="width:32px;height:32px;font-size:15px">${esc(initial(r.userName))}<svg viewBox="0 0 40 40" aria-hidden="true"><use href="#circle-hand"/></svg></span>
+      <b>${esc(r.userName || "회원")}</b>${starsRow(r.rating)}<span class="sr-only">별 5개 중 ${r.rating}개</span><time>${esc(fmtDate(r.createdAt))}</time></div>
+    ${withApp ? `<p class="hint" style="margin-top:4px">${ap ? `<button type="button" class="btn-text btn" style="min-height:32px;padding:0" data-id="${esc(r.appId)}" onclick="App.openDetail(this.dataset.id)">${esc(ap.name)}</button>` : "내려간 앱"}</p>` : ""}
+    <p class="rv-text">${esc(r.text)}</p>
+    ${isAdmin() ? `<div class="rv-admin"><button type="button" class="btn btn-text" data-rid="${esc(r.id)}" onclick="App.adminDelReview(this.dataset.rid, this)">${icon("i-trash", "ic-sm")}지우기</button></div>` : ""}
+  </li>`;
+}
+function reviewsPane() {
+  return S.allReviews.length
+    ? `<p class="pane-head"><span class="hint">부적절한 후기는 지울 수 있어요. 지우면 되돌릴 수 없어요.</span></p><ul>${S.allReviews.map(r => reviewItem(r, { withApp: true })).join("")}</ul>`
+    : `<div class="empty empty-sm">${illu("empty-reviews")}<p class="empty-title">아직 후기가 없어요</p></div>`;
+}
+function settingsPane() {
+  const has = !!S.aiKey;
+  return `
+    <section class="set-sec" aria-labelledby="h-ai">
+      <h2 id="h-ai">AI 도우미 연결</h2>
+      <p>앱 소개 요약과 ‘AI에게 앱 추천받기’에 쓰는 Gemini API 키예요. 지금 상태: <b>${has ? `연결됨 (…${esc(S.aiKey.slice(-4))})` : "연결 안 됨"}</b></p>
+      <form novalidate onsubmit="event.preventDefault(); App.saveAiKey(this.querySelector('[type=submit]'))">
+        ${field({ id: "set-key", label: has ? "새 키로 바꾸기" : "Gemini API 키", type: "password", placeholder: "AIza로 시작하는 키", hint: "키는 로그인한 회원만 읽을 수 있게 저장돼요. 아래 방법으로 사용처를 꼭 제한해 두세요.", auto: "off", pw: true })}
+        <div class="set-row"><button type="submit" class="btn btn-ink">저장</button>${has ? `<button type="button" class="btn btn-line" onclick="App.testAi(this)">${icon("i-ai")}연결 확인</button>` : ""}</div>
+      </form>
+      <details class="howto"><summary>키를 안전하게 쓰는 방법</summary><ol>
+        <li>Google AI Studio(aistudio.google.com) → API 키에서 새 키를 만들어요. 예전 키는 웹사이트에 노출됐던 적이 있으니 새로 만드는 걸 권해요.</li>
+        <li>Google Cloud 콘솔 → API 및 서비스 → 사용자 인증 정보에서 그 키를 열어요.</li>
+        <li>애플리케이션 제한사항: ‘웹사이트’ → <code>${esc(location.origin)}/*</code> 를 추가해요.</li>
+        <li>API 제한사항: ‘Generative Language API’만 고르고 저장해요.</li>
+      </ol></details>
+    </section>
+    <section class="set-sec" aria-labelledby="h-addr">
+      <h2 id="h-addr">앱스토어 주소</h2>
+      <p>친구에게 보낼 주소예요: <code>${esc(location.origin + location.pathname)}</code></p>
+      <div class="set-row"><button type="button" class="btn btn-line" onclick="App.copy('${esc(location.origin + location.pathname)}', this)">${icon("i-copy")}주소 복사</button></div>
+    </section>`;
+}
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  13. 시트 화면: 앱 상세 · 앱 올리기 · 안내 · AI 도우미     ║
+   ╚══════════════════════════════════════════════════════════╝ */
+async function openDetail(id, { replace = false } = {}) {
+  try { await loadApps(); } catch { toast("앱 정보를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.", "bad"); return; }
+  const ap = findApp(id);
+  if (!ap || (ap.hidden && !isAdmin())) {
+    toast("찾는 앱이 없어요. 내려갔거나 주소가 바뀌었을 수 있어요.", "bad");
+    if (replace) history.replaceState(null, "", "#/");
+    return;
+  }
+  S.rvEdit = null;
+  const s = openSheet({
+    kind: "detail", title: ap.name, hideTitle: true, body: detailHTML(ap),
+    url: "#/app/" + encodeURIComponent(id), push: !replace,
+    onClose: () => { if (S.dirty) { S.dirty = false; S.rendered = null; route(); } }
+  });
+  s.appId = id;
+  // AI 요약과 후기는 화면을 먼저 띄운 뒤 채움
+  summaryFor(ap).then(t => {
+    const el = s.el.querySelector("#dt-ai"); if (!el) return;
+    el.innerHTML = t ? esc(t) : `<span class="hint">${S.aiKey === "" ? (isAdmin() ? "AI 키가 아직 없어요. 관리 → 설정에서 연결해 주세요." : "AI 요약은 준비 중이에요.") : "AI가 잠시 쉬고 있어요. 조금 뒤 다시 열어 보세요."}</span>`;
+  });
+  paintReviews(s, ap);
+}
+function detailHTML(ap) {
+  const apk = !!ap.apkUrl, n = ap.reviewCount || 0;
+  return `
+  <div class="dt-head">${appIco(ap, 76)}
+    <div><p class="dt-name">${esc(ap.name)}</p>
+      <p class="dt-sub"><span>${esc(catOf(ap))}</span><span aria-hidden="true">·</span><span>${apk ? "안드로이드 앱" : "웹앱"}</span>${ap.hidden ? '<span class="badge badge-muted">비공개</span>' : ""}${isNew(ap) ? '<span class="badge badge-new">새로 옴</span>' : ""}</p></div>
+  </div>
+  <div class="dt-acts">
+    ${primaryAction(ap)}
+    ${apk ? `<button type="button" class="btn btn-line" data-id="${esc(ap.id)}" onclick="App.apkGuide(this.dataset.id)">${icon("i-info")}설치 방법</button>`
+          : `<button type="button" class="btn btn-line" data-id="${esc(ap.id)}" onclick="App.guideApp(this.dataset.id)">${icon("i-addhome")}홈 화면에 추가</button>`}
+  </div>
+  <div class="facts" id="dt-facts">${factsHTML(ap)}</div>
+  <div class="ai-note"><span class="tape hand">AI가 줄여 본 소개</span><p id="dt-ai"><span class="skel" style="width:95%"></span><span class="skel" style="width:70%"></span></p></div>
+  <section class="dt-sec"><h3>소개</h3><p class="dt-desc">${esc(ap.description || "아직 소개가 없어요.")}</p></section>
+  ${ap.features?.length ? `<section class="dt-sec"><h3>이런 걸 해요</h3><ul class="feat-list">${ap.features.map(f => `<li>${icon("i-check")}<span>${esc(f)}</span></li>`).join("")}</ul></section>` : ""}
+  ${apk ? `<div class="note-box dt-sec">${icon("i-android")}<p><b>안드로이드 전용 앱이에요.</b> 받은 뒤 직접 설치해야 하고, 아이폰에서는 설치할 수 없어요.</p></div>`
+        : (domainOf(ap.url) ? `<section class="dt-sec"><h3>주소</h3><a class="url-link" href="${esc(safeUrl(ap.url))}" target="_blank" rel="noopener">${icon("i-link", "ic-sm")}${esc(domainOf(ap.url))}<span class="sr-only"> (새 창)</span></a></section>` : "")}
+  <section class="dt-sec" aria-labelledby="h-rv"><div class="sec-head"><h3 id="h-rv">후기</h3></div><div id="dt-rv"><ul class="app-list">${skelRows(2)}</ul></div></section>`;
+}
+function factsHTML(ap) {
+  const n = ap.reviewCount || 0;
+  return `<div><b>${n ? ap.rating.toFixed(1) : "–"}</b><span>${n ? "평점" : "평점 없음"}</span></div>
+    <div><b>${n}</b><span>후기</span></div>
+    <div><b>${fmtDate(ap.createdAt) || "–"}</b><span>올라온 날</span></div>`;
+}
+async function paintReviews(s, ap) {
+  let revs;
+  try { revs = await loadReviews(ap.id); } catch { const b = s.el.querySelector("#dt-rv"); if (b) b.innerHTML = `<p class="hint">후기를 불러오지 못했어요.</p>`; return; }
+  const box = s.el.querySelector("#dt-rv"); if (!box) return;
+  const mine = revs.find(r => r.userId === S.me?.uid);
+  const others = revs.filter(r => r !== mine);
+  const n = revs.length;
+  const avg = n ? revs.reduce((t, r) => t + (r.rating || 0), 0) / n : 0;
+  let html = "";
+  if (n) {
+    html += `<div class="rv-sum"><div class="rv-avg"><b>${avg.toFixed(1)}</b>${starsRow(avg)}<span>후기 ${n}개</span></div>
+      <div class="rv-bars">${[5, 4, 3, 2, 1].map(k => { const c = revs.filter(r => r.rating === k).length; return `<div class="rv-bar"><span aria-hidden="true">${k}</span><i aria-hidden="true"><b style="width:${Math.round(c / n * 100)}%"></b></i><span class="sr-only">${k}점 ${c}개</span></div>`; }).join("")}</div></div>`;
+  } else {
+    html += `<div class="empty empty-sm">${illu("empty-reviews")}<p class="empty-title">아직 후기가 없어요</p><p>써 본 느낌을 처음으로 남겨 주세요.</p></div>`;
+  }
+  html += (mine && S.rvEdit !== ap.id)
+    ? `<div class="rv-mine"><div class="rv-mine-head">내 후기 ${starsRow(mine.rating)}<span class="sr-only">별 5개 중 ${mine.rating}개</span></div><p class="rv-text">${esc(mine.text)}</p>
+        <div class="rv-mine-acts"><button type="button" class="btn btn-line btn-sm" data-id="${esc(ap.id)}" onclick="App.editReview(this.dataset.id)">${icon("i-edit", "ic-sm")}고치기</button>
+        <button type="button" class="btn btn-text" data-id="${esc(ap.id)}" onclick="App.delMyReview(this.dataset.id, this)">${icon("i-trash", "ic-sm")}지우기</button></div></div>`
+    : reviewForm(ap, mine);
+  if (others.length) html += `<ul class="rv-list">${others.map(r => reviewItem(r)).join("")}</ul>`;
+  box.innerHTML = html;
+  const fx = s.el.querySelector("#dt-facts"); if (fx) fx.innerHTML = factsHTML(ap);
+}
+function reviewForm(ap, mine) {
+  const cur = mine?.rating || 0;
+  return `<form class="rv-form" novalidate data-id="${esc(ap.id)}" onsubmit="event.preventDefault(); App.submitReview(this)">
+    <fieldset class="field"><legend class="label">별점</legend>
+      <div class="star-pick">${[1, 2, 3, 4, 5].map(n => `<input type="radio" name="rv-star" id="rv-s${n}" value="${n}" ${cur === n ? "checked" : ""} onchange="App.paintStars(this.form)"><label for="rv-s${n}" class="${n <= cur ? "on" : ""}"><svg viewBox="0 0 40 40" aria-hidden="true"><use href="#star-hand"/></svg><span class="sr-only">별 5개 중 ${n}개</span></label>`).join("")}</div>
+      <p class="err" id="rv-s-e">${icon("i-alert", "ic-sm")}<span></span></p>
+    </fieldset>
+    <div style="margin-top:16px">${field({ id: "rv-txt", label: mine ? "내 후기 고치기" : "후기", textarea: true, value: mine?.text || "", placeholder: "써 보니 어땠는지 한두 줄이면 충분해요.", extra: 'maxlength="1000" rows="3"' })}</div>
+    <div class="rv-form-foot">${mine ? `<button type="button" class="btn btn-line" data-id="${esc(ap.id)}" onclick="App.cancelEdit(this.dataset.id)">취소</button>` : ""}<button type="submit" class="btn btn-ink">${mine ? "고친 후기 저장" : "후기 남기기"}</button></div>
+  </form>`;
+}
+
+/* ── 앱 올리기 / 편집 (관리자) ── */
+function appForm(id) {
+  const ap = id ? findApp(id) : null;
+  const kind = ap?.apkUrl ? "apk" : "web";
+  FORM_ICON = ap?.customIcon || "";
+  const textIcon = FORM_ICON && !/^data:image\//i.test(FORM_ICON) ? FORM_ICON : "";
+  const s = openSheet({
+    kind: "form", title: ap ? `${ap.name} 편집` : "앱 올리기",
+    body: `<form id="app-form" novalidate data-id="${esc(id || "")}" onsubmit="event.preventDefault(); App.saveApp(this)">
+      ${field({ id: "f-name", label: "앱 이름", value: ap?.name || "", placeholder: "예: Happy-Playground", extra: 'maxlength="40"' })}
+      <div class="field"><label class="label" for="f-cat">카테고리</label>
+        <select class="select" id="f-cat">${CATS.map(c => `<option ${(ap ? catOf(ap) : "기타") === c ? "selected" : ""}>${c}</option>`).join("")}</select></div>
+      <fieldset class="form-kind"><legend class="label">앱 종류</legend>
+        <div class="seg"><input type="radio" name="f-kind" id="k-web" value="web" ${kind === "web" ? "checked" : ""} onchange="App.formKind()"><label for="k-web">웹앱</label><input type="radio" name="f-kind" id="k-apk" value="apk" ${kind === "apk" ? "checked" : ""} onchange="App.formKind()"><label for="k-apk">안드로이드 APK</label></div>
+      </fieldset>
+      <div data-kind="web" ${kind === "web" ? "" : "hidden"} style="margin-top:16px">${field({ id: "f-url", label: "웹 주소", type: "url", value: ap?.url || "", placeholder: "https://", hint: "누르면 이 주소가 새 창으로 열려요.", extra: 'inputmode="url" autocapitalize="off" oninput="App.iconPreview()"' })}</div>
+      <div data-kind="apk" ${kind === "apk" ? "" : "hidden"} style="margin-top:16px">${field({ id: "f-apk", label: "APK 다운로드 주소", type: "url", value: ap?.apkUrl || "", placeholder: "https://", hint: "Dropbox 공유 링크를 그대로 붙여 넣어도 돼요. 받을 때 바로 받기 주소로 바꿔 줘요.", extra: 'inputmode="url" autocapitalize="off"' })}</div>
+      <div class="field" style="margin-top:16px"><span class="label" id="f-ico-l">아이콘</span>
+        <div class="ico-edit"><span id="f-ico-prev"></span>
+          <div class="ico-edit-ctl">
+            <label class="btn btn-line btn-sm" for="f-ico-file">${icon("i-image", "ic-sm")}이미지 올리기</label>
+            <input id="f-ico-file" type="file" accept="image/*" class="sr-only" onchange="App.iconFile(this)">
+            <button type="button" class="btn btn-text" onclick="App.iconAuto()">자동으로 찾기</button>
+          </div></div>
+        <input class="input" id="f-ico" value="${esc(textIcon)}" placeholder="이모지 하나 또는 이미지 주소 (선택)" aria-labelledby="f-ico-l" aria-describedby="f-ico-h" oninput="App.iconText(this.value)">
+        <p class="hint" id="f-ico-h">비워 두면 웹 주소에서 앱 아이콘을 자동으로 찾아요. 안드로이드 앱은 이미지를 올려 주세요.</p>
+      </div>
+      <div style="margin-top:16px">${field({ id: "f-desc", label: "소개", textarea: true, value: ap?.description || "", placeholder: "이 앱으로 무엇을 할 수 있는지 적어 주세요.", extra: 'maxlength="1000"' })}</div>
+      <div style="margin-top:16px">${field({ id: "f-feat", label: "주요 기능", value: (ap?.features || []).join(", "), placeholder: "예: 채팅, 게시판, 사진 공유", hint: "쉼표로 나눠 적어요." })}</div>
+      <div style="margin-top:16px">
+        <label class="check"><input type="checkbox" id="f-featured" ${ap?.featured ? "checked" : ""}>홈 맨 위 ‘이번 주 추천’으로 보여주기</label>
+        <label class="check"><input type="checkbox" id="f-hidden" ${ap?.hidden ? "checked" : ""}>사용자에게 숨기기 (관리자만 보여요)</label>
+      </div>
+    </form>`,
+    foot: `<button type="button" class="btn btn-line" data-cancel>취소</button><button type="submit" form="app-form" class="btn btn-ink">${ap ? "고친 내용 저장" : "앱 올리기"}</button>`
+  });
+  s.el.querySelector("[data-cancel]").onclick = () => closeSheet(s.id);
+  iconPreview();
+}
+function iconPreview() {
+  const box = $("#f-ico-prev"); if (!box) return;
+  box.innerHTML = appIco({ category: gv("f-cat") || "기타", url: document.getElementById("k-web")?.checked ? gv("f-url") : "", customIcon: FORM_ICON }, 64);
+}
+// 올린 이미지를 256px 정사각형으로 줄여 저장 (투명 배경 유지)
+function compressImage(file, max = 256) {
+  return new Promise((ok, fail) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const s = Math.min(img.width, img.height), out = Math.min(s, max);
+      const c = document.createElement("canvas"); c.width = out; c.height = out;
+      c.getContext("2d").drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, out, out);
+      URL.revokeObjectURL(url);
+      const webp = c.toDataURL("image/webp", .9);
+      ok(webp.startsWith("data:image/webp") ? webp : c.toDataURL("image/png"));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); fail(new Error("load")); };
+    img.src = url;
+  });
+}
+
+/* ── 홈 화면 추가 · APK 설치 안내 ── */
+function guideA2HS(ap) {
+  const name = ap ? ap.name : "KS 앱스토어";
+  const ios = isIOS(), android = isAndroid();
+  const steps = ios
+    ? ["화면 아래 <b>공유 버튼</b>(네모 위 화살표)을 눌러요.", "목록을 올려 <b>홈 화면에 추가</b>를 골라요.", "오른쪽 위 <b>추가</b>를 누르면 끝!"]
+    : android
+      ? ["오른쪽 위 <b>점 세 개(⋮) 메뉴</b>를 눌러요.", "<b>홈 화면에 추가</b>(또는 ‘앱 설치’)를 골라요.", "<b>추가</b>를 누르면 끝!"]
+      : ["휴대폰으로 이 주소에 들어가 같은 방법으로 추가할 수 있어요.", "PC 크롬은 주소창 오른쪽 <b>설치 아이콘</b>을 누르면 바탕화면 앱으로 쓸 수 있어요."];
+  const art = ios ? "guide-ios" : "guide-android";
+  const s = openSheet({
+    kind: "guide", title: `${name}을(를) 홈 화면에`,
+    body: `${ap ? `<p class="lede">먼저 아래 <b>앱 열기</b>를 눌러 앱 화면으로 간 뒤, 그 화면에서 이 순서대로 해 주세요.</p>`
+                : `<p class="lede">${isStandalone() ? "지금 홈 화면 아이콘으로 열고 계세요. 다른 기기에서도 같은 방법으로 둘 수 있어요." : "지금 이 화면에서 바로 하면 돼요."}</p>`}
+      ${(ios || android) ? illu(art, ios ? "아이폰 사파리에서 공유 버튼을 누르고 홈 화면에 추가를 고르는 그림" : "안드로이드 크롬에서 점 세 개 메뉴를 누르고 홈 화면에 추가를 고르는 그림").replace("<img ", '<img class="guide-art" ') : ""}
+      <ol class="steps">${steps.map(t => `<li><span>${t}</span></li>`).join("")}</ol>
+      ${!ap && !(ios || android) ? `<div class="set-row"><button type="button" class="btn btn-line" onclick="App.copy('${esc(location.origin + location.pathname)}', this)">${icon("i-copy")}주소 복사</button></div>` : ""}`,
+    foot: ap ? `<button type="button" class="btn btn-line" data-close-btn>닫기</button><a class="btn btn-ink" href="${esc(safeUrl(ap.url))}" target="_blank" rel="noopener">${icon("i-open")}앱 열기</a>`
+             : `<button type="button" class="btn btn-ink" data-close-btn>알겠어요</button>`
+  });
+  s.el.querySelector("[data-close-btn]").onclick = () => closeSheet(s.id);
+}
+function apkGuide(ap, { justDownloaded = false } = {}) {
+  const ios = isIOS();
+  const steps = ["<b>APK 파일 받기</b>가 시작돼요. 알림창이나 ‘다운로드’ 폴더에서 확인해요.", "받은 <b>APK 파일을 눌러요</b>.", "<b>‘이 출처 허용’</b>(출처를 알 수 없는 앱 설치)을 켜요.", "<b>설치</b>를 누르면 끝!"];
+  const protect = ["<b>Play 스토어</b> 앱을 열어요.", "오른쪽 위 <b>프로필 사진</b> → <b>Play 프로텍트</b>를 골라요.", "오른쪽 위 <b>설정(톱니바퀴)</b> → <b>Play 프로텍트로 기기 스캔</b>을 꺼요.", "다시 <b>APK 설치</b>를 해요. 설치한 뒤 다시 켜도 돼요."];
+  const s = openSheet({
+    kind: "guide", title: `${ap.name} 설치 방법`,
+    body: ios
+      ? `<div class="note-box">${icon("i-android")}<p><b>안드로이드 전용 앱이에요.</b> 아이폰에서는 설치할 수 없어요. 안드로이드 휴대폰에서 열어 주세요.</p></div>`
+      : `${justDownloaded ? `<p class="lede">받기를 시작했어요. 이어서 이 순서대로 설치해 주세요.</p>` : ""}
+        ${illu("guide-apk", "알림창의 다운로드 완료를 누르고 설치 창에서 설치를 누르는 그림").replace("<img ", '<img class="guide-art" ')}
+        <ol class="steps">${steps.map(t => `<li><span>${t}</span></li>`).join("")}</ol>
+        <p class="hint" style="margin-top:12px">‘출처를 알 수 없는 앱’ 안내는 정상이에요. Play 스토어를 거치지 않은 앱이라 뜨는 안내예요.</p>
+        <div class="guide-box"><span class="tape hand">설치가 막히면</span>
+          <h3>‘차단됨’이 뜨거나 설치가 안 될 때</h3>
+          <p class="hint">Play 프로텍트가 막는 경우예요. 잠깐 끄고 다시 설치해요.</p>
+          ${illu("guide-protect", "Play 프로텍트 설정에서 기기 스캔 스위치를 끄는 그림").replace("<img ", '<img class="guide-art" style="max-width:300px" ')}
+          <ol class="steps">${protect.map(t => `<li><span>${t}</span></li>`).join("")}</ol>
+        </div>`,
+    foot: ios ? `<button type="button" class="btn btn-ink" data-close-btn>알겠어요</button>`
+              : `<button type="button" class="btn btn-line" data-close-btn>닫기</button><a class="btn btn-ink" href="${esc(directApkUrl(safeUrl(ap.apkUrl)))}" target="_blank" rel="noopener">${icon("i-download")}${justDownloaded ? "다시 받기" : "APK 받기"}</a>`
+  });
+  s.el.querySelector("[data-close-btn]").onclick = () => closeSheet(s.id);
+}
+// 카카오톡 같은 앱 안 브라우저는 파일 받기를 막음 → 크롬으로 열도록 안내
+function inAppWarn(url) {
+  const s = openSheet({
+    kind: "guide", title: "크롬 같은 브라우저로 열어 주세요",
+    body: `<p class="lede">지금은 <b>카카오톡·네이버 같은 앱 안의 브라우저</b>로 보고 계세요. 이런 브라우저는 보안상 APK 받기를 막아요.</p>
+      <ol class="steps"><li><span>화면 <b>오른쪽 위 ⋮(또는 공유) 메뉴</b>를 눌러요.</span></li><li><span><b>다른 브라우저로 열기</b>(또는 ‘Chrome으로 열기’)를 골라요.</span></li><li><span>열린 화면에서 다시 <b>APK 받기</b>를 눌러요.</span></li></ol>
+      <p class="hint" style="margin-top:12px">아니면 아래 버튼으로 받기 주소를 복사해 크롬 주소창에 붙여 넣어도 돼요.</p>`,
+    foot: `<button type="button" class="btn btn-line" data-close-btn>닫기</button><button type="button" class="btn btn-ink" data-copy>${icon("i-copy")}받기 주소 복사</button>`
+  });
+  s.el.querySelector("[data-close-btn]").onclick = () => closeSheet(s.id);
+  s.el.querySelector("[data-copy]").onclick = e => App.copy(url, e.currentTarget);
+}
+// 옛 주소(ks-app-store.web.app)에서 넘어온 경우 한 번만 안내
+function movedNotice() {
+  const qs = new URLSearchParams(location.search);
+  if (!qs.has("moved")) return;
+  history.replaceState(history.state, "", location.pathname + location.hash);   // 주소창에서 ?moved=1 지우기
+  if (store.get(MOVED_KEY)) return;
+  store.set(MOVED_KEY, "1");
+  const s = openSheet({
+    kind: "guide", title: "앱스토어가 새 주소로 이사했어요",
+    body: `<p class="lede">이제부터 이 주소로 들어와 주세요.</p><p><code>${esc(location.origin + location.pathname)}</code></p>
+      <p class="sec-text">예전 주소로 만든 홈 화면 아이콘이 있다면, 지우고 이 화면에서 다시 추가해 주세요.</p>`,
+    foot: `<button type="button" class="btn btn-line" data-close-btn>나중에</button><button type="button" class="btn btn-ink" data-guide>${icon("i-addhome")}홈 화면에 다시 두기</button>`
+  });
+  s.el.querySelector("[data-close-btn]").onclick = () => closeSheet(s.id);
+  s.el.querySelector("[data-guide]").onclick = () => { closeSheet(s.id); setTimeout(() => guideA2HS(null), 300); };
+}
+
+/* ── AI 도우미 ── */
+const SUGGEST = ["가족이랑 같이 쓸 앱 있어?", "음악 듣는 앱 알려줘", "안드로이드 앱만 보여줘"];
+function msgHTML(m) {
+  if (m.who === "me") return `<div class="msg msg-me">${esc(m.text)}</div>`;
+  const apps = (m.apps || []).map(findApp).filter(Boolean);
+  return `<div class="msg msg-bot ${m.wait ? "msg-wait" : ""}">${esc(m.text)}${apps.length ? `<div class="msg-apps">${apps.map(a => `<button type="button" class="msg-app" data-id="${esc(a.id)}" onclick="App.openDetail(this.dataset.id)">${appIco(a, 32)}${esc(a.name)}</button>`).join("")}</div>` : ""}</div>`;
+}
+function openChat() {
+  if (topSheet("chat")) return;
+  if (!CHAT_LOG.length) CHAT_LOG.push({ who: "bot", text: "안녕하세요! 하고 싶은 일을 편하게 적어 주시면, 여기 올라온 앱 중에서 맞는 걸 찾아 드릴게요." });
+  const s = openSheet({
+    kind: "chat", title: "AI 도우미",
+    body: `<div class="chat-intro">${illu("ai-helper")}<p>여기 올라온 앱 중에서만 찾아 드려요. 없는 앱은 없다고 말씀드릴게요.</p></div>
+      <div class="chat-log" id="chat-log">${CHAT_LOG.map(msgHTML).join("")}</div>
+      <div class="chat-suggest" id="chat-suggest">${CHAT_LOG.length < 2 ? SUGGEST.map(t => `<button type="button" data-t="${esc(t)}" onclick="App.askSuggest(this.dataset.t)">${esc(t)}</button>`).join("") : ""}</div>`,
+    foot: `<form class="chat-form" onsubmit="event.preventDefault(); App.sendChat(this)"><label for="chat-in" class="sr-only">AI에게 물어볼 내용</label>
+      <input id="chat-in" class="input" placeholder="예: 사진 정리하는 앱 있어?" autocomplete="off" enterkeyhint="send" maxlength="300">
+      <button type="submit" class="btn btn-ink" aria-label="보내기">${icon("i-send")}</button></form>`
+  });
+  const log = s.el.querySelector(".sheet-body"); log.scrollTop = log.scrollHeight;
+  loadApps().catch(() => {});
+}
+function paintChat() {
+  const box = $("#chat-log"); if (!box) return;
+  box.innerHTML = CHAT_LOG.map(msgHTML).join("");
+  const sg = $("#chat-suggest"); if (sg) sg.innerHTML = "";
+  const body = topSheet("chat")?.el.querySelector(".sheet-body"); if (body) body.scrollTop = body.scrollHeight;
+}
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  14. 버튼이 부르는 동작 모음 (App.○○)                     ║
+   ╚══════════════════════════════════════════════════════════╝ */
+const authMsg = e => ({
+  "auth/invalid-email": ["au-email", "이메일 형식이 맞지 않아요. 예: name@example.com"],
+  "auth/user-not-found": ["au-pw", "이메일 또는 비밀번호가 맞지 않아요."],
+  "auth/wrong-password": ["au-pw", "이메일 또는 비밀번호가 맞지 않아요."],
+  "auth/invalid-credential": ["au-pw", "이메일 또는 비밀번호가 맞지 않아요."],
+  "auth/email-already-in-use": ["au-email", "이미 가입된 이메일이에요. 위에서 ‘로그인’을 눌러 주세요."],
+  "auth/weak-password": ["au-pw", "비밀번호는 6자 이상이어야 해요."],
+  "auth/too-many-requests": [null, "시도가 너무 많았어요. 잠시 뒤 다시 해 주세요."],
+  "auth/network-request-failed": [null, "인터넷 연결이 불안정해요. 연결을 확인해 주세요."],
+}[e?.code] || [null, "잠시 문제가 생겼어요. 다시 시도해 주세요."]);
+const validEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+const App = {
+  /* 로그인·가입 */
+  authMode(m) { S.authMode = m; renderLogin(); },
+  login: btn => busy(btn, async () => {
+    const f = $("#auth-form"); clearErrs(f);
+    const email = gv("au-email").trim(), pw = gv("au-pw");
+    if (!email) setErr("au-email", "이메일을 적어 주세요."); else if (!validEmail(email)) setErr("au-email", "이메일 형식이 맞지 않아요. 예: name@example.com");
+    if (!pw) setErr("au-pw", "비밀번호를 적어 주세요.");
+    if (f.querySelector(".has-err")) return focusFirstErr(f);
+    $("#au-remember")?.checked ? store.set(REMEMBER_KEY, email) : store.del(REMEMBER_KEY);
+    try { await signInWithEmailAndPassword(auth, email, pw); }
+    catch (e) { const [fid, m] = authMsg(e); fid ? (setErr(fid, m), focusFirstErr(f)) : toast(m, "bad"); }
+  }),
+  signup: btn => busy(btn, async () => {
+    const f = $("#auth-form"); clearErrs(f);
+    const name = gv("au-name").trim(), email = gv("au-email").trim(), pw = gv("au-pw"), pw2 = gv("au-pw2");
+    if (!name) setErr("au-name", "이름을 적어 주세요.");
+    if (!email) setErr("au-email", "이메일을 적어 주세요."); else if (!validEmail(email)) setErr("au-email", "이메일 형식이 맞지 않아요. 예: name@example.com");
+    if (pw.length < 6) setErr("au-pw", "비밀번호는 6자 이상이어야 해요.");
+    if (pw && pw !== pw2) setErr("au-pw2", "위 비밀번호와 똑같이 적어 주세요.");
+    if (f.querySelector(".has-err")) return focusFirstErr(f);
+    SIGNING_UP = true;   // 가입 중에는 회원 문서를 두 번 만들지 않게
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, pw);
+      await updateProfile(cred.user, { displayName: name });
+      const admin = ADMIN_EMAILS.includes(email);
+      await setDoc(doc(db, "users", cred.user.uid), { uid: cred.user.uid, email, displayName: name, role: admin ? "admin" : "user", status: admin ? "approved" : "pending", createdAt: serverTimestamp() });
+    } catch (e) { const [fid, m] = authMsg(e); fid ? (setErr(fid, m), focusFirstErr(f)) : toast(m, "bad"); }
+    finally { SIGNING_UP = false; }
+  }),
+  resetPw: btn => busy(btn, async () => {
+    const f = $("#auth-form"); clearErrs(f);
+    const email = gv("au-email").trim();
+    if (!validEmail(email)) { setErr("au-email", "재설정 메일을 받을 이메일을 먼저 적어 주세요."); return focusFirstErr(f); }
+    try { await sendPasswordResetEmail(auth, email); toast(`${email}(으)로 재설정 메일을 보냈어요. 스팸함도 확인해 주세요.`); }
+    catch (e) { const [fid, m] = authMsg(e); fid ? setErr(fid, m) : toast(m, "bad"); }
+  }),
+  togglePw(btn, id) {
+    const inp = document.getElementById(id); const show = inp.type === "password";
+    inp.type = show ? "text" : "password";
+    btn.setAttribute("aria-pressed", String(show)); btn.setAttribute("aria-label", show ? "비밀번호 숨기기" : "비밀번호 보기");
+    btn.innerHTML = icon(show ? "i-eye-off" : "i-eye");
+  },
+  logout: btn => busy(btn, async () => { await signOut(auth); toast("로그아웃했어요."); }),
+
+  /* 이동 */
+  openDetail: id => openDetail(id),
+  setCat(c) {
+    S.cat = c;
+    if (S.tab === "search") { paintSearch(true); return; }
+    document.querySelectorAll(".tabs .tab").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.cat === c)));
+    const box = $("#home-list"); if (box) box.innerHTML = homeList(visibleApps());
+  },
+  retry() { S.rendered = null; route(); },
+  icoNext(img) {
+    const s = JSON.parse(img.dataset.srcs || "[]");
+    if (s.length) { img.src = s.shift(); img.dataset.srcs = JSON.stringify(s); } else img.remove();
+  },
+  // 아이콘을 못 찾으면 16px짜리 기본 그림이 오는 경우가 있어, 너무 작으면 다음 후보로
+  icoCheck(img) { if (img.naturalWidth && img.naturalWidth < 32) App.icoNext(img); },
+
+  /* 찾기 */
+  onSearch: debounce(v => {
+    S.q = v; const c = $("#q-clear"); if (c) c.hidden = !v; paintSearch();
+  }, 120),
+  clearSearch() { S.q = ""; const q = $("#q"); if (q) { q.value = ""; q.focus(); } $("#q-clear").hidden = true; paintSearch(); },
+  saveRecent() {
+    const w = S.q.trim(); if (!w) return;
+    const list = [w, ...JSON.parse(store.get(RECENT_KEY) || "[]").filter(x => x !== w)].slice(0, 8);
+    store.set(RECENT_KEY, JSON.stringify(list));
+  },
+  useRecent(w) { S.q = w; const q = $("#q"); if (q) q.value = w; $("#q-clear").hidden = false; paintSearch(); },
+  delRecent(w) { store.set(RECENT_KEY, JSON.stringify(JSON.parse(store.get(RECENT_KEY) || "[]").filter(x => x !== w))); paintSearch(); },
+  clearRecent() { store.del(RECENT_KEY); paintSearch(); },
+
+  /* 앱 받기·열기 */
+  getApk(id) {
+    const ap = findApp(id); if (!ap?.apkUrl) return;
+    const u = directApkUrl(safeUrl(ap.apkUrl));
+    if (u === "#") { toast("APK 주소가 올바르지 않아요. 관리자에게 알려 주세요.", "bad"); return; }
+    if (isIOS()) { apkGuide(ap); return; }
+    if (isInApp()) { inAppWarn(u); return; }
+    window.open(u, "_blank", "noopener");
+    apkGuide(ap, { justDownloaded: true });
+  },
+  apkGuide(id) { const ap = findApp(id); if (ap) apkGuide(ap); },
+  guideApp(id) { const ap = findApp(id); if (ap) guideA2HS(ap); },
+  guideStore() { guideA2HS(null); },
+
+  /* 후기 */
+  paintStars(form) { const v = +(form.querySelector('input[name="rv-star"]:checked')?.value || 0); form.querySelectorAll(".star-pick label").forEach((l, i) => l.classList.toggle("on", i < v)); setErr("rv-s1", ""); },
+  submitReview(form) {
+    const btn = form.querySelector('[type="submit"]');
+    return busy(btn, async () => {
+      clearErrs(form);
+      const id = form.dataset.id, rating = +(form.querySelector('input[name="rv-star"]:checked')?.value || 0), text = gv("rv-txt").trim();
+      if (!rating) { const fs = form.querySelector("fieldset"); fs.classList.add("has-err"); fs.querySelector(".err span").textContent = "별점을 골라 주세요."; }
+      if (!text) setErr("rv-txt", "한 줄이라도 적어 주세요.");
+      if (form.querySelector(".has-err")) { (rating ? $("#rv-txt") : $("#rv-s1"))?.focus(); return; }
+      const mine = (S.reviews[id] || []).find(r => r.userId === S.me.uid);
+      try {
+        await saveReview(id, rating, text, mine);
+        S.rvEdit = null;
+        toast(mine ? "후기를 고쳤어요." : "후기를 남겼어요. 고마워요!");
+        const s = topSheet("detail"); const ap = findApp(id); if (s && ap) paintReviews(s, ap);
+      } catch (e) { console.warn(e); toast("후기를 저장하지 못했어요. 잠시 뒤 다시 해 주세요.", "bad"); }
+    });
+  },
+  editReview(id) { S.rvEdit = id; const s = topSheet("detail"), ap = findApp(id); if (s && ap) paintReviews(s, ap); setTimeout(() => $("#rv-txt")?.focus(), 50); },
+  cancelEdit(id) { S.rvEdit = null; const s = topSheet("detail"), ap = findApp(id); if (s && ap) paintReviews(s, ap); },
+  async delMyReview(id, btn) {
+    const mine = (S.reviews[id] || []).find(r => r.userId === S.me.uid); if (!mine) return;
+    if (!await confirmSheet({ title: "내 후기를 지울까요?", text: "지우면 되돌릴 수 없어요.", ok: "후기 지우기", danger: true })) return;
+    await busy(btn, async () => {
+      try { await removeReview(mine); toast("후기를 지웠어요."); const s = topSheet("detail"), ap = findApp(id); if (s && ap) paintReviews(s, ap); }
+      catch { toast("지우지 못했어요. 잠시 뒤 다시 해 주세요.", "bad"); }
+    });
+  },
+  async adminDelReview(rid, btn) {
+    const r = S.allReviews.find(x => x.id === rid) || Object.values(S.reviews).flat().find(x => x.id === rid); if (!r) return;
+    if (!await confirmSheet({ title: "이 후기를 지울까요?", text: `${esc(r.userName || "회원")}님의 후기를 지워요. 되돌릴 수 없어요.`, ok: "후기 지우기", danger: true })) return;
+    await busy(btn, async () => {
+      try {
+        await removeReview(r); toast("후기를 지웠어요.");
+        S.allReviews = S.allReviews.filter(x => x.id !== rid);
+        const s = topSheet("detail"), ap = findApp(r.appId); if (s && ap && s.appId === r.appId) paintReviews(s, ap);
+        if (S.tab === "admin") { S.rendered = null; route(); }
+      } catch { toast("지우지 못했어요. 잠시 뒤 다시 해 주세요.", "bad"); }
+    });
+  },
+
+  /* 내 정보 */
+  saveName: btn => busy(btn, async () => {
+    const f = btn.form; clearErrs(f);
+    const name = gv("me-name").trim();
+    if (!name) { setErr("me-name", "이름을 적어 주세요."); return focusFirstErr(f); }
+    if (name === S.meData?.displayName) { toast("바뀐 내용이 없어요."); return; }
+    try {
+      if (auth.currentUser) await updateProfile(auth.currentUser, { displayName: name });
+      await updateDoc(doc(db, "users", S.me.uid), { displayName: name });
+      S.meData.displayName = name; toast("이름을 바꿨어요."); S.rendered = null; route();
+    } catch { toast("저장하지 못했어요. 잠시 뒤 다시 해 주세요.", "bad"); }
+  }),
+
+  /* 관리: 앱 */
+  appForm: id => appForm(id),
+  formKind() { const apk = $("#k-apk").checked; document.querySelector('[data-kind="web"]').hidden = apk; document.querySelector('[data-kind="apk"]').hidden = !apk; iconPreview(); },
+  iconPreview: debounce(() => iconPreview(), 300),
+  async iconFile(input) {
+    const file = input.files?.[0]; if (!file) return;
+    if (!file.type.startsWith("image/")) { toast("이미지 파일만 올릴 수 있어요.", "bad"); return; }
+    try { FORM_ICON = await compressImage(file); $("#f-ico").value = ""; iconPreview(); toast("아이콘 이미지를 골랐어요. 저장해야 반영돼요."); }
+    catch { toast("이미지를 읽지 못했어요. 다른 파일로 해 주세요.", "bad"); }
+  },
+  iconText(v) { FORM_ICON = v.trim(); iconPreview(); },
+  iconAuto() { FORM_ICON = ""; $("#f-ico").value = ""; iconPreview(); },
+  saveApp(form) {
+    const btn = document.querySelector('[form="app-form"][type="submit"]');
+    return busy(btn, async () => {
+      clearErrs(form);
+      const id = form.dataset.id, apk = $("#k-apk").checked;
+      const d = {
+        name: gv("f-name").trim(), category: gv("f-cat") || "기타",
+        url: apk ? "" : gv("f-url").trim(), apkUrl: apk ? gv("f-apk").trim() : "",
+        customIcon: FORM_ICON || "", description: gv("f-desc").trim(),
+        features: gv("f-feat").split(/[,，、]/).map(s => s.trim()).filter(Boolean).slice(0, 12),
+        featured: $("#f-featured").checked, hidden: $("#f-hidden").checked,
+      };
+      if (!d.name) setErr("f-name", "앱 이름을 적어 주세요.");
+      if (!apk && safeUrl(d.url) === "#") setErr("f-url", "https:// 로 시작하는 주소를 적어 주세요.");
+      if (apk && safeUrl(d.apkUrl) === "#") setErr("f-apk", "https:// 로 시작하는 받기 주소를 적어 주세요.");
+      if (!d.description) setErr("f-desc", "어떤 앱인지 한 줄이라도 적어 주세요.");
+      if (form.querySelector(".has-err")) return focusFirstErr(form);
+      try {
+        let appId = id;
+        if (id) await updateDoc(doc(db, "apps", id), d);
+        else appId = (await addDoc(collection(db, "apps"), { ...d, rating: 0, reviewCount: 0, createdAt: serverTimestamp() })).id;
+        if (d.featured) for (const a of S.apps.filter(a => a.featured && a.id !== appId)) await updateDoc(doc(db, "apps", a.id), { featured: false });
+        toast(id ? "고친 내용을 저장했어요." : "앱을 올렸어요.");
+        closeSheet(topSheet("form").id);
+        await loadApps(true);
+        const ap = findApp(appId); if (ap) summaryFor(ap).catch(() => {});   // AI 소개는 뒤에서 미리 만들어 둠
+        S.rendered = null; route();
+      } catch (e) { console.warn(e); toast("저장하지 못했어요. 잠시 뒤 다시 해 주세요.", "bad"); }
+    });
+  },
+  appMore(id) {
+    const ap = findApp(id); if (!ap) return;
+    const s = openSheet({
+      kind: "menu", title: ap.name,
+      body: `<div class="menu-list">
+        <button type="button" class="menu-item" data-act="feature">${icon("i-pin")}<span>${ap.featured ? "추천에서 빼기" : "이번 주 추천으로 올리기"}</span></button>
+        <button type="button" class="menu-item" data-act="hide">${icon(ap.hidden ? "i-eye" : "i-eye-off")}<span>${ap.hidden ? "다시 보이게 하기" : "사용자에게 숨기기"}</span></button>
+        <button type="button" class="menu-item" data-act="ai">${icon("i-ai")}<span>AI 소개 다시 만들기</span></button>
+        <button type="button" class="menu-item" data-act="view">${icon("i-chev")}<span>상세 화면으로 보기</span></button>
+        <button type="button" class="menu-item menu-danger" data-act="del">${icon("i-trash")}<span>앱 지우기</span></button></div>`
+    });
+    s.el.querySelector(".menu-list").addEventListener("click", async e => {
+      const b = e.target.closest("[data-act]"); if (!b) return;
+      const act = b.dataset.act;
+      if (act === "view") { closeSheet(s.id); setTimeout(() => openDetail(id), 300); return; }
+      if (act === "del") {
+        closeSheet(s.id);
+        if (!await confirmSheet({ title: `‘${esc(ap.name)}’을(를) 지울까요?`, text: "앱 목록에서 사라지고 되돌릴 수 없어요. 잠시 내리려면 ‘사용자에게 숨기기’를 쓰세요.", ok: "앱 지우기", danger: true })) return;
+        try { await deleteDoc(doc(db, "apps", id)); toast("앱을 지웠어요."); await loadApps(true); S.rendered = null; route(); }
+        catch { toast("지우지 못했어요. 잠시 뒤 다시 해 주세요.", "bad"); }
+        return;
+      }
+      await busy(b, async () => {
+        try {
+          if (act === "feature") {
+            const on = !ap.featured;
+            if (on) for (const a of S.apps.filter(a => a.featured && a.id !== id)) await updateDoc(doc(db, "apps", a.id), { featured: false });
+            await updateDoc(doc(db, "apps", id), { featured: on }); toast(on ? "이번 주 추천으로 올렸어요." : "추천에서 뺐어요.");
+          } else if (act === "hide") {
+            await updateDoc(doc(db, "apps", id), { hidden: !ap.hidden }); toast(ap.hidden ? "다시 보이게 했어요." : "사용자에게 숨겼어요. 관리자만 볼 수 있어요.");
+          } else if (act === "ai") {
+            const t = await summaryFor(ap, { force: true }); toast(t ? "AI 소개를 새로 만들었어요." : "AI 소개를 만들지 못했어요. 설정에서 AI 연결을 확인해 주세요.", t ? "" : "bad");
+          }
+          closeSheet(s.id); await loadApps(true); S.rendered = null; route();
+        } catch (e) { console.warn(e); toast("처리하지 못했어요. 잠시 뒤 다시 해 주세요.", "bad"); }
+      });
+    });
+  },
+
+  /* 관리: 회원 */
+  async setUser(uid, st, btn) {
+    const u = S.users.find(x => x.uid === uid); if (!u) return;
+    if (st === "rejected" && !await confirmSheet({ title: `${esc(u.displayName || "이 회원")}님을 ${u.status === "approved" ? "내보낼까요" : "거절할까요"}?`, text: "앱스토어에 들어올 수 없게 돼요. 나중에 ‘다시 들여보내기’로 되돌릴 수 있어요.", ok: u.status === "approved" ? "내보내기" : "거절하기", danger: true })) return;
+    await busy(btn, async () => {
+      try { await updateDoc(doc(db, "users", uid), { status: st }); toast(st === "approved" ? `${u.displayName || "회원"}님을 들여보냈어요.` : "처리했어요."); S.rendered = null; route(); }
+      catch { toast("처리하지 못했어요. 잠시 뒤 다시 해 주세요.", "bad"); }
+    });
+  },
+
+  /* 관리: 설정 */
+  saveAiKey: btn => busy(btn, async () => {
+    const f = btn.form; clearErrs(f);
+    const k = gv("set-key").trim();
+    if (!/^AIza[\w-]{20,}$/.test(k)) { setErr("set-key", "AIza로 시작하는 Gemini API 키를 붙여 넣어 주세요."); return focusFirstErr(f); }
+    try { await setDoc(doc(db, "config", "ai"), { geminiKey: k, updatedAt: serverTimestamp() }); S.aiKey = k; toast("AI 키를 저장했어요."); S.rendered = null; route(); }
+    catch { toast("저장하지 못했어요. Firestore 규칙이 최신인지 확인해 주세요.", "bad"); }
+  }),
+  testAi: btn => busy(btn, async () => {
+    const t = await gemini("'연결 확인'이라고만 답해 주세요.");
+    t ? toast("AI가 잘 연결돼 있어요.") : toast("AI가 응답하지 않아요. 키와 사용처 제한을 확인해 주세요.", "bad");
+  }),
+  async copy(text, btn) {
+    try { await navigator.clipboard.writeText(text); toast("복사했어요."); }
+    catch { window.prompt?.("아래 주소를 길게 눌러 복사해 주세요.", text); }
+  },
+
+  /* AI 도우미 */
+  openChat: () => openChat(),
+  askSuggest(t) { const i = $("#chat-in"); if (i) { i.value = t; App.sendChat(i.form); } },
+  async sendChat(form) {
+    if (CHAT_BUSY) return;
+    const inp = form.querySelector("input"), text = inp.value.trim(); if (!text) return;
+    CHAT_BUSY = true; inp.value = "";
+    CHAT_LOG.push({ who: "me", text });
+    const wait = { who: "bot", text: "찾아보는 중…", wait: true }; CHAT_LOG.push(wait); paintChat();
+    try {
+      await loadApps();
+      const r = await recommend(text);
+      wait.wait = false;
+      if (!r) wait.text = S.aiKey === "" ? "AI가 아직 연결되지 않았어요. 관리자에게 알려 주세요." : "AI가 잠시 쉬고 있어요. 조금 뒤 다시 물어봐 주세요.";
+      else { wait.text = r; wait.apps = visibleApps().filter(a => r.toLowerCase().includes(a.name.toLowerCase())).map(a => a.id).slice(0, 4); }
+    } catch { wait.wait = false; wait.text = "답을 가져오지 못했어요. 다시 물어봐 주세요."; }
+    finally { CHAT_BUSY = false; paintChat(); $("#chat-in")?.focus(); }
+  },
+};
+window.App = App;
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  15. 시작 — 로그인 상태를 보고 화면 결정                   ║
+   ╚══════════════════════════════════════════════════════════╝ */
+function resetSession() {
+  closeAllSheets();
+  Object.assign(S, { me: null, meData: null, apps: [], appsLoaded: false, users: [], allReviews: [], reviews: {}, shell: false, rendered: null, aiKey: undefined, rvEdit: null, cat: "전체", q: "" });
+  CHAT_LOG.length = 0;
+}
+function routeByStatus() {
+  if (S.meData.status === "pending") renderStatus("pending");
+  else if (S.meData.status === "rejected") renderStatus("rejected");
+  else enterApp();
+}
+window.addEventListener("offline", () => { const o = $("#offline"); if (o) o.hidden = false; });
+window.addEventListener("online", () => { const o = $("#offline"); if (o && !o.hidden) { o.hidden = true; toast("다시 연결됐어요."); } });
+
+onAuthStateChanged(auth, async user => {
+  if (UNSUB_USER) { UNSUB_USER(); UNSUB_USER = null; }
+  LAST_STATUS = null;
+  if (!user) { resetSession(); hideSplash(); renderLogin(); movedNotice(); return; }
+  S.me = user;
+  if (!SIGNING_UP) { try { await ensureUserDoc(user); } catch (e) { console.warn(e); } }
+  // 회원 문서를 실시간으로 지켜봄 — 관리자가 승인하면 다시 로그인하지 않아도 바로 들어감
+  UNSUB_USER = onSnapshot(doc(db, "users", user.uid), snap => {
+    if (!snap.exists()) return;
+    S.meData = snap.data();
+    hideSplash();
+    if (S.meData.status !== LAST_STATUS) { LAST_STATUS = S.meData.status; routeByStatus(); }
+  }, err => { console.warn(err); hideSplash(); toast("회원 정보를 불러오지 못했어요. 새로고침해 주세요.", "bad"); });
+});
+</script>
+</body>
+</html>

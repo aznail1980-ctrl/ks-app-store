@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 180" role="img" aria-label="노란 목도리를 한 쪽지 캐릭터가 종이비행기를 타고 앱 꾸러미를 배달하는 그림">
+<!-- 홈 화면 머리 그림: 쪽지가 종이비행기를 타고 앱을 배달 -->
+<style>
+.o{fill:#fff;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.l{fill:none;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:none;stroke:#23211F;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.h{fill:none;stroke:#23211F;stroke-width:1.3;stroke-linecap:round}
+.r{fill:none;stroke:#23211F;stroke-width:1.2;stroke-linecap:round;opacity:.28}
+.k{fill:#23211F}.w{fill:#fff}.y{fill:#FFE14D}
+.yo{fill:#FFE14D;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.ds{fill:none;stroke:#23211F;stroke-width:1.8;stroke-linecap:round;stroke-dasharray:2 7}
+.jj path,.jj ellipse,.jj circle,.jj rect{vector-effect:non-scaling-stroke}
+</style>
+
+<!-- 뒤쪽 형광펜 해 -->
+<path class="y" d="M44 18C74 2 116 14 114 48C112 80 76 90 52 74C30 60 22 30 44 18Z"/>
+<!-- 구름 -->
+<path class="o" style="stroke-width:2" d="M16 66q-1-9 8-10q3-8 12-6q6-6 13 0q9-1 9 8q6 3 2 9H20q-6-1-4-1z"/>
+<path class="o" style="stroke-width:2" d="M160 148q-1-8 7-9q3-7 11-5q6-5 12 0q8 0 8 7q5 3 2 8h-37q-4 0-3-1z"/>
+
+<!-- 궤적 -->
+<path class="ds" d="M4 132C24 98 52 128 44 106C38 90 20 98 34 86C46 76 60 88 70 96"/>
+<path class="d" d="M60 88l-11 2M64 98l-13 1"/>
+
+<!-- 날개와 아랫날개 -->
+<path class="o" d="M206 60L68 96L118 108Z"/>
+<path class="o" d="M206 60L118 108L130 140Z"/>
+<path class="h" d="M174 82l-9 13M184 76l-10 15M162 90l-6 9M150 98l-4 6"/>
+
+<!-- 꾸러미 -->
+<path class="d" d="M129 139Q136 148 134 155"/>
+<g transform="rotate(6 138 166)">
+  <rect class="o" x="124" y="154" width="28" height="24" rx="6"/>
+  <path class="d" d="M124 164h28M138 154v24"/>
+  <path class="yo" style="stroke-width:1.6" d="M132.6 151.6q5.4-5 5.4 2.4q0-7.4 5.4-2.4q0 4-5.4 2.4q-5.4 1.6-5.4-2.4z"/>
+</g>
+
+<!-- 쪽지: 날개 위에 앉아 손 흔들기, 노란 목도리 휘날림 -->
+<g class="jj" transform="translate(94.25 28.3) scale(.95) rotate(-13.6 25 58)">
+  <!-- 목도리 꼬리(뒤로 휘날림) -->
+  <path class="yo" style="stroke-width:1.9" d="M4 40Q-10 36-22 42Q-14 46-24 52Q-10 52 4 46Z"/>
+  <!-- 다리: 앞으로 뻗어 앉음 -->
+  <path class="l" d="M15 57Q18 66 27 66"/><path class="l" d="M31 57Q34 65 42 65"/>
+  <ellipse class="o" cx="29.6" cy="66" rx="4.2" ry="2.6"/><ellipse class="o" cx="44.6" cy="65" rx="4.2" ry="2.6"/>
+  <!-- 팔: 한 손은 날개 잡고, 한 손은 흔들기 -->
+  <path class="l" d="M3.5 34Q-3 44 1 53"/>
+  <path class="l" d="M47.6 30Q57 22 60 12"/>
+  <path class="o" d="M3 4Q18 2.6 34 2.2L48.5 15.5Q48 37 47.4 57.6Q25 58.8 3.4 58.2Q2.2 31 3 4Z"/>
+  <path class="r" d="M9 51Q22 50.5 37 51"/>
+  <path class="yo" style="stroke-width:1.9" d="M34 2.4Q33.6 9.5 34.8 15.6Q41.5 15.9 48.3 15.4Z"/>
+  <!-- 목도리 감은 부분 -->
+  <path class="yo" style="stroke-width:1.9" d="M3.2 38Q25 41 47.6 37.6L47.5 44.6Q25 47.6 3.3 45Z"/>
+  <ellipse class="y" cx="11.6" cy="33" rx="3.6" ry="2.1"/><ellipse class="y" cx="37.4" cy="33" rx="3.6" ry="2.1"/>
+  <ellipse class="k" cx="18.4" cy="26.6" rx="2.5" ry="3.2"/><ellipse class="k" cx="32.2" cy="26.6" rx="2.5" ry="3.2"/>
+  <circle class="w" cx="19.3" cy="25.4" r="1"/><circle class="w" cx="33.1" cy="25.4" r="1"/>
+  <path class="d" d="M21.6 31.6Q25 35.4 28.4 31.6"/>
+  <circle class="o" cx="1.6" cy="54.4" r="3.2"/>
+  <circle class="o" cx="60.4" cy="10.4" r="3.2"/>
+</g>
+
+<!-- 반짝임 -->
+<path class="d" d="M186 22v12M180 28h12M181.8 23.8l8.4 8.4M190.2 23.8l-8.4 8.4"/>
+<path class="d" d="M208 104v8M204 108h8"/>
+<circle class="k" cx="96" cy="20" r="2"/><circle class="k" cx="12" cy="150" r="1.8"/>
+</svg>

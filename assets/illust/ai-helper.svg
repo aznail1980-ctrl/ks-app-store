@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="동그란 안경을 쓴 쪽지 캐릭터, AI 도우미">
+<!-- AI 도우미 얼굴: 안경 쓴 척척박사 쪽지 (작게 써도 읽히도록 안경을 크게) -->
+<style>
+.o{fill:#fff;stroke:#23211F;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+.l{fill:none;stroke:#23211F;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:none;stroke:#23211F;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.r{fill:none;stroke:#23211F;stroke-width:1.4;stroke-linecap:round;opacity:.28}
+.k{fill:#23211F}.w{fill:#fff}.y{fill:#FFE14D}
+.yo{fill:#FFE14D;stroke:#23211F;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<path class="y" d="M64 14C92 12 116 34 114 64C112 94 90 116 62 114C34 112 14 92 16 62C18 34 38 16 64 14Z"/>
+<path class="o" d="M24 24Q50 22 74 21.6L97 44Q97.4 80 97 120L23 120Q22 70 24 24Z"/>
+<path class="yo" d="M74 21.8Q73.6 33 74.8 44.2Q85.8 44.4 96.8 44Z"/>
+<path class="r" d="M32 100Q60 99 88 100M32 108Q56 107.4 80 108"/>
+<!-- 안경 -->
+<path class="d" d="M34.6 62L24.6 59.6M84.6 62L96.4 59.6"/>
+<circle class="o" cx="46" cy="64" r="11.6"/><circle class="o" cx="73.4" cy="64" r="11.6"/>
+<path class="d" d="M57.6 63Q59.7 60.4 61.8 63"/>
+<ellipse class="k" cx="46.6" cy="65" rx="3.2" ry="4"/><ellipse class="k" cx="74" cy="65" rx="3.2" ry="4"/>
+<circle class="w" cx="47.8" cy="63.4" r="1.2"/><circle class="w" cx="75.2" cy="63.4" r="1.2"/>
+<ellipse class="y" cx="36.4" cy="82.6" rx="5.6" ry="3.2"/><ellipse class="y" cx="83" cy="82.6" rx="5.6" ry="3.2"/>
+<path class="d" d="M53.6 82Q59.7 88.4 65.8 82"/>
+<!-- 반짝 아이디어 -->
+<path class="yo" style="stroke-width:2.2" d="M104 4Q105.6 13.6 114 15.4Q105.6 17.2 104 26.8Q102.4 17.2 94 15.4Q102.4 13.6 104 4Z"/>
+</svg>

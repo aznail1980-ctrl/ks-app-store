@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 190" role="img" aria-label="안드로이드 크롬 오른쪽 위 점 세 개 메뉴를 누르고 홈 화면에 추가를 고르는 그림">
+<!-- 안내: 안드로이드 크롬 → ⋮ 메뉴 → 홈 화면에 추가 -->
+<style>
+.o{fill:#fff;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.l{fill:none;stroke:#23211F;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:none;stroke:#23211F;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.r{fill:none;stroke:#23211F;stroke-width:1.2;stroke-linecap:round;opacity:.3}
+.k{fill:#23211F}.y{fill:#FFE14D}
+.mk{fill:none;stroke:#FFE14D;stroke-width:9;stroke-linecap:round;stroke-linejoin:round}
+.tx{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",Roboto,sans-serif;font-size:13px;font-weight:600;fill:#23211F}
+</style>
+<!-- 휴대폰 -->
+<path class="o" d="M42 10Q84 8.6 124 10Q138 11 138.6 26L139 168Q138.4 184 124 184.4Q84 186 42 184.6Q28 184 27.6 168L27 26Q27.6 11 42 10Z"/>
+<path class="d" d="M42 22Q78 21 112 22Q116.6 22.2 116.6 27L116.6 31Q116.4 35.4 112 35.6L42 35.6Q37.4 35.4 37.4 31L37.4 27Q37.6 22.2 42 22Z"/>
+<!-- ⋮ 메뉴 강조 -->
+<path class="mk" d="M128.4 15.4C120.8 15.6 120.6 43.4 128.4 43.6C136.2 43.4 136 15.6 128.4 15.4"/>
+<circle class="k" cx="128.4" cy="23.6" r="1.9"/><circle class="k" cx="128.4" cy="29.4" r="1.9"/><circle class="k" cx="128.4" cy="35.2" r="1.9"/>
+<path class="r" d="M44 52h76M44 62h60M44 72h72M44 82h48"/>
+<path class="d" d="M44 96Q82 95 120 96L120.4 136Q82 137 44.4 136Z"/>
+<path class="r" d="M52 106h40M52 114h54M52 122h28"/>
+<path class="d" d="M70 172Q83 171 96 172"/>
+<!-- 화살표 -->
+<path class="l" d="M140 34C154 38 162 46 168 58"/>
+<path class="l" d="M168 58l-7.6-4.4M168 58l1.8-8.6"/>
+<!-- 메뉴 -->
+<path class="o" d="M176 44Q232 42.6 286 44Q292 44.4 292.4 50L292.8 172Q292.4 178 286 178.4Q232 179.6 176.4 178.2Q170.4 177.8 170.2 172L170 50Q170.4 44.4 176 44Z"/>
+<path class="y" d="M176 114Q230 112.6 287 114L287.6 146Q230 147.4 176.4 146Z"/>
+<text class="tx" x="184" y="68">새 탭</text>
+<text class="tx" x="184" y="99">방문 기록</text>
+<text class="tx" x="184" y="135" style="font-weight:700">홈 화면에 추가</text>
+<text class="tx" x="184" y="168">설정</text>
+<path class="l" d="M268 124h12q2 0 2 2v12q0 2-2 2h-12q-2 0-2-2v-12q0-2 2-2zM274 128v8M270 132h8"/>
+</svg>

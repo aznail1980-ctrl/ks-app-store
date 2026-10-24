@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 200" role="img" aria-label="쪽지 캐릭터가 종이컵 전화기를 귀에 대고 있지만 실이 끊어져 갸웃하는 그림">
+<!-- 빈 화면(인터넷 끊김): 종이컵 전화기의 실이 툭 끊어짐 -->
+<style>
+.o{fill:#fff;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.l{fill:none;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:none;stroke:#23211F;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.h{fill:none;stroke:#23211F;stroke-width:1.3;stroke-linecap:round}
+.r{fill:none;stroke:#23211F;stroke-width:1.2;stroke-linecap:round;opacity:.28}
+.k{fill:#23211F}.w{fill:#fff}.y{fill:#FFE14D}
+.yo{fill:#FFE14D;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.jj path,.jj ellipse,.jj circle,.jj rect{vector-effect:non-scaling-stroke}
+</style>
+
+<!-- 형광펜 면 -->
+<path class="y" d="M30 70C52 50 92 56 100 84C108 112 92 150 62 152C32 154 14 128 16 104C18 88 20 78 30 70Z"/>
+<!-- 바닥 -->
+<path class="l" d="M10 183Q130 187 250 182"/>
+<path class="h" d="M196 189l-4 6M206 189l-4 6M216 189l-4 6M226 189l-4 6"/>
+
+<!-- 쪽지: 컵 전화기를 귀에 -->
+<g class="jj" transform="translate(28 108) scale(1.05)">
+  <path class="l" d="M17 57.5L16.2 66"/><path class="l" d="M33 57.5L33.8 66"/>
+  <ellipse class="o" cx="14.6" cy="67.4" rx="4.8" ry="2.7"/><ellipse class="o" cx="35.4" cy="67.4" rx="4.8" ry="2.7"/>
+  <path class="l" d="M3.6 34Q-3 42-2 50"/>
+  <path class="l" d="M47.6 31Q55 24 56 16"/>
+  <path class="o" d="M3 4Q18 2.6 34 2.2L48.5 15.5Q48 37 47.4 57.6Q25 58.8 3.4 58.2Q2.2 31 3 4Z"/>
+  <path class="r" d="M9 46.5Q24 45.7 41 46.3M9 52Q22 51.5 37 51.9"/>
+  <path class="yo" style="stroke-width:1.9" d="M34 2.4Q33.6 9.5 34.8 15.6Q41.5 15.9 48.3 15.4Z"/>
+  <ellipse class="y" cx="11.6" cy="34.6" rx="3.9" ry="2.3"/><ellipse class="y" cx="37.4" cy="34.6" rx="3.9" ry="2.3"/>
+  <path class="d" d="M13.8 21Q17.4 18.4 20.8 20.4M28.4 20.4Q31.8 18.4 35.4 21"/>
+  <ellipse class="k" cx="17.6" cy="28" rx="2.6" ry="3.3"/><ellipse class="k" cx="31.4" cy="28" rx="2.6" ry="3.3"/>
+  <circle class="w" cx="18.5" cy="26.8" r="1"/><circle class="w" cx="32.3" cy="26.8" r="1"/>
+  <path class="d" d="M21.4 34.6h6.4"/>
+  <circle class="o" cx="-1.6" cy="51.4" r="3.2"/>
+</g>
+<!-- 귀에 댄 종이컵 -->
+<path class="o" d="M79 113L98 117L98 127L79 131Z"/>
+<ellipse class="o" cx="79" cy="122" rx="3.2" ry="9"/>
+<path class="h" d="M86 115v13.6M92 116.2v11.6"/>
+<circle class="o" cx="87.4" cy="124.6" r="3.2"/>
+
+<!-- 끊어진 실 -->
+<path class="d" d="M98 122Q122 124 146 141"/>
+<path class="d" d="M146 141l5 1.2M146 141l4.6 3.6M146 141l3.2 5"/>
+<path class="d" d="M155 128l3 5M163 129l-1.6 5.6M150 134l-3.6 1"/>
+<path class="d" d="M168 146l-5-.6M168 146l-4.4-2.8M168 146l-3.2-4.4"/>
+<path class="d" d="M168 146Q186 152 202 168"/>
+<!-- 바닥에 떨어진 컵 -->
+<path class="o" d="M202 166L222 160L222 182L202 176Z"/>
+<ellipse class="o" cx="222" cy="171" rx="3.4" ry="11"/>
+<path class="h" d="M208 165v10.6M214 163.4v14"/>
+
+<!-- 생각 풍선 + 물음표 -->
+<circle class="o" style="stroke-width:2" cx="90" cy="96" r="2.4"/>
+<circle class="o" style="stroke-width:2" cx="96" cy="86" r="3.6"/>
+<path class="o" d="M100 58q2-10 12-9q8-6 15 1q10 0 9 10q4 8-4 12q-3 8-13 6q-8 5-14-1q-9-1-8-9q-6-6 3-10z"/>
+<path class="d" d="M111 63q1-6.4 7.4-5.4q5.4 1.4 2.8 6.6q-3 2.4-3 5.6"/>
+<circle class="k" cx="118.2" cy="74.4" r="1.7"/>
+
+<path class="d" d="M232 40v12M226 46h12"/>
+<circle class="k" cx="186" cy="60" r="1.8"/>
+</svg>

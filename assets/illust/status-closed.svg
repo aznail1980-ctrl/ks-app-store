@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 240" role="img" aria-label="달 모양 팻말이 걸린 닫힌 문 앞 계단에 쪽지 캐릭터가 따뜻한 차를 들고 편하게 앉아 있는 그림">
+<!-- 입장 불가: 문은 닫혔지만 다그치지 않는 분위기. 달 팻말 + 차 한 잔 -->
+<style>
+.o{fill:#fff;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.l{fill:none;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:none;stroke:#23211F;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.h{fill:none;stroke:#23211F;stroke-width:1.3;stroke-linecap:round}
+.r{fill:none;stroke:#23211F;stroke-width:1.2;stroke-linecap:round;opacity:.28}
+.k{fill:#23211F}.w{fill:#fff}.y{fill:#FFE14D}.t{fill:#EDEBE6}
+.yo{fill:#FFE14D;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.jj path,.jj ellipse,.jj circle,.jj rect{vector-effect:non-scaling-stroke}
+</style>
+
+<!-- 바닥 -->
+<path class="l" d="M20 213Q150 217 284 211"/>
+
+<!-- 문틀과 문 -->
+<path class="o" d="M122 34L214 32L216 198L120 199Z"/>
+<path class="o" d="M130 42L206 40.6L207.6 197L128.6 198Z"/>
+<path class="d" d="M140 54L196 53L196.6 112L140.4 113Z"/>
+<path class="d" d="M140.4 124L196.6 123.4L197 184L140.8 185Z"/>
+<path class="h" d="M146 60v46M152 59.6v47"/>
+<circle class="o" style="stroke-width:2.2" cx="201.4" cy="152" r="3.6"/>
+
+<!-- 달 팻말 -->
+<circle class="k" cx="168" cy="60" r="2.2"/>
+<path class="d" d="M168 60L150 80M168 60L186 80"/>
+<path class="yo" d="M144 80Q168 78.6 192 80L192.6 110Q168 111.4 143.6 110Z"/>
+<path class="k" d="M171 85.6c-5.6 1.4-8.8 6.8-7.4 12.2c1.4 5.2 6.8 8.4 12 7c2.6-.6 4.6-2.2 5.8-4.4c-5.6 1.4-11-1.8-12.2-7.4c-.6-2.8-.2-5.4 1.8-7.4z"/>
+<path class="d" d="M183 88v5M180.5 90.5h5M155 98v4M153 100h4"/>
+
+<!-- 계단 -->
+<path class="o" d="M106 198L230 196.6L232 212L104 213Z"/>
+<path class="h" d="M112 202l-3 8M124 202l-3 8M136 202l-3 8M148 202l-3 8M160 202l-3 8M172 202l-3 8M184 202l-3 8M196 202l-3 8M208 202l-3 8M220 202l-3 8"/>
+
+<!-- 화분 -->
+<path class="o" d="M245 172Q236 158 240 146Q250 156 245 172Z"/>
+<path class="yo" d="M246 172Q252 154 264 150Q262 166 246 172Z"/>
+<path class="o" d="M244 172Q232 166 226 154Q240 154 244 172Z"/>
+<path class="d" style="stroke-width:1.3" d="M243.6 168Q241 158 241.6 150M248 168Q254 160 260 154M242 168Q236 162 231 157"/>
+<path class="o" d="M232 172h26v5.4h-26z"/>
+<path class="o" d="M234.4 177.4L255.6 177.4L253 198L237 198Z"/>
+
+<!-- 쪽지: 계단에 앉아 차 한 잔 -->
+<g class="jj" transform="translate(108.25 142.9) scale(.95)">
+  <path class="l" d="M17 57Q16 65 14 71"/><path class="l" d="M32 57Q32 65 31 71"/>
+  <ellipse class="o" cx="12.6" cy="72.2" rx="4.6" ry="2.6"/><ellipse class="o" cx="30.4" cy="72.2" rx="4.6" ry="2.6"/>
+  <path class="l" d="M47.6 38Q52 42 50 46"/>
+  <path class="o" d="M3 4Q18 2.6 34 2.2L48.5 15.5Q48 37 47.4 57.6Q25 58.8 3.4 58.2Q2.2 31 3 4Z"/>
+  <path class="r" d="M9 52Q22 51.5 37 51.9"/>
+  <path class="yo" style="stroke-width:1.9" d="M34 2.4Q33.6 9.5 34.8 15.6Q41.5 15.9 48.3 15.4Z"/>
+  <ellipse class="y" cx="11.6" cy="34.6" rx="3.9" ry="2.3"/><ellipse class="y" cx="37.4" cy="34.6" rx="3.9" ry="2.3"/>
+  <path class="d" d="M14.8 28.6Q17.6 25.6 20.4 28.6M28.6 28.6Q31.4 25.6 34.2 28.6"/>
+  <path class="d" d="M21.6 33.4Q24.5 36.6 27.4 33.4"/>
+  <!-- 머그컵과 김 -->
+  <path class="d" d="M52 30q-3-5 0-9t0-9M58.4 30q3-5 0-9t0-9"/>
+  <path class="o" d="M48 36L62 36L61 52Q55 54 49 52Z"/>
+  <path class="d" d="M62 40q5.4 1 4.8 5.6q-.6 3.6-5 3.4"/>
+  <ellipse class="k" cx="55" cy="36.6" rx="6.4" ry="1.4"/>
+  <path class="l" d="M3.6 40Q22 50 46 48"/>
+  <circle class="o" cx="46.6" cy="48" r="3.2"/><circle class="o" cx="50" cy="46.5" r="3.2"/>
+</g>
+
+<path class="d" d="M58 52v12M52 58h12M53.8 53.8l8.4 8.4M62.2 53.8l-8.4 8.4"/>
+<path class="d" d="M262 64v8M258 68h8"/>
+<circle class="k" cx="84" cy="120" r="1.8"/><circle class="k" cx="250" cy="110" r="1.8"/>
+</svg>

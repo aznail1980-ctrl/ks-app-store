@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 240" role="img" aria-label="깃발을 올린 우체통 안에서 쪽지 캐릭터가 빼꼼 내다보며 차례를 기다리는 그림">
+<!-- 승인 대기: 가입 신청(쪽지)이 우체통에 들어가 관리자가 꺼내 주기를 기다리는 중 -->
+<style>
+.o{fill:#fff;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.l{fill:none;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:none;stroke:#23211F;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.h{fill:none;stroke:#23211F;stroke-width:1.3;stroke-linecap:round}
+.r{fill:none;stroke:#23211F;stroke-width:1.2;stroke-linecap:round;opacity:.28}
+.k{fill:#23211F}.w{fill:#fff}.y{fill:#FFE14D}.t{fill:#EDEBE6}
+.yo{fill:#FFE14D;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.jj path,.jj ellipse,.jj circle,.jj rect{vector-effect:non-scaling-stroke}
+</style>
+<defs><clipPath id="arch"><path d="M92 150L92 118Q92 92 118 92Q144 92 144 118L144 150Z"/></clipPath></defs>
+
+<!-- 형광펜 면 -->
+<path class="y" d="M104 62C144 40 218 46 236 84C254 122 232 164 190 170C148 176 102 158 92 122C84 94 86 74 104 62Z"/>
+
+<!-- 바닥과 풀 -->
+<path class="l" d="M20 224Q150 229 284 223"/>
+<path class="d" d="M134 224l-3-8M138 224l1-9M142 224l4-7M170 224l-3-8M174 224l2-9M178 223l5-6M46 224l-2-6M50 224l2-7"/>
+<path class="h" d="M146 230l-4 6M156 230l-4 6M166 230l-4 6"/>
+
+<!-- 기둥 -->
+<path class="o" d="M150 148Q158 147.6 166 148L167 224Q158 224.4 149 224Z"/>
+<path class="d" style="stroke-width:1.3" d="M155 162q2 10 0 20t1 20M161 172q-1 12 1 24"/>
+
+<!-- 우체통 몸통 -->
+<path class="o" d="M118 92L188 86Q214 86 214 112L214 144L144 150L144 118Q144 92 118 92Z"/>
+<path class="d" style="stroke-width:1.4" d="M162 90Q168 116 164 148M184 88Q192 114 188 146"/>
+<!-- 열린 입구 안쪽 (어둡게) -->
+<path class="t" d="M92 150L92 118Q92 92 118 92Q144 92 144 118L144 150Z"/>
+<g clip-path="url(#arch)">
+  <path class="h" d="M84 112l26-26M84 124l38-38M84 136l50-50M84 148l62-62M92 152l58-58M104 152l46-46M116 152l34-34"/>
+  <!-- 안에서 내다보는 쪽지 -->
+  <g class="jj" transform="translate(98 95.6) scale(.8)">
+    <path class="o" d="M3 4Q18 2.6 34 2.2L48.5 15.5Q48 37 47.4 57.6Q25 58.8 3.4 58.2Q2.2 31 3 4Z"/>
+    <path class="yo" style="stroke-width:1.9" d="M34 2.4Q33.6 9.5 34.8 15.6Q41.5 15.9 48.3 15.4Z"/>
+    <ellipse class="y" cx="11.6" cy="34.6" rx="3.9" ry="2.3"/><ellipse class="y" cx="37.4" cy="34.6" rx="3.9" ry="2.3"/>
+    <ellipse class="k" cx="16.4" cy="28.6" rx="2.6" ry="3.3"/><ellipse class="k" cx="30.2" cy="28.6" rx="2.6" ry="3.3"/>
+    <circle class="w" cx="17.3" cy="27.4" r="1"/><circle class="w" cx="31.1" cy="27.4" r="1"/>
+    <path class="d" d="M21.6 34Q24.5 36.4 27.4 34"/>
+  </g>
+</g>
+<path class="l" d="M92 150L92 118Q92 92 118 92Q144 92 144 118L144 150"/>
+<!-- 아래로 열린 문 -->
+<path class="o" d="M92 150L144 150L140 178L88 178Z"/>
+<path class="l" d="M108 166h16"/>
+<!-- 입구를 잡은 손 -->
+<circle class="o" cx="106" cy="150" r="3.4"/><circle class="o" cx="130" cy="150" r="3.4"/>
+
+<!-- 올라간 깃발 -->
+<path class="l" d="M200 128L202 72"/>
+<path class="yo" d="M202 72L230 74L228 92L201 90Z"/>
+<circle class="o" cx="200" cy="128" r="3.2"/>
+
+<!-- 시계 낙서 -->
+<circle class="o" cx="56" cy="64" r="18"/>
+<path class="l" d="M56 64V53M56 64l7.6 4.6"/>
+<circle class="k" cx="56" cy="64" r="2"/>
+<path class="d" d="M30 50q-6 14 0 28M82 50q6 14 0 28"/>
+
+<!-- "…" 말풍선 -->
+<path class="o" d="M44 104Q60 102.6 76 104Q80 104.4 80 108L80 118Q79.6 122 76 122.4L70 122.6L82 130L64 122.8L44 122.6Q40 122 40 118L40 108Q40.4 104.4 44 104Z"/>
+<circle class="k" cx="52" cy="113.4" r="2"/><circle class="k" cx="60" cy="113.4" r="2"/><circle class="k" cx="68" cy="113.4" r="2"/>
+
+<path class="d" d="M262 40v12M256 46h12M257.8 41.8l8.4 8.4M266.2 41.8l-8.4 8.4"/>
+<circle class="k" cx="248" cy="182" r="1.8"/><circle class="k" cx="110" cy="40" r="1.8"/>
+</svg>

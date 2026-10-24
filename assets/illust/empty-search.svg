@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 200" role="img" aria-label="쪽지 캐릭터가 도서관 목록함 서랍을 열고 돋보기로 들여다보지만 비어 있는 그림">
+<!-- 빈 화면(검색 결과 없음): 도서관 목록함 서랍을 열어봤는데 텅 -->
+<style>
+.o{fill:#fff;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.l{fill:none;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.d{fill:none;stroke:#23211F;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.h{fill:none;stroke:#23211F;stroke-width:1.3;stroke-linecap:round}
+.r{fill:none;stroke:#23211F;stroke-width:1.2;stroke-linecap:round;opacity:.28}
+.k{fill:#23211F}.w{fill:#fff}.y{fill:#FFE14D}.t{fill:#EDEBE6}
+.yo{fill:#FFE14D;stroke:#23211F;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.jj path,.jj ellipse,.jj circle,.jj rect{vector-effect:non-scaling-stroke}
+</style>
+<defs><clipPath id="drawer-in"><path d="M100 114L190 112.5L210 98.5L120 100Z"/></clipPath></defs>
+
+<!-- 바닥 -->
+<path class="l" d="M10 182Q130 186 250 181"/>
+<path class="h" d="M126 188l-5 7M138 188l-5 7M150 188l-5 7M162 188l-5 7M174 188l-5 7M186 188l-5 7M198 188l-5 7M210 188l-5 7M222 187l-5 7M234 187l-5 7"/>
+
+<!-- 연필꽂이 -->
+<path class="yo" style="stroke-width:1.8" d="M187 25.6L185 11L189 10.4L191 25.2Z"/>
+<path class="k" d="M185 11L186.4 6.2L189 10.4Z"/>
+<path class="l" style="stroke-width:2.2" d="M195.4 25V8"/>
+<path class="k" d="M193.6 8.4L195.4 3.6L197.2 8.4Z"/>
+<path class="l" style="stroke-width:2.2" d="M199 25.4L204 12"/>
+<path class="o" style="stroke-width:2.2" d="M182 47L184 25.6L201.6 25L203 46.4Z"/>
+<path class="h" d="M185 32h16M184.6 38h17"/>
+
+<!-- 목록함 윗면·앞면·옆면 -->
+<path class="o" d="M112 52L218 50L236 40L130 42Z"/>
+<path class="o" d="M112 52L218 50L216 178L114 180Z"/>
+<path class="o" d="M218 50L236 40L234 168L216 178Z"/>
+<path class="h" d="M223 56v112M228.6 52v112"/>
+<!-- 위·아래 서랍 -->
+<path class="d" d="M120 60L210 58.5L209.6 92L120.4 93Z"/>
+<rect class="d" x="153" y="64" width="24" height="9" rx="1.5"/>
+<circle class="o" style="stroke-width:2.2" cx="165" cy="81" r="3.6"/>
+<path class="d" d="M120.4 142L209.6 140.6L209.4 172L120.6 173Z"/>
+<rect class="d" x="153" y="146" width="24" height="9" rx="1.5"/>
+<circle class="o" style="stroke-width:2.2" cx="165" cy="162" r="3.6"/>
+<!-- 가운데 서랍이 빠진 자리 -->
+<path class="k" d="M120 100L210 98.5L209.6 134L120.4 135Z" opacity=".85"/>
+
+<!-- 앞으로 당겨 나온 서랍: 안이 비어 있음 -->
+<path class="t" d="M100 114L190 112.5L210 98.5L120 100Z"/>
+<g clip-path="url(#drawer-in)"><path class="h" d="M92 104l14 12M102 102l14 12M112 100l14 12M122 98l14 12M132 98l14 12M142 98l14 12M152 98l14 12M162 98l14 12M172 98l14 12M182 98l14 12M192 98l14 12M202 96l14 12"/></g>
+<path class="o" d="M190 112.5L210 98.5L209.6 134L189.6 148Z"/>
+<path class="h" d="M196 112v32M202 108v32"/>
+<path class="o" d="M100 114L190 112.5L189.6 148L100.4 149Z"/>
+<path class="l" d="M100 114L120 100"/>
+<rect class="d" x="133" y="118" width="24" height="9" rx="1.5"/>
+<path class="h" d="M137 122.5h16"/>
+<circle class="o" style="stroke-width:2.2" cx="145" cy="135" r="3.6"/>
+
+<!-- 쪽지: 머리를 긁적이며 돋보기로 확인 -->
+<g class="jj" transform="translate(18.75 93.75) scale(1.25)">
+  <path class="l" d="M17 57.5L16.2 66"/><path class="l" d="M33 57.5L33.8 66"/>
+  <ellipse class="o" cx="14.6" cy="67.4" rx="4.8" ry="2.7"/><ellipse class="o" cx="35.4" cy="67.4" rx="4.8" ry="2.7"/>
+  <path class="l" d="M3.6 30Q-6 20 2 8"/>
+  <path class="l" d="M47.6 30Q54 22 58.6 15.6"/>
+  <path class="o" d="M3 4Q18 2.6 34 2.2L48.5 15.5Q48 37 47.4 57.6Q25 58.8 3.4 58.2Q2.2 31 3 4Z"/>
+  <path class="r" d="M9 46.5Q24 45.7 41 46.3M9 52Q22 51.5 37 51.9"/>
+  <path class="yo" style="stroke-width:1.9" d="M34 2.4Q33.6 9.5 34.8 15.6Q41.5 15.9 48.3 15.4Z"/>
+  <ellipse class="y" cx="11.6" cy="34.6" rx="3.9" ry="2.3"/><ellipse class="y" cx="37.4" cy="34.6" rx="3.9" ry="2.3"/>
+  <path class="d" d="M14.6 21.4Q17.8 19.2 21 20.8M28.4 22.2Q31.4 21.6 34.4 22.4"/>
+  <ellipse class="k" cx="18.6" cy="28" rx="2.6" ry="3.3"/><ellipse class="k" cx="32.4" cy="28" rx="2.6" ry="3.3"/>
+  <circle class="w" cx="19.5" cy="26.8" r="1"/><circle class="w" cx="33.3" cy="26.8" r="1"/>
+  <path class="d" d="M21.4 34.6q1.6-1.8 3.2-.2t3.2 0"/>
+  <circle class="o" cx="2.6" cy="7" r="3.2"/>
+</g>
+<!-- 돋보기 (유리는 형광펜) -->
+<path class="l" style="stroke-width:4.4" d="M90 114L102.6 104"/>
+<circle class="y" cx="112" cy="97.4" r="12" style="mix-blend-mode:multiply"/>
+<circle class="l" cx="112" cy="97.4" r="12"/>
+<path class="d" d="M105 92.6q2.6-3.4 6.6-3.6"/>
+<circle class="o" cx="92" cy="112.4" r="3.2"/>
+
+<!-- 물음표 낙서 -->
+<path class="d" d="M66 70q1-8 9-7q7 2 3 9q-4 3-4 7"/>
+<circle class="k" cx="74.2" cy="84" r="1.8"/>
+<path class="d" d="M236 18v10M231 23h10"/>
+</svg>
