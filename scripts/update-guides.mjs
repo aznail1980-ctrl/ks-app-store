@@ -14,6 +14,7 @@
 //     앱 이름·주소는 로그에 찍지 않고, 앱 ID 앞 4글자만 찍습니다.
 // ════════════════════════════════════════════════════════════
 import { createHash } from "node:crypto";
+import { gunzipSync } from "node:zlib";
 import admin from "firebase-admin";
 import { chromium, devices } from "playwright";
 import sharp from "sharp";
@@ -59,11 +60,27 @@ for (const ap of apps) {
 console.log(`앱 ${apps.length}개${FORCE ? " · 전부 새로 만들기" : ""}${ONLY ? " · 한 앱만" : ""}${KEY ? "" : " · AI 키 없음(사진만 찍음)"}`);
 
 const browser = await chromium.launch();
-const ctx = await browser.newContext({ ...devices["Pixel 7"], locale: "ko-KR", timezoneId: "Asia/Seoul" });
+const DEVICE = { ...devices["Pixel 7"], locale: "ko-KR", timezoneId: "Asia/Seoul" };
+const ctx = await browser.newContext(DEVICE);
+
+// 로그인 앱의 '한 번 로그인' 기록 (내 맥에서 record-logins.mjs 로 만든 GitHub 비밀값 APP_SESSIONS)
+// 이 열쇠로 앱을 열면 로그인된 화면이 보여서 실제 화면을 찍을 수 있음. 내용은 절대 로그에 찍지 않음.
+let SESSIONS = { cookies: [], origins: [] };
+if (process.env.APP_SESSIONS) {
+  try { SESSIONS = JSON.parse(gunzipSync(Buffer.from(process.env.APP_SESSIONS, "base64")).toString("utf8")); }
+  catch { console.log("::warning::로그인 기록을 읽지 못했어요. 내 맥에서 record-logins.mjs 를 다시 실행해 주세요."); }
+}
+function sessionFor(url) {
+  let u; try { u = new URL(url); } catch { return null; }
+  const origin = SESSIONS.origins.find(o => o.origin === u.origin);
+  const cookies = SESSIONS.cookies.filter(c => { const d = c.domain.replace(/^\./, ""); return u.hostname === d || u.hostname.endsWith("." + d); });
+  return origin || cookies.length ? { cookies, origins: origin ? [origin] : [] } : null;
+}
+console.log(`로그인 기록 ${SESSIONS.origins.length}개`);
 
 // ── 1. 화면 찍기 ─────────────────────────────────────────
-async function capture(url) {
-  const page = await ctx.newPage();
+async function capture(url, context = ctx) {
+  const page = await context.newPage();
   page.on("dialog", d => d.dismiss().catch(() => {}));   // '정말 ~할까요?' 같은 창이 뜨면 항상 '취소'
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 45_000 });
@@ -234,10 +251,14 @@ for (const ap of apps) {
   try {
     const g = (await gRef.get()).data() || {};
     const manual = (g.manualShots || []).filter(s => s?.src);
-    let cap = null;
+    let cap = null, usedSession = false;
     if (ap.url && !ap.apkUrl) {
-      try { cap = await capture(ap.url); }
+      const sess = sessionFor(ap.url);
+      usedSession = !!sess;
+      const sctx = sess ? await browser.newContext({ ...DEVICE, storageState: sess }) : ctx;   // 로그인 기록이 있으면 로그인된 상태로 열기
+      try { cap = await capture(ap.url, sctx); }
       catch (e) { console.log(`${tag(ap.id)} 화면을 못 찍었어요: ${clean(e)}`); }
+      finally { if (sctx !== ctx) await sctx.close().catch(() => {}); }
     }
     // 지문: 앱 정보 + 화면 지문 + 직접 올린 사진
     const fp = sha(JSON.stringify([
@@ -266,6 +287,7 @@ for (const ap of apps) {
     }
     // 앱 문서: 가이드 날짜 + (자동 소개를 켠 앱이면) 소개 바꾸기
     const upd = { guideStatus: off ? "off" : loginOnly ? "login" : hasGuide ? "ok" : "none" };
+    if (loginOnly || usedSession) upd.needsLogin = true;      // 로그인이 필요한 앱이라고 기억 (로그인 기록 만들 때 목록에 나옴)
     if (hasGuide) upd.guideAt = now;
     if (ai) {
       upd.autoFp = fp;                                          // AI까지 성공했을 때만 '처리함'으로 기록 → 실패하면 내일 다시
@@ -276,7 +298,7 @@ for (const ap of apps) {
     }
     await db.doc(`apps/${ap.id}`).update(upd);
     stat.updated++;
-    console.log(`${tag(ap.id)} ${off ? "가이드 제외 · " : ""}${manual.length ? `직접 올린 사진 ${manual.length}장` : loginOnly ? "로그인 화면뿐(사진 빼고 직접 올리기 필요)" : hasGuide ? `사진 ${kept.length}장${kept.length < images.length ? ` (로그인 화면 ${images.length - kept.length}장 뺌)` : ""}` : "사진 없음"}${ai ? " · AI 글 완료" : KEY ? " · AI 실패(내일 다시)" : ""}`);
+    console.log(`${tag(ap.id)} ${off ? "가이드 제외 · " : ""}${manual.length ? `직접 올린 사진 ${manual.length}장` : loginOnly ? (usedSession ? "로그인 기록이 만료된 듯(다시 기록 필요)" : "로그인 필요(로그인 기록을 만들면 자동 촬영)") : hasGuide ? `${usedSession ? "로그인해서 " : ""}사진 ${kept.length}장${kept.length < images.length ? ` (로그인 화면 ${images.length - kept.length}장 뺌)` : ""}` : "사진 없음"}${ai ? " · AI 글 완료" : KEY ? " · AI 실패(내일 다시)" : ""}`);
     await sleep(1500);                                          // 무료 사용량 한도를 넘지 않게 천천히
   } catch (e) {
     stat.failed++;
