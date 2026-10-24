@@ -15,7 +15,9 @@ service cloud.firestore {
     function isAdminEmail() {
       return request.auth.token.email == 'aznail1980@gmail.com';
     }
-    function signedIn() { return request.auth != null; }
+    // 예전 마스터 계정은 비밀번호가 노출된 적이 있어 완전히 차단 (계정을 지운 뒤에도 그대로 둬도 됨)
+    function blocked()  { return request.auth != null && request.auth.token.email == 'aznail@appstore.master'; }
+    function signedIn() { return request.auth != null && !blocked(); }
     function hasMyDoc() { return exists(/databases/$(database)/documents/users/$(request.auth.uid)); }
     function myDoc()    { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
     function isAdmin()    { return signedIn() && hasMyDoc() && myDoc().role == 'admin'; }
@@ -35,7 +37,7 @@ service cloud.firestore {
       );
       // 관리자는 승인·거절 등 전부, 본인은 이름만
       allow update: if isAdmin() || (
-        request.auth.uid == uid
+        signedIn() && request.auth.uid == uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName'])
       );
       allow delete: if isAdmin();
