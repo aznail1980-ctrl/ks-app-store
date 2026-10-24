@@ -780,7 +780,7 @@ const ADMIN_EMAILS = ["aznail@hanmail.net"];
 // AI(Gemini) 키는 코드에 넣지 않습니다. 관리 → 설정에서 입력하면 Firestore(config/ai)에 저장됩니다.
 const AI_MODELS = ["gemini-flash-latest", "gemini-2.5-flash"]; // 앞 모델이 없어지면 다음 모델로
 const ASSET_V   = "20261024";  // 일러스트 파일을 고치면 이 값을 바꿔 휴대폰 캐시를 새로 받게 합니다
-const APP_VERSION = "10.24-6"; // 내 정보 맨 아래에 보이는 버전. 고칠 때마다 올리면 새 화면이 떴는지 바로 알 수 있어요
+const APP_VERSION = "10.24-7"; // 내 정보 맨 아래에 보이는 버전. 고칠 때마다 올리면 새 화면이 떴는지 바로 알 수 있어요
 const NEW_DAYS  = 14;          // 며칠 안에 등록한 앱에 '새로 옴' 표시
 const CATS      = ["업무", "소통", "분석", "관리", "기타"];
 const CAT_ICON  = { "업무":"c-work", "소통":"c-talk", "분석":"c-chart", "관리":"c-manage", "기타":"c-etc" };
@@ -1187,6 +1187,29 @@ async function aiDraft({ url, name, category, memo, apk }) {
         if (res.status === 404 || /not found|no longer|deprecated/i.test(data?.error?.message || "")) break;   // 다음 모델로
       } catch (e) { console.warn("AI 초안 실패", e); }
     }
+  }
+  return null;
+}
+// 관리자가 직접 올린 가이드 사진에 AI가 바로 한 줄 설명을 붙임 (실패하면 새벽 자동 실행이 붙임)
+async function aiShotSteps(name, shots) {
+  const key = await loadAiKey(); if (!key || !shots.length) return null;
+  const parts = [{ text:
+    `작은 앱스토어 'KS 앱스토어'의 '초간단 가이드'를 써요. 첨부한 앱 '${name}'의 화면 사진 ${shots.length}장(순서대로)을 보고 JSON 하나로만 답하세요.\n` +
+    `- oneLine: 이 앱을 한 줄로, 30자 이내.\n` +
+    `- steps: 사진마다 하나씩 정확히 ${shots.length}개. 그 화면에서 무엇을 보고 무엇을 누르면 되는지 35자 이내의 쉬운 말. 사진에 안 보이는 건 쓰지 마세요.\n` +
+    `이모지와 마크다운은 쓰지 마세요. {"oneLine":"","steps":[]}` }];
+  for (const src of shots) { const m = String(src).match(/^data:(image\/[\w+.-]+);base64,(.+)$/); if (m) parts.push({ inline_data: { mime_type: m[1], data: m[2] } }); }
+  for (const model of AI_MODELS) {
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts }], generationConfig: { responseMimeType: "application/json" } })
+      });
+      const data = await res.json();
+      const j = parseJsonLoose(data?.candidates?.[0]?.content?.parts?.map(p => p.text || "").join(""));
+      if (Array.isArray(j?.steps) && j.steps.length) return { oneLine: cleanAi(j.oneLine || "").slice(0, 60), steps: shots.map((_, i) => cleanAi(String(j.steps[i] || "")).slice(0, 70)) };
+      if (res.status !== 404) return null;                       // 404면 다음 모델로
+    } catch (e) { console.warn("가이드 설명 실패", e); return null; }
   }
   return null;
 }
@@ -2412,11 +2435,24 @@ const App = {
         }
       }
       d.name = name || ap?.name || nameFromUrl(link);
+      // 직접 올린 가이드 사진: AI가 바로 화면마다 한 줄 설명을 붙임
+      let gd = null;
+      if (FORM_SHOTS_DIRTY) {
+        gd = { manualShots: FORM_SHOTS.map(src => ({ src })), manualAt: serverTimestamp() };
+        if (FORM_SHOTS.length) {
+          const label = btn.lastChild; const old = label.textContent; label.textContent = "AI가 사진 설명을 쓰는 중…";
+          try {
+            const st = await aiShotSteps(d.name, FORM_SHOTS);
+            if (st) Object.assign(gd, { steps: st.steps, loginOnly: false }, st.oneLine ? { oneLine: st.oneLine } : {});
+          } finally { if (label.isConnected) label.textContent = old; }
+          Object.assign(d, { guideStatus: "ok", guideAt: serverTimestamp() });
+        }
+      }
       try {
         let appId = id;
         if (id) await updateDoc(doc(db, "apps", id), d);
         else appId = (await addDoc(collection(db, "apps"), { ...d, rating: 0, reviewCount: 0, createdAt: serverTimestamp() })).id;
-        if (FORM_SHOTS_DIRTY) await setDoc(doc(db, "guides", appId), { manualShots: FORM_SHOTS.map(src => ({ src })), manualAt: serverTimestamp() }, { merge: true });
+        if (gd) await setDoc(doc(db, "guides", appId), gd, { merge: true });
         if (FORM_SHOTS_DIRTY || (ap && ap.noGuide !== d.noGuide)) delete GUIDE_CACHE[appId];
         if (d.featured) for (const a of S.apps.filter(a => a.featured && a.id !== appId)) await updateDoc(doc(db, "apps", a.id), { featured: false });
         toast(id ? "고친 내용을 저장했어요." : `‘${d.name}’을(를) 올렸어요.`);
