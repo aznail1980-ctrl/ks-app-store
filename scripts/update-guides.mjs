@@ -62,6 +62,7 @@ const ctx = await browser.newContext({ ...devices["Pixel 7"], locale: "ko-KR", t
 // ── 1. 화면 찍기 ─────────────────────────────────────────
 async function capture(url) {
   const page = await ctx.newPage();
+  page.on("dialog", d => d.dismiss().catch(() => {}));   // '정말 ~할까요?' 같은 창이 뜨면 항상 '취소'
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 45_000 });
     await page.waitForLoadState("networkidle", { timeout: 15_000 }).catch(() => {});
@@ -98,6 +99,42 @@ async function capture(url) {
       }
       const png = await page.screenshot({ type: "png" });
       if (!(await isDuplicate(png, raws))) raws.push(png);
+    }
+    // 앱처럼 생긴 화면은 스크롤이 없어서 한 장뿐 → 아래쪽 메뉴 탭(홈/기록/통계 같은)을 눌러 다른 화면도 찍음.
+    // 지우기·결제·로그아웃·보내기 같은 버튼, 다른 사이트로 가는 링크는 절대 누르지 않음.
+    if (raws.length < MAX_SHOTS) {
+      await page.evaluate(() => { const el = document.querySelector("[data-ks-scroll]") || document.scrollingElement; el.scrollTo(0, 0); });
+      const n = await page.evaluate(() => {
+        const vw = innerWidth, vh = innerHeight;
+        const bad = /삭제|지우|로그아웃|탈퇴|결제|구매|주문|송금|보내|전송|초기화|리셋|공유|신고|delete|remove|logout|log out|sign ?out|pay|buy|order|send|reset|share/i;
+        const inNav = el => el.closest('nav, footer, [role="tablist"], [role="navigation"], [class*="tab" i], [class*="nav" i]');
+        const seen = new Set(), picks = [];
+        for (const el of document.querySelectorAll('a, button, [role="tab"]')) {
+          const r = el.getBoundingClientRect();
+          const txt = (el.innerText || el.getAttribute("aria-label") || "").trim();
+          if (!r.width || !r.height || r.top < vh * 0.72 || r.bottom > vh + 2 || r.width > vw * 0.5) continue;   // 화면 아래쪽의 작은 버튼만
+          if (!inNav(el) || !txt || txt.length > 12 || bad.test(txt) || seen.has(txt)) continue;
+          if (el.matches('[aria-current="page"], [aria-selected="true"], [disabled]')) continue;                    // 지금 보고 있는 탭은 건너뜀
+          if (el.tagName === "A") {
+            const href = el.getAttribute("href") || "";
+            if (el.target === "_blank" || /^(mailto|tel|javascript):/i.test(href)) continue;
+            try { if (new URL(href, location.href).origin !== location.origin) continue; } catch { continue; }
+          }
+          seen.add(txt); picks.push(el);
+        }
+        picks.slice(0, 4).forEach((el, i) => el.setAttribute("data-ks-tap", String(i)));
+        return Math.min(picks.length, 4);
+      });
+      const home = new URL(page.url()).origin;
+      for (let i = 0; i < n && raws.length < MAX_SHOTS; i++) {
+        try {
+          await page.locator(`[data-ks-tap="${i}"]`).first().click({ timeout: 3000 });
+          await sleep(1500);
+          if (new URL(page.url()).origin !== home) break;                                 // 다른 사이트로 넘어가면 그만
+          const png = await page.screenshot({ type: "png" });
+          if (!(await isDuplicate(png, raws))) raws.push(png);
+        } catch {}
+      }
     }
     const shots = [];
     for (const png of raws) shots.push(await toWebp(png));
