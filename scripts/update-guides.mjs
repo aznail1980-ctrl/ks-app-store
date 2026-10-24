@@ -34,6 +34,8 @@ const tag = id => `[${String(id).slice(0, 4)}]`;
 // 오류 문구에 들어 있는 주소는 가림
 const clean = e => String(e?.message || e).split("\n")[0].replace(/https?:\/\/\S+/g, "[주소]").replace(/[\w-]+(\.[\w-]+)+\.(app|dev|com|net|io|kr)\b/g, "[주소]").slice(0, 160);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+// 관리자가 처음에 직접 쓴 소개 (AI가 덮어쓰면 descManual 에 보관) — AI가 예전에 쓴 글을 다시 근거로 쓰지 않음
+const origDesc = ap => ap.descManual || (ap.descBy !== "ai" ? ap.description : "") || "";
 
 // ── 0. 준비 ─────────────────────────────────────────────
 if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
@@ -180,10 +182,11 @@ async function writeWithAI(ap, images, pageText, { manual = false } = {}) {
          `  keep: ${manual ? "모두 true." : "로그인·회원가입·비밀번호 입력 화면, 빈 화면, 로딩 화면, 오류 화면이면 false. 앱의 실제 기능이 보이는 화면이면 true."}\n` +
          `  step: 그 화면에서 무엇을 보고 무엇을 누르면 되는지 35자 이내의 쉬운 말. 사진에 안 보이는 건 쓰지 마세요. keep이 false면 빈칸.\n`
        : `- shots: 빈 배열.\n`) +
+    `- 근거 규칙: 이 앱에 대해 확실한 건 [관리자가 쓴 원래 소개], [관리자 메모], 그리고 실제 앱 화면(로그인 화면 제외)뿐이에요. 앱 이름이나 주소만 보고 무슨 앱인지 짐작하지 마세요(예: 이름에 Rich가 있다고 돈·주식 앱이라고 쓰면 안 돼요). 근거가 부족하면 확실한 내용만 짧게 쓰세요. 로그인 화면 사진이나 로그인 화면 글자는 앱 내용의 근거가 아니에요.\n` +
     `이모지와 마크다운은 쓰지 마세요.\n` +
     `{"description":"","features":[],"oneLine":"","shots":[{"keep":true,"step":""}]}\n\n` +
     `[앱 이름] ${ap.name || ""}\n[카테고리] ${ap.category || "기타"}\n[종류] ${ap.apkUrl ? "안드로이드 앱(APK)" : "웹앱"}\n` +
-    `[관리자 메모] ${ap.aiMemo || "(없음)"}\n[지금 소개] ${ap.description || "(없음)"}\n[화면 글자 일부] ${pageText || "(없음)"}`;
+    `[관리자 메모] ${ap.aiMemo || "(없음)"}\n[관리자가 쓴 원래 소개] ${origDesc(ap) || "(없음)"}\n[화면 글자 일부] ${pageText || "(없음)"}`;
   const parts = [{ text: prompt }];
   for (const src of images) {
     const m = String(src).match(/^data:(image\/[\w+.-]+);base64,(.+)$/);
