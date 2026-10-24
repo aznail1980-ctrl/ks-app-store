@@ -475,10 +475,11 @@ body.no-tab .toasts{bottom:calc(var(--safe-b) + 16px)}
 /* 초간단 가이드 (상세 화면) */
 .gd{position:relative;margin-top:var(--s7);padding:var(--s5) var(--s4) var(--s4);border:2px solid var(--ink);border-radius:var(--r)}
 .gd-one{font-weight:700;font-size:17px;letter-spacing:-0.02em}
-.gd-strip{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(128px,1fr);gap:var(--s3);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:var(--s4) calc(-1 * var(--s4)) 0;padding:0 var(--s4) var(--s1);counter-reset:gd}
-.gd-strip::-webkit-scrollbar{display:none}
-.gd-item{scroll-snap-align:start;display:grid;gap:var(--s2);align-content:start;counter-increment:gd}
-.gd-shot{display:block;width:100%;aspect-ratio:9/16;border:1.5px solid var(--ink);border-radius:14px;overflow:hidden;background:var(--paper-2);padding:0}
+/* 휴대폰: 한 줄에 2장(사진 윗부분 3:4로), 넓은 화면: 한 줄에 다 (9:16). 눌러서 크게 보기 */
+.gd-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4) var(--s3);margin-top:var(--s4);counter-reset:gd}
+.gd-strip[data-n="1"]{grid-template-columns:minmax(0,200px)}
+.gd-item{display:grid;gap:var(--s2);align-content:start;counter-increment:gd;min-width:0}
+.gd-shot{display:block;width:100%;aspect-ratio:3/4;border:1.5px solid var(--ink);border-radius:14px;overflow:hidden;background:var(--paper-2);padding:0}
 .gd-shot img{width:100%;height:100%;object-fit:cover;object-position:50% 0;transition:transform .2s}
 .gd-shot:hover img{transform:scale(1.03)}
 .gd-cap{display:grid;grid-template-columns:22px minmax(0,1fr);gap:6px;font-size:var(--t-14);line-height:1.5}
@@ -645,6 +646,9 @@ body.no-tab .toasts{bottom:calc(var(--safe-b) + 16px)}
   .sheet-foot{border-radius:0 0 var(--r-lg) var(--r-lg)}
   .sheet-foot .btn{flex:0 0 auto}
   .cat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .gd-strip{grid-template-columns:repeat(var(--n,3),minmax(0,1fr))}
+  .gd-strip[data-n="1"]{grid-template-columns:minmax(0,180px)}
+  .gd-shot{aspect-ratio:9/16}
   .fm{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);align-items:center;gap:var(--s6)}
   .fm-stage{margin:0;--fm-w:184px}
   .fm-cap,.fm-dot{display:none}
@@ -780,7 +784,7 @@ const ADMIN_EMAILS = ["aznail@hanmail.net"];
 // AI(Gemini) 키는 코드에 넣지 않습니다. 관리 → 설정에서 입력하면 Firestore(config/ai)에 저장됩니다.
 const AI_MODELS = ["gemini-flash-latest", "gemini-2.5-flash"]; // 앞 모델이 없어지면 다음 모델로
 const ASSET_V   = "20261024";  // 일러스트 파일을 고치면 이 값을 바꿔 휴대폰 캐시를 새로 받게 합니다
-const APP_VERSION = "10.25-1"; // 내 정보 맨 아래에 보이는 버전. 고칠 때마다 올리면 새 화면이 떴는지 바로 알 수 있어요
+const APP_VERSION = "10.25-2"; // 내 정보 맨 아래에 보이는 버전. 고칠 때마다 올리면 새 화면이 떴는지 바로 알 수 있어요
 const NEW_DAYS  = 14;          // 며칠 안에 등록한 앱에 '새로 옴' 표시
 const CATS      = ["업무", "소통", "분석", "관리", "기타"];
 const CAT_ICON  = { "업무":"c-work", "소통":"c-talk", "분석":"c-chart", "관리":"c-manage", "기타":"c-etc" };
@@ -1844,15 +1848,12 @@ async function paintGuide(s, ap) {
 }
 function guideHTML(ap, g) {
   const shots = guideShots(g).slice(0, MAX_GUIDE), steps = g.steps || [];
-  const manual = !!g.manualShots?.length;
-  const when = fmtDate(manual ? g.manualAt : g.updatedAt);
   return `<section class="gd" aria-labelledby="h-gd"><span class="tape hand" id="h-gd">초간단 가이드</span>
     ${g.oneLine ? `<p class="gd-one">${esc(g.oneLine)}</p>` : ""}
-    ${shots.length ? `<ol class="gd-strip">${shots.map((sh, i) => `<li class="gd-item">
+    ${shots.length ? `<ol class="gd-strip" data-n="${shots.length}" style="--n:${shots.length}">${shots.map((sh, i) => `<li class="gd-item">
         <button type="button" class="gd-shot" data-id="${esc(ap.id)}" data-i="${i}" onclick="App.shots(this.dataset.id, +this.dataset.i)" aria-label="${i + 1}번째 화면 크게 보기"><img src="${esc(sh.src)}" alt="" loading="lazy" decoding="async"></button>
         <p class="gd-cap">${esc(steps[i] || `${i + 1}번째 화면`)}</p></li>`).join("")}</ol>`
       : steps.length ? `<ol class="steps" style="margin-top:12px">${steps.map(t => `<li><span>${esc(t)}</span></li>`).join("")}</ol>` : ""}
-    <p class="gd-foot">${manual ? "관리자가 올린 화면이에요." : `${when ? `${when} 화면 기준 · ` : ""}앱이 바뀌면 다음 날 새로 만들어져요.`}</p>
   </section>`;
 }
 // 가이드 사진 크게 보기 (좌우 버튼·키보드 화살표·옆으로 밀기)
@@ -1896,7 +1897,7 @@ function detailHTML(ap) {
           : `<button type="button" class="btn btn-line" data-id="${esc(ap.id)}" onclick="App.guideApp(this.dataset.id)">${icon("i-addhome")}홈 화면에 추가</button>`}
   </div>
   <div class="facts" id="dt-facts">${factsHTML(ap)}</div>
-  <div id="dt-guide"><div class="gd" aria-hidden="true"><span class="skel" style="width:70%;height:18px"></span><div class="gd-strip">${'<span class="skel" style="aspect-ratio:9/16;border-radius:14px"></span>'.repeat(3)}</div></div></div>
+  <div id="dt-guide"><div class="gd" aria-hidden="true"><span class="skel" style="width:70%;height:18px"></span><div class="gd-strip">${'<span class="skel" style="aspect-ratio:3/4;border-radius:14px"></span>'.repeat(2)}</div></div></div>
   <section class="dt-sec"><h3>소개${ap.descBy === "ai" && ap.description ? `<span class="dt-by">${icon("i-ai")}AI가 앱을 보고 쓴 소개</span>` : ""}</h3><p class="dt-desc">${esc(ap.description || "AI가 소개를 준비하고 있어요.")}</p></section>
   ${ap.features?.length ? `<section class="dt-sec"><h3>이런 걸 해요</h3><ul class="feat-list">${ap.features.map(f => `<li>${icon("i-check")}<span>${esc(f)}</span></li>`).join("")}</ul></section>` : ""}
   ${apk ? `<div class="note-box dt-sec">${icon("i-android")}<p><b>안드로이드 전용 앱이에요.</b> 받은 뒤 직접 설치해야 하고, 아이폰에서는 설치할 수 없어요.</p></div>`
