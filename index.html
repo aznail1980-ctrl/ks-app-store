@@ -367,6 +367,42 @@ body.no-tab .toasts{bottom:calc(var(--safe-b) + 16px)}
 .feature-acts{display:flex;gap:var(--s2);margin-top:var(--s4);flex-wrap:wrap}
 .feature-acts .btn{flex:1 1 140px}
 
+/* 홈 맨 위 앱의 '움직이는 초간단 가이드'
+   휴대폰 틀 안에서 화면 사진이 천천히 내려가며 바뀌고, 옆 설명에 형광펜이 칠해짐.
+   형광펜이 끝까지 칠해지면 다음 장면으로 넘어감 (형광펜 = 진행 막대) */
+.fm{display:grid;grid-template-columns:112px minmax(0,1fr);gap:var(--s4);align-items:center;margin-top:var(--s5);padding-top:var(--s5);border-top:1.5px dashed var(--ink)}
+.fm-dev{position:relative}
+.fm-dev::before{content:"";position:absolute;inset:0;transform:translate(6px,6px) rotate(1.5deg);background:var(--marker);border-radius:18px}   /* 휴대폰 뒤 형광펜 그림자 */
+.fm-phone{position:relative;display:block;width:100%;aspect-ratio:9/16;border:2px solid var(--ink);border-radius:18px;background:var(--paper-2);overflow:hidden;padding:0}
+.fm-phone::after{content:"";position:absolute;top:6px;left:50%;width:26%;height:5px;transform:translateX(-50%);border-radius:3px;background:var(--ink);z-index:2}   /* 위쪽 스피커 */
+.fm-phone.skel{border-color:transparent}
+.fm-shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0;opacity:0;transition:opacity .6s ease}
+.fm-shot.on{opacity:1;animation:fm-pan var(--fm-dur,4200ms) ease-in-out forwards}
+@keyframes fm-pan{0%,15%{object-position:50% 0}100%{object-position:50% 100%}}
+.fm-splash{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:var(--s2);padding:var(--s3);text-align:center}
+.fm-splash .ico{animation:fm-bob 2.8s ease-in-out infinite}
+.fm-splash b{font-size:var(--t-12);font-weight:800;line-height:1.3}
+@keyframes fm-bob{50%{transform:translateY(-4px) rotate(-2deg)}}
+.fm-side{min-width:0;display:grid;gap:var(--s2)}
+.fm-head{font-size:18px;line-height:1.2;display:flex;gap:var(--s2);align-items:baseline}
+.fm-n{font-family:var(--f-body);font-size:var(--t-12);font-weight:700;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.fm-cap{font-size:17px;font-weight:700;line-height:1.5;letter-spacing:-0.02em;min-height:4.5em}
+.fm-cap span{display:inline;background:linear-gradient(var(--marker),var(--marker)) no-repeat 0 88%/0% 42%;animation:fm-in .45s ease-out both,fm-sweep var(--fm-dur,4200ms) linear .2s forwards}
+@keyframes fm-in{from{opacity:0;transform:translateY(8px)}}
+@keyframes fm-sweep{to{background-size:100% 42%}}
+.fm-ctl{display:flex;align-items:center;margin-left:-8px}
+.fm-dot{width:28px;height:44px;display:grid;place-items:center}
+.fm-dot::before{content:"";width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink);transition:width .25s,background-color .25s}
+.fm-dot.on::before{width:22px;border-radius:5px;background:var(--ink)}
+.fm-toggle{margin-left:auto}
+.fm-toggle .ic{width:20px;height:20px}
+/* 멈춤: 버튼으로 멈췄거나(is-paused) 화면 밖에 있을 때(is-off) */
+.fm.is-paused .fm-shot.on,.fm.is-off .fm-shot.on{animation-play-state:paused}
+.fm.is-paused .fm-cap span,.fm.is-off .fm-cap span{animation-play-state:running,paused}   /* 글자 나타나기는 끝까지, 형광펜만 멈춤 */
+/* 장면이 하나뿐이거나 '움직임 줄이기'를 켠 기기: 넘기지 않고 형광펜은 다 칠한 채로 */
+.fm.is-still .fm-cap span{animation:fm-in .3s ease-out both;background-size:100% 42%}
+.fm.is-still .fm-toggle{display:none}
+
 .list-head{position:sticky;top:calc(var(--safe-t) + var(--bar-h));z-index:20;background:var(--paper);border-bottom:1.5px solid var(--ink);margin:0 calc(-1 * var(--gut-r)) 0 calc(-1 * var(--gut-l));padding:0 var(--gut-r) 0 var(--gut-l)}
 .app-list{display:grid}
 .app-row{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) 0;border-bottom:1.5px solid var(--ink)}
@@ -414,6 +450,26 @@ body.no-tab .toasts{bottom:calc(var(--safe-b) + 16px)}
 .dt-sec{margin-top:var(--s6)}
 .dt-sec > h3{font-size:var(--t-16);font-weight:800;margin-bottom:var(--s2)}
 .dt-desc{white-space:pre-wrap}
+.dt-by{display:inline-flex;align-items:center;gap:4px;margin-left:var(--s2);font-size:var(--t-12);font-weight:600;color:var(--ink-3);vertical-align:2px}
+.dt-by .ic{width:14px;height:14px}
+/* 초간단 가이드 (상세 화면) */
+.gd{position:relative;margin-top:var(--s7);padding:var(--s5) var(--s4) var(--s4);border:2px solid var(--ink);border-radius:var(--r)}
+.gd-one{font-weight:700;font-size:17px;letter-spacing:-0.02em}
+.gd-strip{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(128px,1fr);gap:var(--s3);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:var(--s4) calc(-1 * var(--s4)) 0;padding:0 var(--s4) var(--s1);counter-reset:gd}
+.gd-strip::-webkit-scrollbar{display:none}
+.gd-item{scroll-snap-align:start;display:grid;gap:var(--s2);align-content:start;counter-increment:gd}
+.gd-shot{display:block;width:100%;aspect-ratio:9/16;border:1.5px solid var(--ink);border-radius:14px;overflow:hidden;background:var(--paper-2);padding:0}
+.gd-shot img{width:100%;height:100%;object-fit:cover;object-position:50% 0;transition:transform .2s}
+.gd-shot:hover img{transform:scale(1.03)}
+.gd-cap{display:grid;grid-template-columns:22px minmax(0,1fr);gap:6px;font-size:var(--t-14);line-height:1.5}
+.gd-cap::before{content:counter(gd);width:22px;height:22px;display:grid;place-items:center;border:1.5px solid var(--ink);border-radius:50%;font-size:var(--t-12);font-weight:800}
+.gd-foot{margin-top:var(--s3);font-size:var(--t-12);color:var(--ink-3)}
+/* 가이드 사진 크게 보기 */
+.shot-view{display:grid;justify-items:center;gap:var(--s3)}
+.shot-view img{max-height:min(62dvh,640px);width:auto;max-width:100%;border:2px solid var(--ink);border-radius:18px;background:var(--paper-2);touch-action:pan-y}
+.shot-view figcaption{font-weight:700;text-align:center;min-height:1.6em}
+.sv-n{align-self:center;font-size:var(--t-14);font-weight:700;color:var(--ink-2);font-variant-numeric:tabular-nums;padding:0 var(--s2)}
+.ic.flip{transform:scaleX(-1)}
 .feat-list li{display:flex;gap:var(--s2);align-items:flex-start;padding:4px 0}
 .feat-list .ic{width:20px;height:20px;margin-top:2px}
 .url-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-weight:600;word-break:break-all}
@@ -467,12 +523,14 @@ body.no-tab .toasts{bottom:calc(var(--safe-b) + 16px)}
 
 /* ── 관리 ── */
 .page-title{font-size:var(--t-title);margin-bottom:var(--s5)}
+/* 숫자 칸을 누르면 해당 탭으로 이동 */
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
-.stats div{padding:var(--s3) var(--s2);display:grid;gap:2px}
-.stats div + div{border-left:1px solid var(--hair)}
-.stats dt{font-size:var(--t-12);color:var(--ink-3);font-weight:600}
-.stats dd{font-size:var(--t-26);font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2}
-.stats .is-wait dd{background:linear-gradient(transparent 55%,var(--marker) 55%,var(--marker) 90%,transparent 90%);justify-self:start}
+.stats a{padding:var(--s3) var(--s2);display:grid;gap:2px;align-content:start;text-decoration:none;color:inherit}
+.stats a:hover{background:var(--paper-2)}
+.stats a + a{border-left:1px solid var(--hair)}
+.stats span{font-size:var(--t-12);color:var(--ink-3);font-weight:600;line-height:1.3}
+.stats b{font-size:var(--t-26);font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2;justify-self:start}
+.stats .is-wait b{background:linear-gradient(transparent 55%,var(--marker) 55%,var(--marker) 90%,transparent 90%)}
 .subnav{display:flex;gap:var(--s5);overflow-x:auto;margin-top:var(--s5);border-bottom:1.5px solid var(--ink);scrollbar-width:none}
 .subnav a{min-height:48px;display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--ink-3);text-decoration:none;flex-shrink:0}
 .subnav a[aria-current="page"]{color:var(--ink)}
@@ -502,8 +560,22 @@ body.no-tab .toasts{bottom:calc(var(--safe-b) + 16px)}
 .howto ol{list-style:decimal;padding-left:1.4em;color:var(--ink-2);display:grid;gap:var(--s1)}
 .ico-edit{display:flex;gap:var(--s4);align-items:center}
 .ico-edit-ctl{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
-.form-kind{margin-top:var(--s4)}
 .form-kind legend{margin-bottom:var(--s2)}
+.set-st{margin-top:var(--s2);font-size:var(--t-14);color:var(--ink-2)}
+.btn-bad-line{color:var(--bad);border-color:var(--bad);background:var(--paper)}
+.btn-bad-line:hover{background:var(--bad-bg)}
+/* 앱 올리기 폼의 'AI 소개' · '초간단 가이드' 상자 */
+.form-box{position:relative;margin-top:var(--s6);padding:var(--s5) var(--s4) var(--s4);border:1.5px dashed var(--ink);border-radius:var(--r)}
+.form-box > .check:first-of-type{margin-top:var(--s1)}
+.ai-prev{margin:var(--s3) 0;padding:var(--s3) var(--s4);background:var(--paper-2);border-radius:var(--r)}
+.ai-prev-l{font-size:var(--t-12);font-weight:700;color:var(--ink-3);margin-bottom:2px}
+.ai-prev ul{display:flex;flex-wrap:wrap;gap:6px;margin-top:var(--s2)}
+.ai-prev li{font-size:var(--t-12);font-weight:700;padding:2px var(--s2);border:1.5px solid var(--ink);border-radius:6px;background:var(--paper)}
+.shot-edit{display:flex;gap:var(--s3);flex-wrap:wrap}
+.shot-edit:empty{display:none}
+.shot-th{display:grid;justify-items:center;width:76px}
+.shot-th img{width:76px;aspect-ratio:9/16;object-fit:cover;object-position:50% 0;border:1.5px solid var(--ink);border-radius:10px}
+.shot-th .btn{min-height:40px;font-size:var(--t-14)}
 
 /* ── 안내 시트 ── */
 .guide-art{width:100%;max-width:360px;margin:var(--s2) auto var(--s4);display:block}
@@ -550,6 +622,8 @@ body.no-tab .toasts{bottom:calc(var(--safe-b) + 16px)}
   .sheet-foot{border-radius:0 0 var(--r-lg) var(--r-lg)}
   .sheet-foot .btn{flex:0 0 auto}
   .cat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .fm{grid-template-columns:150px minmax(0,480px);gap:var(--s6)}
+  .fm-cap{font-size:var(--t-20)}
 }
 @media (min-width:900px){
   .topnav{display:flex}
@@ -574,11 +648,13 @@ body.no-tab .toasts{bottom:calc(var(--safe-b) + 16px)}
   .home-art{width:104px}
   .home-hero h1{font-size:31px}
   .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .stats div:nth-child(3){border-left:0}
-  .stats div:nth-child(n+3){border-top:1px solid var(--hair)}
+  .stats a:nth-child(3){border-left:0}
+  .stats a:nth-child(n+3){border-top:1px solid var(--hair)}
+  .fm{grid-template-columns:96px minmax(0,1fr);gap:var(--s3)}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .fm-shot.on,.fm-splash .ico{animation:none!important}   /* 사진이 맨 아래로 튀지 않게 첫 위치 그대로 */
 }
 </style>
 </head>
@@ -640,6 +716,8 @@ body.no-tab .toasts{bottom:calc(var(--safe-b) + 16px)}
   <symbol id="i-copy" viewBox="0 0 24 24"><path d="M9.2 8.6h9c.6 0 1.1.5 1.1 1.1v9c0 .6-.5 1.1-1.1 1.1h-9c-.6 0-1.1-.5-1.1-1.1v-9c0-.6.5-1.1 1.1-1.1z"/><path d="M15.6 8.4V5.8c0-.6-.5-1.1-1.1-1.1H5.6c-.6 0-1.1.5-1.1 1.1v8.9c0 .6.5 1.1 1.1 1.1h2.4"/></symbol>
   <symbol id="i-image" viewBox="0 0 24 24"><path d="M5.6 4.6h12.8c.6 0 1.1.5 1.1 1.1v12.6c0 .6-.5 1.1-1.1 1.1H5.6c-.6 0-1.1-.5-1.1-1.1V5.7c0-.6.5-1.1 1.1-1.1z"/><path d="M4.7 16.4l4.4-4.5 3.5 3.4 2.4-2.3 4.4 4.3"/><path d="M15.2 8.6h.1" stroke-width="2.8"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.4 12.2c-.1 4-3.4 7.2-7.4 7.2-4.1 0-7.4-3.3-7.4-7.4S7.9 4.6 12 4.6c2.4 0 4.6 1.2 6 3"/><path d="M18.4 3.8l-.1 4.2-4.2-.1"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8.6 5.4l.2 13.3M15.3 5.2l.1 13.5" stroke-width="2.6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7.4 5.2c-.2 4.6-.1 9.1.1 13.6l11-6.9z"/></symbol>
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.6l7 2.8v5.2c0 4.3-2.9 7.6-7 9-4.1-1.4-7-4.7-7-9V6.4z"/><path d="M8.9 12l2.3 2.3 4-4.3"/></symbol>
   <symbol id="i-share-ios" viewBox="0 0 24 24"><path d="M8.4 8.6H6.6c-.9 0-1.6.7-1.6 1.6v8.2c0 .9.7 1.6 1.6 1.6h10.8c.9 0 1.6-.7 1.6-1.6v-8.2c0-.9-.7-1.6-1.6-1.6h-1.8"/><path d="M12 3.8v10.4M8.6 7.1L12 3.8l3.4 3.3"/></symbol>
   <symbol id="i-dots-v" viewBox="0 0 24 24"><path d="M12 5.5v.1M12.1 12v.1M11.9 18.5v.1" stroke-width="3.4"/></symbol>
@@ -682,6 +760,11 @@ const CAT_ICON  = { "업무":"c-work", "소통":"c-talk", "분석":"c-chart", "�
 const REMEMBER_KEY = "ks_saved_email";
 const RECENT_KEY   = "ks_recent_search";
 const MOVED_KEY    = "ks_moved_seen";
+// 초간단 가이드를 만들지 않을 앱 — 이름에 이 글자가 들어가면 제외 (띄어쓰기 무시).
+// scripts/update-guides.mjs 의 GUIDE_EXCLUDE 와 같게 맞춰 주세요.
+const GUIDE_EXCLUDE = ["업무관리지원", "네모냥이"];
+// 가이드·AI 소개를 만드는 GitHub 자동 실행 화면 (여기서 '지금 새로 만들기')
+const GUIDE_ACTION_URL = "https://github.com/aznail1980-ctrl/ks-app-store/actions/workflows/app-guides.yml";
 
 /* ╔══════════════════════════════════════════════════════════╗
    ║  2. Firebase                                               ║
@@ -717,6 +800,9 @@ const S = {
 };
 let UNSUB_USER = null, LAST_STATUS = null, SIGNING_UP = false;
 let FORM_ICON = "";                // 앱 폼에서 고른 아이콘 (이모지 / 이미지 주소 / 올린 이미지)
+let FORM_DRAFT = null;             // 앱 폼에서 AI가 써 둔 소개 초안 { name, description, features }
+let FORM_SHOTS = [], FORM_SHOTS_DIRTY = false;   // 관리자가 직접 올린 가이드 사진
+const GUIDE_CACHE = {};            // 앱별 가이드 (사진 크게 보기에서 씀)
 let CHAT_BUSY = false;
 const AI_CACHE = {};
 const CHAT_LOG = [];
@@ -997,6 +1083,14 @@ async function ensureUserDoc(user) {
     role: admin ? "admin" : "user", status: admin ? "approved" : "pending", createdAt: serverTimestamp()
   });
 }
+// 초간단 가이드 (GitHub 자동 실행이 매일 만들어 Firestore guides/앱ID 에 넣어 둠)
+const norm = s => String(s || "").replace(/\s+/g, "").toLowerCase();
+const guideOff = ap => ap.noGuide === true || GUIDE_EXCLUDE.some(n => norm(ap.name).includes(norm(n)));
+async function loadGuide(appId) {
+  try { const d = await getDoc(doc(db, "guides", appId)); return d.exists() ? d.data() : null; }
+  catch { return null; }
+}
+const guideShots = g => ((g?.manualShots?.length ? g.manualShots : g?.shots) || []).filter(s => s?.src);
 async function loadAiKey(force = false) {
   if (S.aiKey !== undefined && !force) return S.aiKey;
   try { const d = await getDoc(doc(db, "config", "ai")); S.aiKey = (d.exists() && d.data().geminiKey) || ""; }
@@ -1033,6 +1127,51 @@ function aiKeyOf(ap) {
   const s = [ap.name, ap.description, (ap.features || []).join(",")].join("|");
   let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) | 0;
   return String(h);
+}
+// 앱 소개 초안: 주소·카테고리만 주면 AI가 이름·소개·할 수 있는 일을 씀.
+// 웹앱은 Gemini가 주소의 내용을 직접 읽어 봄(url_context). 실패하면 null.
+const parseJsonLoose = t => { try { const m = String(t || "").match(/\{[\s\S]*\}/); return m ? JSON.parse(m[0]) : null; } catch { return null; } };
+async function aiDraft({ url, name, category, memo, apk }) {
+  const key = await loadAiKey(); if (!key) return null;
+  const readUrl = url && !apk;
+  const prompt =
+    `당신은 작은 앱스토어 'KS 앱스토어'의 소개글 담당이에요. 아래 앱의 소개를 써 주세요.\n` +
+    `- 말투: 친구에게 슬쩍 추천하듯 다정하고 재치 있게. 과장하거나 없는 기능을 지어내지 마세요. 이모지·마크다운 금지.\n` +
+    `- description: 두 문장, 합쳐서 90자 안팎. 첫 문장은 이 앱이 무엇인지, 둘째 문장은 언제 쓰면 좋은지.\n` +
+    `- features: 이 앱으로 할 수 있는 일 3~5개, 각각 12자 이내의 짧은 말.\n` +
+    `- name: 앱 이름. 페이지 제목이나 주소에서 찾고, 모르겠으면 빈칸.\n` +
+    `JSON 하나로만 답하세요: {"name":"","description":"","features":[]}\n\n` +
+    (readUrl ? `[앱 주소] ${url}\n(이 주소의 내용을 읽고 쓰세요)\n` : "") +
+    `[종류] ${apk ? "안드로이드 앱(APK)" : "웹앱"}\n[카테고리] ${category}\n[지금 이름] ${name || "(없음)"}\n[관리자 메모] ${memo || "(없음)"}`;
+  for (const m of AI_MODELS) {
+    for (const withTools of (readUrl ? [true, false] : [false])) {   // 주소 읽기 기능이 안 되면 그냥 글만으로
+      try {
+        const body = { contents: [{ parts: [{ text: prompt }] }] };
+        if (withTools) body.tools = [{ url_context: {} }];
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${encodeURIComponent(key)}`,
+          { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+        const data = await res.json();
+        const j = parseJsonLoose(data?.candidates?.[0]?.content?.parts?.map(p => p.text || "").join(""));
+        if (j?.description) return {
+          name: cleanAi(j.name || "").slice(0, 40),
+          description: cleanAi(j.description).slice(0, 300),
+          features: (Array.isArray(j.features) ? j.features : []).map(f => cleanAi(String(f)).slice(0, 20)).filter(Boolean).slice(0, 5),
+        };
+        if (res.status === 404 || /not found|no longer|deprecated/i.test(data?.error?.message || "")) break;   // 다음 모델로
+      } catch (e) { console.warn("AI 초안 실패", e); }
+    }
+  }
+  return null;
+}
+// 주소에서 임시 이름 만들기 (AI가 이름을 못 지었을 때)
+function nameFromUrl(u) {
+  try {
+    const x = new URL(u);
+    const file = x.pathname.split("/").pop() || "";
+    if (/\.apk$/i.test(file)) return decodeURIComponent(file.replace(/\.apk$/i, ""));
+    const host = x.hostname.split(".")[0].replace(/-[a-z0-9]{4,6}$/i, "").replace(/[-_]+/g, " ");
+    return host.replace(/\b\w/g, c => c.toUpperCase()) || "새 앱";
+  } catch { return "새 앱"; }
 }
 async function summaryFor(ap, { force = false } = {}) {
   const k = aiKeyOf(ap);
@@ -1274,17 +1413,76 @@ async function renderHome() {
     ${f ? `
     <section class="feature" aria-labelledby="ft-name">
       <span class="tape hand">${f.label}</span>
-      <div class="feature-row">${appIco(f.ap, 64)}<div class="feature-txt"><h2 id="ft-name">${esc(f.ap.name)}</h2><p>${esc(f.ap.description || "")}</p></div></div>
+      <div class="feature-row">${appIco(f.ap, 64)}<div class="feature-txt"><h2 id="ft-name">${esc(f.ap.name)}</h2><p>${esc(f.ap.description || "AI가 소개를 준비하고 있어요.")}</p></div></div>
+      <div id="ft-motion">${f.ap.id in GUIDE_CACHE ? "" : motionSkel(f.ap)}</div>
       <div class="feature-acts">${primaryAction(f.ap)}<button type="button" class="btn btn-line" data-id="${esc(f.ap.id)}" onclick="App.openDetail(this.dataset.id)">자세히 보기</button></div>
     </section>` : ""}
     <section class="sec" aria-labelledby="h-all">
       <div class="sec-head"><h2 id="h-all">전체 앱</h2></div>
       ${apps.length ? `<div class="list-head">${catTabs(apps)}</div><div id="home-list">${homeList(apps)}</div>` : emptyHTML("apps")}
     </section>`;
+  if (f) paintMotion(f.ap);
 }
 function homeList(apps) {
   const list = S.cat === "전체" ? apps : apps.filter(a => catOf(a) === S.cat);
   return list.length ? `<ul class="app-list">${list.map(a => appRow(a)).join("")}</ul>` : emptyHTML("cat");
+}
+
+/* ── 홈 맨 위 앱: 움직이는 초간단 가이드 ──
+   가이드 사진이 있으면 → 휴대폰 틀 안에서 사진이 넘어가고 옆에 '따라 해 보기' 설명
+   사진이 없으면       → 앱 아이콘이 둥실거리고 옆에 '이런 걸 해요'(주요 기능)를 하나씩 */
+const FM_DUR = 4200;                 // 한 장면을 보여 주는 시간 (ms)
+const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+let FM = null, FM_IO = null;         // 지금 돌고 있는 장면 정보 / 화면 밖 감지
+function motionScenes(ap, g) {
+  const shots = guideOff(ap) ? [] : guideShots(g).slice(0, 3);
+  if (shots.length) return { kind: "guide", head: "따라 해 보기", scenes: shots.map((s, i) => ({ src: s.src, text: g.steps?.[i] || (i ? `${i + 1}번째 화면` : g.oneLine || "첫 화면") })) };
+  const feats = (ap.features || []).slice(0, 4);
+  if (feats.length) return { kind: "feat", head: "이런 걸 해요", scenes: feats.map(t => ({ text: t })) };
+  return null;
+}
+const motionSkel = ap => guideOff(ap) && !ap.features?.length ? "" :
+  `<div class="fm" aria-hidden="true"><div class="fm-dev"><span class="fm-phone skel"></span></div><div class="fm-side"><span class="skel" style="width:40%;height:16px"></span><span class="skel" style="width:92%;height:18px"></span><span class="skel" style="width:64%;height:18px"></span></div></div>`;
+function motionHTML(ap, m) {
+  const n = m.scenes.length;
+  const phone = m.kind === "guide"
+    ? m.scenes.map((s, i) => `<img class="fm-shot ${i ? "" : "on"}" src="${esc(s.src)}" alt="" decoding="async">`).join("")
+    : `<span class="fm-splash">${appIco(ap, 56)}<b>${esc(ap.name)}</b></span>`;
+  return `<div class="fm" style="--fm-dur:${FM_DUR}ms">
+    <div class="fm-dev"><button type="button" class="fm-phone" data-id="${esc(ap.id)}" onclick="App.fmOpen(this.dataset.id)" aria-label="${esc(ap.name)} ${m.kind === "guide" ? "화면 크게 보기" : "자세히 보기"}">${phone}</button></div>
+    <div class="fm-side">
+      <p class="fm-head hand">${m.head}<span class="fm-n">${n > 1 ? `1/${n}` : ""}</span></p>
+      <p class="fm-cap"><span>${esc(m.scenes[0].text)}</span></p>
+      ${n > 1 ? `<div class="fm-ctl">${m.scenes.map((s, i) => `<button type="button" class="fm-dot ${i ? "" : "on"}" aria-label="${i + 1}번째 장면 보기" aria-pressed="${!i}" onclick="App.fmGo(${i})"></button>`).join("")}
+        <button type="button" class="icon-btn fm-toggle" aria-label="움직임 멈추기" onclick="App.fmToggle(this)">${icon("i-pause")}</button></div>` : ""}
+    </div>
+  </div>`;
+}
+async function paintMotion(ap) {
+  const box = $("#ft-motion"); if (!box) return;
+  if (!(ap.id in GUIDE_CACHE)) GUIDE_CACHE[ap.id] = guideOff(ap) ? null : await loadGuide(ap.id);
+  if (!box.isConnected) return;                     // 그 사이 다른 탭으로 갔으면 그만
+  const m = motionScenes(ap, GUIDE_CACHE[ap.id]);
+  FM_IO?.disconnect(); FM = null;
+  box.innerHTML = m ? motionHTML(ap, m) : "";
+  if (!m) return;
+  const el = box.querySelector(".fm");
+  FM = { el, m, i: 0, id: ap.id };
+  if (m.scenes.length < 2 || reducedMotion()) { el.classList.add("is-still"); return; }
+  // 형광펜이 끝까지 칠해지면 다음 장면으로
+  el.addEventListener("animationend", e => { if (e.animationName === "fm-sweep" && FM?.el === el) fmShow(FM.i + 1); });
+  // 화면 밖으로 스크롤되면 잠깐 멈춤 (배터리 아끼기)
+  FM_IO = new IntersectionObserver(([en]) => el.classList.toggle("is-off", !en.isIntersecting), { threshold: .3 });
+  FM_IO.observe(el);
+}
+function fmShow(i) {
+  if (!FM?.el.isConnected) return;
+  const { el, m } = FM, n = m.scenes.length;
+  FM.i = i = (i + n) % n;
+  el.querySelectorAll(".fm-shot").forEach((s, k) => s.classList.toggle("on", k === i));
+  el.querySelectorAll(".fm-dot").forEach((d, k) => { d.classList.toggle("on", k === i); d.setAttribute("aria-pressed", String(k === i)); });
+  el.querySelector(".fm-n").textContent = `${i + 1}/${n}`;
+  el.querySelector(".fm-cap").innerHTML = `<span>${esc(m.scenes[i].text)}</span>`;   // 새로 그리면 형광펜이 처음부터 칠해짐
 }
 
 /* ── 찾기 ── */
@@ -1374,19 +1572,20 @@ async function renderMe() {
 async function renderAdmin(sub) {
   const v = $("#view");
   v.innerHTML = `<div class="skel" style="width:30%;height:44px;margin-bottom:24px"></div><div class="skel" style="height:72px"></div><ul class="app-list" style="margin-top:24px">${skelRows(4)}</ul>`;
-  try { await Promise.all([loadApps(true), loadUsers(), loadAllReviews(), loadAiKey(true)]); }
+  try { await Promise.all([loadApps(true), loadUsers(), loadAllReviews(), loadAiKey(true), loadGuideRun()]); }
   catch (e) { console.warn(e); v.innerHTML = emptyHTML("offline"); return; }
   const pend = S.users.filter(u => u.status === "pending").length;
   setPending(pend);
   const tabs = [["apps", "앱"], ["users", "회원"], ["reviews", "후기"], ["settings", "설정"]];
+  // 숫자 칸을 누르면 그 목록으로 이동 (가입 승인 대기 → 회원 탭 맨 위)
   v.innerHTML = `
     <h1 class="title page-title">관리</h1>
-    <dl class="stats">
-      <div><dt>앱</dt><dd>${S.apps.length}</dd></div>
-      <div><dt>회원</dt><dd>${S.users.filter(u => u.status === "approved").length}</dd></div>
-      <div class="${pend ? "is-wait" : ""}"><dt>승인 대기</dt><dd>${pend}</dd></div>
-      <div><dt>후기</dt><dd>${S.allReviews.length}</dd></div>
-    </dl>
+    <nav class="stats" aria-label="한눈에 보기">
+      <a href="#/admin"><span>앱</span><b>${S.apps.length}</b></a>
+      <a href="#/admin/users"><span>회원</span><b>${S.users.filter(u => u.status === "approved").length}</b></a>
+      <a href="#/admin/users" class="${pend ? "is-wait" : ""}"><span>가입 승인 대기</span><b>${pend}</b></a>
+      <a href="#/admin/reviews"><span>후기</span><b>${S.allReviews.length}</b></a>
+    </nav>
     <nav class="subnav" aria-label="관리 메뉴">${tabs.map(([k, t]) => `<a href="#/admin${k === "apps" ? "" : "/" + k}" ${sub === k ? 'aria-current="page"' : ""}><span>${t}</span>${k === "users" && pend ? `<span class="badge badge-wait">대기 ${pend}</span>` : ""}${k === "settings" && !S.aiKey ? `<span class="badge badge-wait">AI 키 필요</span>` : ""}</a>`).join("")}</nav>
     <div id="admin-pane">${adminPane(sub)}</div>`;
 }
@@ -1407,6 +1606,7 @@ function appsPane() {
         <div class="admin-txt">
           <p class="admin-name">${esc(ap.name)}${ap.featured ? `<span class="badge badge-new">${icon("i-pin", "ic-xs")}추천</span>` : ""}${ap.hidden ? '<span class="badge badge-muted">비공개</span>' : ""}${ap.apkUrl ? '<span class="badge">APK</span>' : ""}</p>
           <p class="admin-meta">${esc(catOf(ap))} · ${ap.apkUrl ? "안드로이드 APK" : esc(domainOf(ap.url) || "주소 없음")}${ap.reviewCount ? ` · 후기 ${ap.reviewCount}` : ""}</p>
+          <p class="admin-meta">${ap.autoDesc === false ? "직접 쓴 소개" : ap.descBy === "ai" && ap.description ? "AI 소개" : "소개 대기"} · ${guideOff(ap) ? "가이드 없음" : ap.guideAt ? `가이드 ${new Date(ts(ap.guideAt)).getMonth() + 1}/${new Date(ts(ap.guideAt)).getDate()}` : "가이드 대기"}</p>
         </div>
         <div class="admin-acts">
           <button type="button" class="btn btn-line btn-sm" data-id="${esc(ap.id)}" onclick="App.appForm(this.dataset.id)">${icon("i-edit", "ic-sm")}편집</button>
@@ -1457,7 +1657,7 @@ function settingsPane() {
   return `
     <section class="set-sec" aria-labelledby="h-ai">
       <h2 id="h-ai">AI 도우미 연결</h2>
-      <p>앱 소개 요약과 ‘AI에게 앱 추천받기’에 쓰는 Gemini API 키예요. 지금 상태: <b>${has ? `연결됨 (…${esc(S.aiKey.slice(-4))})` : "연결 안 됨"}</b></p>
+      <p>앱 소개 쓰기, 초간단 가이드 설명, ‘AI에게 묻기’에 쓰는 Gemini API 키예요. 지금 상태: <b>${has ? `연결됨 (…${esc(S.aiKey.slice(-4))})` : "연결 안 됨"}</b></p>
       <form novalidate onsubmit="event.preventDefault(); App.saveAiKey(this.querySelector('[type=submit]'))">
         ${field({ id: "set-key", label: has ? "새 키로 바꾸기" : "Gemini API 키", type: "password", placeholder: "AIza로 시작하는 키", hint: "키는 로그인한 회원만 읽을 수 있게 저장돼요. 아래 방법으로 사용처를 꼭 제한해 두세요.", auto: "off", pw: true })}
         <div class="set-row"><button type="submit" class="btn btn-ink">저장</button>${has ? `<button type="button" class="btn btn-line" onclick="App.testAi(this)">${icon("i-ai")}연결 확인</button>` : ""}</div>
@@ -1469,11 +1669,40 @@ function settingsPane() {
         <li>API 제한사항: ‘Generative Language API’만 고르고 저장해요.</li>
       </ol></details>
     </section>
+    <section class="set-sec" aria-labelledby="h-auto">
+      <h2 id="h-auto">초간단 가이드 · AI 소개 자동 만들기</h2>
+      <p>매일 새벽 3시에 GitHub이 앱마다 화면을 찍어 보고, <b>바뀐 앱만</b> AI가 가이드(화면 사진 + 한 줄 설명)와 앱 소개를 새로 써요. ${GUIDE_EXCLUDE.map(esc).join("·")} 앱은 가이드를 만들지 않아요.</p>
+      <p class="set-st">${guideRunText()}</p>
+      <div class="set-row"><a class="btn btn-line" href="${GUIDE_ACTION_URL}" target="_blank" rel="noopener">${icon("i-refresh")}지금 바로 만들기 (GitHub)<span class="sr-only"> (새 창)</span></a></div>
+      <details class="howto"><summary>처음 한 번 연결하는 방법</summary><ol>
+        <li>Firebase 콘솔 → 프로젝트 설정(톱니바퀴) → <b>서비스 계정</b> → <b>새 비공개 키 생성</b>을 눌러 파일을 받아요.</li>
+        <li>GitHub 저장소 → Settings → Secrets and variables → Actions → <b>New repository secret</b>. 이름은 <code>FIREBASE_SERVICE_ACCOUNT</code>, 값에는 받은 파일 내용을 통째로 붙여 넣어요.</li>
+        <li>받은 파일은 바로 지워요. 이 파일이 있으면 누구나 데이터를 고칠 수 있어요.</li>
+        <li>위 ‘지금 바로 만들기’ → <b>Run workflow</b>를 누르면 몇 분 뒤 가이드가 생겨요.</li>
+      </ol></details>
+    </section>
     <section class="set-sec" aria-labelledby="h-addr">
       <h2 id="h-addr">앱스토어 주소</h2>
       <p>친구에게 보낼 주소예요: <code>${esc(location.origin + location.pathname)}</code></p>
       <div class="set-row"><button type="button" class="btn btn-line" onclick="App.copy('${esc(location.origin + location.pathname)}', this)">${icon("i-copy")}주소 복사</button></div>
+    </section>
+    <section class="set-sec" aria-labelledby="h-reset">
+      <h2 id="h-reset">후기 모두 지우기</h2>
+      <p>지금 있는 후기 ${S.allReviews.length}개를 전부 지우고, 모든 앱의 별점을 처음(0)으로 되돌려요. <b>되돌릴 수 없어요.</b></p>
+      <div class="set-row"><button type="button" class="btn btn-bad-line" onclick="App.resetReviews()" ${S.allReviews.length ? "" : "disabled"}>${icon("i-trash")}${S.allReviews.length ? `후기 ${S.allReviews.length}개 모두 지우기` : "지울 후기가 없어요"}</button></div>
     </section>`;
+}
+// 자동 실행 기록 (scripts/update-guides.mjs 가 config/guidesRun 에 남김)
+async function loadGuideRun() {
+  try { const d = await getDoc(doc(db, "config", "guidesRun")); S.guideRun = d.exists() ? d.data() : null; }
+  catch { S.guideRun = null; }
+}
+function guideRunText() {
+  const r = S.guideRun;
+  if (!r?.at) return "아직 한 번도 돌지 않았어요. 아래 ‘처음 한 번 연결하는 방법’을 따라 해 주세요.";
+  const d = new Date(ts(r.at));
+  const when = `${fmtDate(r.at)} ${d.getHours() < 12 ? "오전" : "오후"} ${d.getHours() % 12 || 12}:${String(d.getMinutes()).padStart(2, "0")}`;
+  return `마지막 실행: ${when} · 앱 ${r.checked || 0}개 살펴봄 · ${r.updated ? `${r.updated}개 새로 만듦` : "바뀐 앱 없음"}${r.failed ? ` · ${r.failed}개 실패` : ""}${r.noAi ? " · AI 키가 없어 사진만 찍음" : ""}`;
 }
 
 /* ╔══════════════════════════════════════════════════════════╗
@@ -1494,12 +1723,65 @@ async function openDetail(id, { replace = false } = {}) {
     onClose: () => { if (S.dirty) { S.dirty = false; S.rendered = null; route(); } }
   });
   s.appId = id;
-  // AI 요약과 후기는 화면을 먼저 띄운 뒤 채움
-  summaryFor(ap).then(t => {
-    const el = s.el.querySelector("#dt-ai"); if (!el) return;
-    el.innerHTML = t ? esc(t) : `<span class="hint">${S.aiKey === "" ? (isAdmin() ? "AI 키가 아직 없어요. 관리 → 설정에서 연결해 주세요." : "AI 요약은 준비 중이에요.") : "AI가 잠시 쉬고 있어요. 조금 뒤 다시 열어 보세요."}</span>`;
-  });
+  // 가이드(또는 AI 요약)와 후기는 화면을 먼저 띄운 뒤 채움
+  paintGuide(s, ap);
   paintReviews(s, ap);
+}
+// 초간단 가이드가 있으면 가이드, 없으면 (직접 쓴 소개일 때만) AI가 줄여 본 소개
+async function paintGuide(s, ap) {
+  let g = null;
+  if (!guideOff(ap)) {
+    if (!(ap.id in GUIDE_CACHE)) GUIDE_CACHE[ap.id] = await loadGuide(ap.id);
+    g = GUIDE_CACHE[ap.id];
+  }
+  const box = s.el.querySelector("#dt-guide"); if (!box) return;
+  if (g && (guideShots(g).length || g.oneLine)) { box.innerHTML = guideHTML(ap, g); return; }
+  if (ap.descBy === "ai" || !ap.description) { box.innerHTML = ""; return; }   // 소개 자체가 AI 글이거나 아직 없으면 요약은 생략
+  box.innerHTML = `<div class="ai-note"><span class="tape hand">AI가 줄여 본 소개</span><p id="dt-ai"><span class="skel" style="width:95%"></span><span class="skel" style="width:70%"></span></p></div>`;
+  const t = await summaryFor(ap);
+  const el = s.el.querySelector("#dt-ai"); if (!el) return;
+  el.innerHTML = t ? esc(t) : `<span class="hint">${S.aiKey === "" ? (isAdmin() ? "AI 키가 아직 없어요. 관리 → 설정에서 연결해 주세요." : "AI 요약은 준비 중이에요.") : "AI가 잠시 쉬고 있어요. 조금 뒤 다시 열어 보세요."}</span>`;
+}
+function guideHTML(ap, g) {
+  const shots = guideShots(g).slice(0, 3), steps = g.steps || [];
+  const manual = !!g.manualShots?.length;
+  const when = fmtDate(manual ? g.manualAt : g.updatedAt);
+  return `<section class="gd" aria-labelledby="h-gd"><span class="tape hand" id="h-gd">초간단 가이드</span>
+    ${g.oneLine ? `<p class="gd-one">${esc(g.oneLine)}</p>` : ""}
+    ${shots.length ? `<ol class="gd-strip">${shots.map((sh, i) => `<li class="gd-item">
+        <button type="button" class="gd-shot" data-id="${esc(ap.id)}" data-i="${i}" onclick="App.shots(this.dataset.id, +this.dataset.i)" aria-label="${i + 1}번째 화면 크게 보기"><img src="${esc(sh.src)}" alt="" loading="lazy" decoding="async"></button>
+        <p class="gd-cap">${esc(steps[i] || `${i + 1}번째 화면`)}</p></li>`).join("")}</ol>`
+      : steps.length ? `<ol class="steps" style="margin-top:12px">${steps.map(t => `<li><span>${esc(t)}</span></li>`).join("")}</ol>` : ""}
+    <p class="gd-foot">${manual ? "관리자가 올린 화면이에요." : `${when ? `${when} 화면 기준 · ` : ""}앱이 바뀌면 다음 날 새로 만들어져요.`}</p>
+  </section>`;
+}
+// 가이드 사진 크게 보기 (좌우 버튼·키보드 화살표·옆으로 밀기)
+function openShots(appId, start = 0) {
+  const ap = findApp(appId), g = GUIDE_CACHE[appId];
+  const shots = guideShots(g).slice(0, 3); if (!ap || !shots.length) return;
+  const steps = g.steps || [], n = shots.length;
+  let i = Math.min(Math.max(0, start), n - 1);
+  const s = openSheet({
+    kind: "shots", title: `${ap.name} 화면 보기`,
+    body: `<figure class="shot-view"><img id="sv-img" alt=""><figcaption id="sv-cap" aria-live="polite"></figcaption></figure>`,
+    foot: n > 1 ? `<button type="button" class="btn btn-line" data-prev>${icon("i-chev", "flip")}이전</button><span class="sv-n" id="sv-n"></span><button type="button" class="btn btn-ink" data-next>다음${icon("i-chev")}</button>`
+                : `<button type="button" class="btn btn-ink" data-close-btn>닫기</button>`
+  });
+  const img = s.el.querySelector("#sv-img"), cap = s.el.querySelector("#sv-cap"), num = s.el.querySelector("#sv-n");
+  const paint = () => {
+    img.src = shots[i].src; img.alt = `${ap.name} ${i + 1}번째 화면`;
+    cap.textContent = steps[i] ? `${n > 1 ? `${i + 1}. ` : ""}${steps[i]}` : "";
+    if (num) num.textContent = `${i + 1} / ${n}`;
+  };
+  const go = d => { i = (i + d + n) % n; paint(); };
+  paint();
+  s.el.querySelector("[data-prev]")?.addEventListener("click", () => go(-1));
+  s.el.querySelector("[data-next]")?.addEventListener("click", () => go(1));
+  s.el.querySelector("[data-close-btn]")?.addEventListener("click", () => closeSheet(s.id));
+  s.el.addEventListener("keydown", e => { if (n > 1 && e.key === "ArrowLeft") go(-1); if (n > 1 && e.key === "ArrowRight") go(1); });
+  let x0 = null;
+  img.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, { passive: true });
+  img.addEventListener("touchend", e => { if (x0 === null || n < 2) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1); });
 }
 function detailHTML(ap) {
   const apk = !!ap.apkUrl, n = ap.reviewCount || 0;
@@ -1514,8 +1796,8 @@ function detailHTML(ap) {
           : `<button type="button" class="btn btn-line" data-id="${esc(ap.id)}" onclick="App.guideApp(this.dataset.id)">${icon("i-addhome")}홈 화면에 추가</button>`}
   </div>
   <div class="facts" id="dt-facts">${factsHTML(ap)}</div>
-  <div class="ai-note"><span class="tape hand">AI가 줄여 본 소개</span><p id="dt-ai"><span class="skel" style="width:95%"></span><span class="skel" style="width:70%"></span></p></div>
-  <section class="dt-sec"><h3>소개</h3><p class="dt-desc">${esc(ap.description || "아직 소개가 없어요.")}</p></section>
+  <div id="dt-guide"><div class="gd" aria-hidden="true"><span class="skel" style="width:70%;height:18px"></span><div class="gd-strip">${'<span class="skel" style="aspect-ratio:9/16;border-radius:14px"></span>'.repeat(3)}</div></div></div>
+  <section class="dt-sec"><h3>소개${ap.descBy === "ai" && ap.description ? `<span class="dt-by">${icon("i-ai")}AI가 앱을 보고 쓴 소개</span>` : ""}</h3><p class="dt-desc">${esc(ap.description || "AI가 소개를 준비하고 있어요.")}</p></section>
   ${ap.features?.length ? `<section class="dt-sec"><h3>이런 걸 해요</h3><ul class="feat-list">${ap.features.map(f => `<li>${icon("i-check")}<span>${esc(f)}</span></li>`).join("")}</ul></section>` : ""}
   ${apk ? `<div class="note-box dt-sec">${icon("i-android")}<p><b>안드로이드 전용 앱이에요.</b> 받은 뒤 직접 설치해야 하고, 아이폰에서는 설치할 수 없어요.</p></div>`
         : (domainOf(ap.url) ? `<section class="dt-sec"><h3>주소</h3><a class="url-link" href="${esc(safeUrl(ap.url))}" target="_blank" rel="noopener">${icon("i-link", "ic-sm")}${esc(domainOf(ap.url))}<span class="sr-only"> (새 창)</span></a></section>` : "")}
@@ -1568,19 +1850,37 @@ function appForm(id) {
   const ap = id ? findApp(id) : null;
   const kind = ap?.apkUrl ? "apk" : "web";
   FORM_ICON = ap?.customIcon || "";
+  FORM_DRAFT = null; FORM_SHOTS = []; FORM_SHOTS_DIRTY = false;
   const textIcon = FORM_ICON && !/^data:image\//i.test(FORM_ICON) ? FORM_ICON : "";
+  const auto = ap ? ap.autoDesc !== false : true;              // 새 앱은 기본으로 AI가 소개를 씀
+  const listedOff = ap && GUIDE_EXCLUDE.some(n => norm(ap.name).includes(norm(n)));   // 가이드 제외 목록에 든 앱
   const s = openSheet({
     kind: "form", title: ap ? `${ap.name} 편집` : "앱 올리기",
     body: `<form id="app-form" novalidate data-id="${esc(id || "")}" onsubmit="event.preventDefault(); App.saveApp(this)">
-      ${field({ id: "f-name", label: "앱 이름", value: ap?.name || "", placeholder: "예: Happy-Playground", extra: 'maxlength="40"' })}
-      <div class="field"><label class="label" for="f-cat">카테고리</label>
-        <select class="select" id="f-cat">${CATS.map(c => `<option ${(ap ? catOf(ap) : "기타") === c ? "selected" : ""}>${c}</option>`).join("")}</select></div>
+      <p class="lede">${ap ? "주소나 카테고리를 바꾸면 AI가 소개를 다시 써요." : "주소와 카테고리만 정하면 이름·소개·할 수 있는 일은 AI가 앱을 살펴보고 써요."}</p>
       <fieldset class="form-kind"><legend class="label">앱 종류</legend>
         <div class="seg"><input type="radio" name="f-kind" id="k-web" value="web" ${kind === "web" ? "checked" : ""} onchange="App.formKind()"><label for="k-web">웹앱</label><input type="radio" name="f-kind" id="k-apk" value="apk" ${kind === "apk" ? "checked" : ""} onchange="App.formKind()"><label for="k-apk">안드로이드 APK</label></div>
       </fieldset>
       <div data-kind="web" ${kind === "web" ? "" : "hidden"} style="margin-top:16px">${field({ id: "f-url", label: "웹 주소", type: "url", value: ap?.url || "", placeholder: "https://", hint: "누르면 이 주소가 새 창으로 열려요.", extra: 'inputmode="url" autocapitalize="off" oninput="App.iconPreview()"' })}</div>
       <div data-kind="apk" ${kind === "apk" ? "" : "hidden"} style="margin-top:16px">${field({ id: "f-apk", label: "APK 다운로드 주소", type: "url", value: ap?.apkUrl || "", placeholder: "https://", hint: "Dropbox 공유 링크를 그대로 붙여 넣어도 돼요. 받을 때 바로 받기 주소로 바꿔 줘요.", extra: 'inputmode="url" autocapitalize="off"' })}</div>
-      <div class="field" style="margin-top:16px"><span class="label" id="f-ico-l">아이콘</span>
+      <div class="field" style="margin-top:16px"><label class="label" for="f-cat">카테고리</label>
+        <select class="select" id="f-cat" onchange="App.iconPreview()">${CATS.map(c => `<option ${(ap ? catOf(ap) : "기타") === c ? "selected" : ""}>${c}</option>`).join("")}</select></div>
+      <div style="margin-top:16px">${field({ id: "f-name", label: "앱 이름 (선택)", value: ap?.name || "", placeholder: "비워 두면 AI가 지어요", extra: 'maxlength="40"' })}</div>
+
+      <section class="form-box" aria-labelledby="h-fai"><span class="tape hand" id="h-fai">AI 소개</span>
+        <label class="check"><input type="checkbox" id="f-auto" ${auto ? "checked" : ""} onchange="App.formAuto()">AI가 소개를 알아서 쓰기</label>
+        <div data-auto="on" ${auto ? "" : "hidden"}>
+          <div style="margin-top:8px">${field({ id: "f-memo", label: "AI에게 귀띔 (선택)", value: ap?.aiMemo || "", placeholder: "예: 중학생 용돈 기록용, 로그인 없이 휴대폰에만 저장", hint: "누가, 언제 쓰면 좋은지 한 줄 적어 주면 더 잘 써요.", extra: 'maxlength="200"' })}</div>
+          <div class="ai-prev" id="f-ai-prev" aria-live="polite">${aiPrevHTML(ap)}</div>
+          <button type="button" class="btn btn-line btn-sm" onclick="App.aiTry(this)">${icon("i-ai", "ic-sm")}AI로 지금 써 보기</button>
+        </div>
+        <div data-auto="off" ${auto ? "hidden" : ""} style="margin-top:8px">
+          ${field({ id: "f-desc", label: "소개", textarea: true, value: ap?.description || "", placeholder: "이 앱으로 무엇을 할 수 있는지 적어 주세요.", extra: 'maxlength="1000"' })}
+          <div style="margin-top:16px">${field({ id: "f-feat", label: "주요 기능", value: (ap?.features || []).join(", "), placeholder: "예: 채팅, 게시판, 사진 공유", hint: "쉼표로 나눠 적어요." })}</div>
+        </div>
+      </section>
+
+      <div class="field" style="margin-top:32px"><span class="label" id="f-ico-l">아이콘</span>
         <div class="ico-edit"><span id="f-ico-prev"></span>
           <div class="ico-edit-ctl">
             <label class="btn btn-line btn-sm" for="f-ico-file">${icon("i-image", "ic-sm")}이미지 올리기</label>
@@ -1590,9 +1890,19 @@ function appForm(id) {
         <input class="input" id="f-ico" value="${esc(textIcon)}" placeholder="이모지 하나 또는 이미지 주소 (선택)" aria-labelledby="f-ico-l" aria-describedby="f-ico-h" oninput="App.iconText(this.value)">
         <p class="hint" id="f-ico-h">비워 두면 웹 주소에서 앱 아이콘을 자동으로 찾아요. 안드로이드 앱은 이미지를 올려 주세요.</p>
       </div>
-      <div style="margin-top:16px">${field({ id: "f-desc", label: "소개", textarea: true, value: ap?.description || "", placeholder: "이 앱으로 무엇을 할 수 있는지 적어 주세요.", extra: 'maxlength="1000"' })}</div>
-      <div style="margin-top:16px">${field({ id: "f-feat", label: "주요 기능", value: (ap?.features || []).join(", "), placeholder: "예: 채팅, 게시판, 사진 공유", hint: "쉼표로 나눠 적어요." })}</div>
-      <div style="margin-top:16px">
+
+      <section class="form-box" aria-labelledby="h-fgd"><span class="tape hand" id="h-fgd">초간단 가이드</span>
+        ${listedOff ? `<p class="hint" style="margin-top:4px">이 앱은 가이드를 만들지 않는 앱이에요. (제외 목록: ${GUIDE_EXCLUDE.map(esc).join(", ")})</p>` : `
+        <label class="check"><input type="checkbox" id="f-guide" ${ap?.noGuide ? "" : "checked"}>상세 화면에 초간단 가이드 보여주기</label>
+        <p class="hint" id="f-guide-st">매일 새벽 앱 화면을 찍어 AI가 한 줄 설명을 붙여요.</p>
+        <div class="field" style="margin-top:16px"><span class="label">가이드 사진 직접 올리기 (선택, 3장까지)</span>
+          <div class="shot-edit" id="f-shots"></div>
+          <div><label class="btn btn-line btn-sm" for="f-shot-file">${icon("i-image", "ic-sm")}사진 고르기</label><input id="f-shot-file" type="file" accept="image/*" multiple class="sr-only" onchange="App.shotFiles(this)"></div>
+          <p class="hint">로그인해야 보이는 앱이나 안드로이드 앱은 직접 찍은 화면을 올려 주세요. 올린 사진이 있으면 자동으로 찍은 사진 대신 이걸 보여 줘요.</p>
+        </div>`}
+      </section>
+
+      <div style="margin-top:24px">
         <label class="check"><input type="checkbox" id="f-featured" ${ap?.featured ? "checked" : ""}>홈 맨 위 ‘이번 주 추천’으로 보여주기</label>
         <label class="check"><input type="checkbox" id="f-hidden" ${ap?.hidden ? "checked" : ""}>사용자에게 숨기기 (관리자만 보여요)</label>
       </div>
@@ -1601,6 +1911,46 @@ function appForm(id) {
   });
   s.el.querySelector("[data-cancel]").onclick = () => closeSheet(s.id);
   iconPreview();
+  // 이미 있는 앱이면 가이드 상태와 직접 올린 사진을 불러옴
+  if (ap && !listedOff) loadGuide(ap.id).then(g => {
+    GUIDE_CACHE[ap.id] = g;
+    if (!s.el.isConnected || FORM_SHOTS_DIRTY) return;
+    FORM_SHOTS = (g?.manualShots || []).map(x => x.src).filter(Boolean);
+    paintFormShots();
+    const st = s.el.querySelector("#f-guide-st");
+    if (!st) return;
+    st.textContent = g?.updatedAt ? `마지막 가이드: ${fmtDate(g.updatedAt)} · 자동 사진 ${g.shots?.length || 0}장${g.manualShots?.length ? ` · 직접 올린 사진 ${g.manualShots.length}장` : ""}`
+      : g?.manualShots?.length ? `직접 올린 사진 ${g.manualShots.length}장을 보여 주고 있어요. 설명은 다음 새벽 자동 실행 때 붙어요.`
+      : "아직 가이드가 없어요. 다음 새벽 자동 실행 때 만들어져요.";
+  });
+}
+// AI 소개 미리보기 칸
+function aiPrevHTML(src, label = "") {
+  if (!src?.description) return `<p class="hint">저장하면 AI가 앱을 살펴보고 소개를 써요. 미리 보려면 아래 ‘AI로 지금 써 보기’를 눌러요.</p>`;
+  const l = label || (src.descBy === "ai" ? "지금 소개 (AI가 쓴 글)" : "지금 소개 (직접 쓴 글) · 저장하면 AI가 새로 써요");
+  return `<p class="ai-prev-l">${esc(l)}</p><p>${esc(src.description)}</p>${src.features?.length ? `<ul>${src.features.map(f => `<li>${esc(f)}</li>`).join("")}</ul>` : ""}`;
+}
+function paintFormShots() {
+  const box = $("#f-shots"); if (!box) return;
+  box.innerHTML = FORM_SHOTS.map((src, i) => `<figure class="shot-th"><img src="${esc(src)}" alt="${i + 1}번째 가이드 사진"><button type="button" class="btn btn-text" onclick="App.dropShot(${i})" aria-label="${i + 1}번째 사진 빼기">빼기</button></figure>`).join("");
+}
+// 가이드 사진: 폭 540px 안으로 줄여 WebP로 (문서 하나 1MB 제한 때문에 장당 200KB 안팎)
+function shrinkShot(file, maxW = 540, maxH = 1200) {
+  return new Promise((ok, fail) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, maxW / img.width, maxH / img.height);
+      const c = document.createElement("canvas"); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      const type = c.toDataURL("image/webp", .5).startsWith("data:image/webp") ? "image/webp" : "image/jpeg";   // 옛 사파리는 WebP를 못 만듦
+      let out = c.toDataURL(type, .72);
+      if (out.length > 220000) out = c.toDataURL(type, .5);
+      ok(out);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); fail(new Error("load")); };
+    img.src = url;
+  });
 }
 function iconPreview() {
   const box = $("#f-ico-prev"); if (!box) return;
@@ -1830,6 +2180,17 @@ const App = {
   guideApp(id) { const ap = findApp(id); if (ap) guideA2HS(ap); },
   guideStore() { guideA2HS(null); },
 
+  /* 초간단 가이드 */
+  shots: (id, i) => openShots(id, i),
+  fmGo(i) { fmShow(i); },
+  fmToggle(btn) {
+    const el = FM?.el; if (!el) return;
+    const paused = el.classList.toggle("is-paused");
+    btn.setAttribute("aria-label", paused ? "움직임 다시 켜기" : "움직임 멈추기");
+    btn.innerHTML = icon(paused ? "i-play" : "i-pause");
+  },
+  fmOpen(id) { FM?.m.kind === "guide" ? openShots(id, FM.i) : openDetail(id); },
+
   /* 후기 */
   paintStars(form) { const v = +(form.querySelector('input[name="rv-star"]:checked')?.value || 0); form.querySelectorAll(".star-pick label").forEach((l, i) => l.classList.toggle("on", i < v)); setErr("rv-s1", ""); },
   submitReview(form) {
@@ -1897,32 +2258,89 @@ const App = {
   },
   iconText(v) { FORM_ICON = v.trim(); iconPreview(); },
   iconAuto() { FORM_ICON = ""; $("#f-ico").value = ""; iconPreview(); },
+  formAuto() {
+    const on = $("#f-auto").checked;
+    document.querySelector('[data-auto="on"]').hidden = !on;
+    document.querySelector('[data-auto="off"]').hidden = on;
+  },
+  // 'AI로 지금 써 보기' — 저장 전에 초안을 미리 봄 (마음에 들면 그대로 저장)
+  aiTry: btn => busy(btn, async () => {
+    const form = $("#app-form"); clearErrs(form);
+    const apk = $("#k-apk").checked, url = apk ? gv("f-apk").trim() : gv("f-url").trim();
+    if (safeUrl(url) === "#") { setErr(apk ? "f-apk" : "f-url", "먼저 https:// 로 시작하는 주소를 적어 주세요."); return focusFirstErr(form); }
+    const box = $("#f-ai-prev");
+    box.innerHTML = `<p class="hint">AI가 앱을 살펴보는 중이에요… (10초쯤 걸려요)</p>`;
+    const memo = gv("f-memo").trim(), category = gv("f-cat") || "기타";
+    const dr = await aiDraft({ url, name: gv("f-name").trim(), category, memo, apk });
+    if (!box.isConnected) return;
+    if (!dr) { box.innerHTML = `<p class="hint">${S.aiKey ? "AI가 지금 답하지 않아요. 그냥 저장해 두면 새벽 자동 실행 때 다시 써요." : "AI 키가 없어요. 관리 → 설정에서 먼저 연결해 주세요."}</p>`; return; }
+    FORM_DRAFT = { ...dr, sig: [url, category, memo].join("|") };
+    box.innerHTML = aiPrevHTML(dr, "AI 초안 · 마음에 안 들면 다시 눌러요");
+    if (!gv("f-name").trim() && dr.name) $("#f-name").value = dr.name;
+  }),
+  async shotFiles(input) {
+    const files = [...(input.files || [])].filter(f => f.type.startsWith("image/"));
+    input.value = "";
+    if (!files.length) return;
+    const room = 3 - FORM_SHOTS.length;
+    if (room <= 0) { toast("가이드 사진은 3장까지예요. 하나를 빼고 다시 골라 주세요.", "bad"); return; }
+    for (const f of files.slice(0, room)) { try { FORM_SHOTS.push(await shrinkShot(f)); } catch { toast("사진 하나를 읽지 못했어요.", "bad"); } }
+    if (files.length > room) toast(`3장까지라 ${room}장만 넣었어요.`);
+    FORM_SHOTS_DIRTY = true; paintFormShots();
+  },
+  dropShot(i) { FORM_SHOTS.splice(i, 1); FORM_SHOTS_DIRTY = true; paintFormShots(); },
   saveApp(form) {
     const btn = document.querySelector('[form="app-form"][type="submit"]');
     return busy(btn, async () => {
       clearErrs(form);
-      const id = form.dataset.id, apk = $("#k-apk").checked;
+      const id = form.dataset.id, ap = id ? findApp(id) : null, apk = $("#k-apk").checked, auto = $("#f-auto").checked;
       const d = {
-        name: gv("f-name").trim(), category: gv("f-cat") || "기타",
+        category: gv("f-cat") || "기타",
         url: apk ? "" : gv("f-url").trim(), apkUrl: apk ? gv("f-apk").trim() : "",
-        customIcon: FORM_ICON || "", description: gv("f-desc").trim(),
-        features: gv("f-feat").split(/[,，、]/).map(s => s.trim()).filter(Boolean).slice(0, 12),
+        customIcon: FORM_ICON || "",
         featured: $("#f-featured").checked, hidden: $("#f-hidden").checked,
+        autoDesc: auto, aiMemo: gv("f-memo").trim(),
       };
-      if (!d.name) setErr("f-name", "앱 이름을 적어 주세요.");
+      const gBox = $("#f-guide"); if (gBox) d.noGuide = !gBox.checked;
       if (!apk && safeUrl(d.url) === "#") setErr("f-url", "https:// 로 시작하는 주소를 적어 주세요.");
       if (apk && safeUrl(d.apkUrl) === "#") setErr("f-apk", "https:// 로 시작하는 받기 주소를 적어 주세요.");
-      if (!d.description) setErr("f-desc", "어떤 앱인지 한 줄이라도 적어 주세요.");
+      if (!auto) {
+        Object.assign(d, { description: gv("f-desc").trim(), features: gv("f-feat").split(/[,，、]/).map(s => s.trim()).filter(Boolean).slice(0, 12), descBy: "manual" });
+        if (!d.description) setErr("f-desc", "어떤 앱인지 한 줄이라도 적어 주세요. (또는 ‘AI가 소개를 알아서 쓰기’를 켜요)");
+      }
       if (form.querySelector(".has-err")) return focusFirstErr(form);
+      let name = gv("f-name").trim(), later = false;
+      const link = d.url || d.apkUrl;
+      if (auto) {
+        // 주소·카테고리·귀띔이 그대로이고 이미 AI 소개가 있으면 다시 쓰지 않음
+        const sig = [link, d.category, d.aiMemo].join("|");
+        const stale = !ap || ap.descBy !== "ai" || !ap.description || [ap.url || ap.apkUrl, catOf(ap), ap.aiMemo || ""].join("|") !== sig;
+        let dr = FORM_DRAFT?.sig === sig ? FORM_DRAFT : null;
+        if (!dr && stale) {
+          const label = btn.lastChild; const old = label.textContent; label.textContent = "AI가 소개를 쓰는 중…";
+          try { dr = await aiDraft({ url: link, name, category: d.category, memo: d.aiMemo, apk }); } finally { if (label.isConnected) label.textContent = old; }
+        }
+        if (dr) {
+          Object.assign(d, { description: dr.description, features: dr.features, descBy: "ai", descAt: serverTimestamp() });
+          if (ap?.description && ap.descBy !== "ai" && !ap.descManual) d.descManual = ap.description;   // 직접 썼던 소개는 따로 보관
+          if (!name && dr.name) name = dr.name;
+        } else if (stale) {
+          later = true;
+          if (!ap) Object.assign(d, { description: "", features: [], descBy: "ai" });   // 새벽 자동 실행이 채움
+        }
+      }
+      d.name = name || ap?.name || nameFromUrl(link);
       try {
         let appId = id;
         if (id) await updateDoc(doc(db, "apps", id), d);
         else appId = (await addDoc(collection(db, "apps"), { ...d, rating: 0, reviewCount: 0, createdAt: serverTimestamp() })).id;
+        if (FORM_SHOTS_DIRTY) await setDoc(doc(db, "guides", appId), { manualShots: FORM_SHOTS.map(src => ({ src })), manualAt: serverTimestamp() }, { merge: true });
+        if (FORM_SHOTS_DIRTY || (ap && ap.noGuide !== d.noGuide)) delete GUIDE_CACHE[appId];
         if (d.featured) for (const a of S.apps.filter(a => a.featured && a.id !== appId)) await updateDoc(doc(db, "apps", a.id), { featured: false });
-        toast(id ? "고친 내용을 저장했어요." : "앱을 올렸어요.");
+        toast(id ? "고친 내용을 저장했어요." : `‘${d.name}’을(를) 올렸어요.`);
+        if (later) toast("AI 소개는 아직이에요. 새벽 자동 실행 때 채워져요.");
         closeSheet(topSheet("form").id);
         await loadApps(true);
-        const ap = findApp(appId); if (ap) summaryFor(ap).catch(() => {});   // AI 소개는 뒤에서 미리 만들어 둠
         S.rendered = null; route();
       } catch (e) { console.warn(e); toast("저장하지 못했어요. 잠시 뒤 다시 해 주세요.", "bad"); }
     });
@@ -1934,7 +2352,7 @@ const App = {
       body: `<div class="menu-list">
         <button type="button" class="menu-item" data-act="feature">${icon("i-pin")}<span>${ap.featured ? "추천에서 빼기" : "이번 주 추천으로 올리기"}</span></button>
         <button type="button" class="menu-item" data-act="hide">${icon(ap.hidden ? "i-eye" : "i-eye-off")}<span>${ap.hidden ? "다시 보이게 하기" : "사용자에게 숨기기"}</span></button>
-        <button type="button" class="menu-item" data-act="ai">${icon("i-ai")}<span>AI 소개 다시 만들기</span></button>
+        <button type="button" class="menu-item" data-act="ai">${icon("i-ai")}<span>AI 소개 새로 쓰기</span></button>
         <button type="button" class="menu-item" data-act="view">${icon("i-chev")}<span>상세 화면으로 보기</span></button>
         <button type="button" class="menu-item menu-danger" data-act="del">${icon("i-trash")}<span>앱 지우기</span></button></div>`
     });
@@ -1945,7 +2363,12 @@ const App = {
       if (act === "del") {
         closeSheet(s.id);
         if (!await confirmSheet({ title: `‘${esc(ap.name)}’을(를) 지울까요?`, text: "앱 목록에서 사라지고 되돌릴 수 없어요. 잠시 내리려면 ‘사용자에게 숨기기’를 쓰세요.", ok: "앱 지우기", danger: true })) return;
-        try { await deleteDoc(doc(db, "apps", id)); toast("앱을 지웠어요."); await loadApps(true); S.rendered = null; route(); }
+        try {
+          await deleteDoc(doc(db, "apps", id));
+          await deleteDoc(doc(db, "guides", id)).catch(() => {});   // 그 앱의 가이드도 함께
+          delete GUIDE_CACHE[id];
+          toast("앱을 지웠어요."); await loadApps(true); S.rendered = null; route();
+        }
         catch { toast("지우지 못했어요. 잠시 뒤 다시 해 주세요.", "bad"); }
         return;
       }
@@ -1958,7 +2381,11 @@ const App = {
           } else if (act === "hide") {
             await updateDoc(doc(db, "apps", id), { hidden: !ap.hidden }); toast(ap.hidden ? "다시 보이게 했어요." : "사용자에게 숨겼어요. 관리자만 볼 수 있어요.");
           } else if (act === "ai") {
-            const t = await summaryFor(ap, { force: true }); toast(t ? "AI 소개를 새로 만들었어요." : "AI 소개를 만들지 못했어요. 설정에서 AI 연결을 확인해 주세요.", t ? "" : "bad");
+            const dr = await aiDraft({ url: ap.url || ap.apkUrl, name: ap.name, category: catOf(ap), memo: ap.aiMemo || "", apk: !!ap.apkUrl });
+            if (!dr) { toast("AI 소개를 쓰지 못했어요. 설정에서 AI 연결을 확인해 주세요.", "bad"); return; }
+            const u = { description: dr.description, features: dr.features, descBy: "ai", descAt: serverTimestamp(), autoDesc: true };
+            if (ap.description && ap.descBy !== "ai" && !ap.descManual) u.descManual = ap.description;   // 직접 썼던 소개는 따로 보관
+            await updateDoc(doc(db, "apps", id), u); toast("AI가 소개를 새로 썼어요.");
           }
           closeSheet(s.id); await loadApps(true); S.rendered = null; route();
         } catch (e) { console.warn(e); toast("처리하지 못했어요. 잠시 뒤 다시 해 주세요.", "bad"); }
@@ -1988,6 +2415,31 @@ const App = {
     const t = await gemini("'연결 확인'이라고만 답해 주세요.");
     t ? toast("AI가 잘 연결돼 있어요.") : toast("AI가 응답하지 않아요. 키와 사용처 제한을 확인해 주세요.", "bad");
   }),
+  // 후기 모두 지우기 — '초기화'를 직접 적어야 버튼이 켜짐 (실수 방지)
+  resetReviews() {
+    const revs = [...S.allReviews], n = revs.length; if (!n) return;
+    const s = openSheet({
+      kind: "confirm", title: `후기 ${n}개를 모두 지울까요?`,
+      body: `<p class="confirm-text">모든 후기와 앱 별점이 사라지고 <b>되돌릴 수 없어요.</b></p>
+        ${field({ id: "rs-word", label: "확인을 위해 ‘초기화’라고 적어 주세요", auto: "off", extra: 'autocapitalize="off" enterkeyhint="done"' })}`,
+      foot: `<button type="button" class="btn btn-line" data-no>취소</button><button type="button" class="btn btn-danger" data-yes disabled>모두 지우기</button>`
+    });
+    const yes = s.el.querySelector("[data-yes]");
+    s.el.querySelector("#rs-word").addEventListener("input", e => { yes.disabled = e.target.value.trim() !== "초기화"; });
+    s.el.querySelector("[data-no]").onclick = () => closeSheet(s.id);
+    yes.onclick = () => busy(yes, async () => {
+      let done = 0, fail = 0;
+      for (let k = 0; k < n; k += 10) {    // 10개씩 나눠 지움
+        await Promise.all(revs.slice(k, k + 10).map(r => deleteDoc(doc(db, "reviews", r.id)).then(() => done++, () => fail++)));
+        yes.lastChild.textContent = `지우는 중 ${done}/${n}`;
+      }
+      await Promise.all(S.apps.filter(a => a.rating || a.reviewCount).map(a => updateDoc(doc(db, "apps", a.id), { rating: 0, reviewCount: 0 }).catch(() => fail++)));
+      S.reviews = {}; S.dirty = true;
+      closeSheet(s.id);
+      fail ? toast(`${done}개는 지웠지만 ${fail}건은 못 했어요. 한 번 더 눌러 주세요.`, "bad") : toast(`후기 ${done}개를 모두 지웠어요. 별점도 처음으로 돌아갔어요.`);
+      S.rendered = null; route();
+    });
+  },
   async copy(text, btn) {
     try { await navigator.clipboard.writeText(text); toast("복사했어요."); }
     catch { window.prompt?.("아래 주소를 길게 눌러 복사해 주세요.", text); }
@@ -2019,8 +2471,10 @@ window.App = App;
    ╚══════════════════════════════════════════════════════════╝ */
 function resetSession() {
   closeAllSheets();
-  Object.assign(S, { me: null, meData: null, apps: [], appsLoaded: false, users: [], allReviews: [], reviews: {}, shell: false, rendered: null, aiKey: undefined, rvEdit: null, cat: "전체", q: "" });
+  Object.assign(S, { me: null, meData: null, apps: [], appsLoaded: false, users: [], allReviews: [], reviews: {}, shell: false, rendered: null, aiKey: undefined, rvEdit: null, cat: "전체", q: "", guideRun: null });
   CHAT_LOG.length = 0;
+  for (const k in GUIDE_CACHE) delete GUIDE_CACHE[k];
+  FM_IO?.disconnect(); FM = null;
 }
 function routeByStatus() {
   if (S.meData.status === "pending") renderStatus("pending");

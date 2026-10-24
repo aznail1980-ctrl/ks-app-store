@@ -1,0 +1,60 @@
+# KS 앱스토어 — 초간단 가이드 · AI 소개 자동 만들기
+# 매일 새벽 3시(한국 시간)에 앱마다 화면을 찍어 보고, 바뀐 앱만 AI가 가이드와 소개를 새로 씁니다.
+# 손으로 돌리기: GitHub 저장소 → Actions → 이 작업 → Run workflow
+# 필요한 비밀값(Settings → Secrets and variables → Actions):
+#   FIREBASE_SERVICE_ACCOUNT  (필수) Firebase 서비스 계정 키 파일 내용
+#   GEMINI_API_KEY            (선택) 없으면 앱스토어 관리 → 설정에 넣은 키를 씀
+# ⚠️ 저장소가 공개라 실행 기록도 공개됩니다. 스크립트는 앱 이름·주소를 기록에 남기지 않습니다.
+name: 앱 가이드·소개 자동 만들기
+
+on:
+  schedule:
+    - cron: "0 18 * * *"          # 매일 18:00 UTC = 한국 시간 새벽 3시
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "바뀐 게 없어도 전부 새로 만들기"
+        type: boolean
+        default: false
+      only_app:
+        description: "한 앱만 (앱 ID 또는 이름 일부 · 비우면 전체)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: app-guides
+  cancel-in-progress: false
+
+jobs:
+  guides:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 한글 글꼴 설치 (화면 사진의 한글이 네모로 깨지지 않게)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk fonts-noto-color-emoji > /dev/null
+
+      - name: 준비물 설치
+        working-directory: scripts
+        run: |
+          npm install --no-audit --no-fund --loglevel=error
+          npx playwright install --with-deps chromium > /dev/null
+
+      - name: 가이드 만들기
+        working-directory: scripts
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          FORCE: ${{ inputs.force }}
+          ONLY_APP: ${{ inputs.only_app }}
+        run: node update-guides.mjs

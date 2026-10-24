@@ -5,7 +5,7 @@ rules_version = '2';
 //  이 규칙이 진짜 보안입니다. 화면(index.html)을 고쳐도 이 규칙을 넘을 수 없습니다.
 //  배포: Firebase 콘솔 > Firestore Database > 규칙 탭에 전체를 붙여넣고 [게시]
 //        또는 터미널에서  firebase deploy --only firestore:rules
-//  2026-10-24: 마스터 계정 제거, 내 후기 고치기·지우기 허용, AI 설정(config) 추가
+//  2026-10-24: 마스터 계정 제거, 내 후기 고치기·지우기 허용, AI 설정(config) 추가, 초간단 가이드(guides) 추가
 // ════════════════════════════════════════════════════════════
 
 service cloud.firestore {
@@ -72,8 +72,15 @@ service cloud.firestore {
       allow delete: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
     }
 
-    // ──────────────── 설정 (AI 키 등) ────────────────
+    // ──────────────── 설정 (AI 키, 자동 실행 기록 등) ────────────────
     match /config/{id} {
+      allow read: if isApproved();
+      allow write: if isAdmin();
+    }
+
+    // ──────────────── 초간단 가이드 (앱 화면 사진 + 한 줄 설명) ────────────────
+    // 매일 GitHub 자동 실행(서비스 계정, 규칙과 무관)이 만들고, 관리자는 사진을 직접 올릴 수 있음
+    match /guides/{appId} {
       allow read: if isApproved();
       allow write: if isAdmin();
     }

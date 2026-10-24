@@ -1,0 +1,14 @@
+{
+  "name": "ks-app-store-guides",
+  "private": true,
+  "description": "KS 앱스토어 초간단 가이드·AI 소개 자동 만들기 (GitHub Actions에서 실행)",
+  "type": "module",
+  "scripts": {
+    "guides": "node update-guides.mjs"
+  },
+  "dependencies": {
+    "firebase-admin": "12.7.0",
+    "playwright": "1.48.2",
+    "sharp": "0.33.5"
+  }
+}

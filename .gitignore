@@ -12,3 +12,4 @@ downloads/
 *.apk
 # 예전 설정 문서 (README.md로 대체)
 설정안내.md
+scripts/node_modules/
