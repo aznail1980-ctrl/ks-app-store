@@ -784,7 +784,7 @@ const ADMIN_EMAILS = ["aznail@hanmail.net"];
 // AI(Gemini) 키는 코드에 넣지 않습니다. 관리 → 설정에서 입력하면 Firestore(config/ai)에 저장됩니다.
 const AI_MODELS = ["gemini-flash-latest", "gemini-2.5-flash"]; // 앞 모델이 없어지면 다음 모델로
 const ASSET_V   = "20261024";  // 일러스트 파일을 고치면 이 값을 바꿔 휴대폰 캐시를 새로 받게 합니다
-const APP_VERSION = "10.25-2"; // 내 정보 맨 아래에 보이는 버전. 고칠 때마다 올리면 새 화면이 떴는지 바로 알 수 있어요
+const APP_VERSION = "10.25-3"; // 내 정보 맨 아래에 보이는 버전. 고칠 때마다 올리면 새 화면이 떴는지 바로 알 수 있어요
 const NEW_DAYS  = 14;          // 며칠 안에 등록한 앱에 '새로 옴' 표시
 const CATS      = ["업무", "소통", "분석", "관리", "기타"];
 const CAT_ICON  = { "업무":"c-work", "소통":"c-talk", "분석":"c-chart", "관리":"c-manage", "기타":"c-etc" };
@@ -1772,12 +1772,15 @@ function settingsPane() {
         <li>위 ‘지금 바로 만들기’ → <b>Run workflow</b>를 누르면 몇 분 뒤 가이드가 생겨요.</li>
       </ol></details>
       <details class="howto"><summary>로그인이 필요한 앱도 자동으로 찍게 하기 (처음 한 번)</summary><ol>
-        <li>맥의 터미널에서 이 폴더의 <code>scripts</code>로 가서 <code>npm install && npx playwright install chromium && node record-logins.mjs</code> 를 실행해요.</li>
-        <li>열린 창에서 KS 앱스토어에 <b>관리자 계정으로 로그인</b>하면, 로그인이 필요한 앱이 하나씩 열려요.</li>
+        <li>맥의 <b>Finder</b>에서 앱스토어 작업 폴더(‘11. 앱 연결 플랫폼’) → <b>scripts</b> 폴더를 열어요.</li>
+        <li><b>‘로그인 기록하기.command’</b> 파일을 <b>더블클릭</b>해요. 터미널 창이 저절로 열리고 필요한 준비를 알아서 해요. 터미널이 다른 폴더에 있거나 다른 일을 하고 있어도 상관없어요.</li>
+        <li>처음 한 번은 “확인되지 않은 개발자” 같은 경고가 뜰 수 있어요. 그때는 파일을 <b>오른쪽 클릭 → 열기 → 열기</b>를 눌러요.</li>
+        <li>곧 브라우저 창이 열려요. 그 창에서 KS 앱스토어에 <b>관리자 계정으로 로그인</b>하면, 로그인이 필요한 앱이 하나씩 열려요.</li>
         <li>앱마다 직접 로그인하고 위쪽 노란 띠의 <b>로그인 끝</b>을 눌러요. 가이드 사진은 회원 모두가 보니 가능하면 가이드용 계정으로요.</li>
         <li>로그인 상태(열쇠)만 GitHub에 암호화돼 보관되고 비밀번호는 저장되지 않아요. 이후 매일 로그인된 화면을 자동으로 찍어요.</li>
         <li>몇 달 뒤 다시 로그인 화면만 찍히면(열쇠 만료) 같은 방법으로 한 번 더 해 주세요.</li>
-      </ol></details>
+      </ol>
+      <p class="hint" style="margin-top:8px">터미널로 직접 하고 싶다면: 터미널이 다른 일을 하고 있으면 <b>⌘T</b>로 새 탭을 열고, <code>cd</code> 와 띄어쓰기 하나를 입력한 뒤 Finder의 <b>scripts 폴더를 터미널 창으로 끌어다 놓고</b> Enter → <code>./"로그인 기록하기.command"</code> 를 입력하고 Enter.</p></details>
     </section>
     <section class="set-sec" aria-labelledby="h-addr">
       <h2 id="h-addr">앱스토어 주소</h2>

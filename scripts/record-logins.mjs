@@ -52,6 +52,11 @@ function banner(page, text, buttons) {
 
 const dir = mkdtempSync(join(tmpdir(), "ks-login-"));    // 이번 한 번만 쓰는 빈 브라우저 (끝나면 지움)
 const ctx = await chromium.launchPersistentContext(dir, { headless: AUTO, viewport: { width: 430, height: 900 }, locale: "ko-KR" });
+// 중간에 창을 닫거나 Ctrl+C로 멈춰도 내 컴퓨터에 로그인 흔적이 남지 않게 정리
+const cleanup = async () => { await ctx.close().catch(() => {}); rmSync(dir, { recursive: true, force: true }); };
+process.on("SIGINT", async () => { console.log("\n멈췄어요. 아무것도 올리지 않았어요."); await cleanup(); process.exit(130); });
+let closed = false;
+ctx.on("close", () => { closed = true; rmSync(dir, { recursive: true, force: true }); });   // 브라우저 창을 통째로 닫은 경우
 const waiters = new Map();
 await ctx.exposeBinding("ksDone", ({ page }, action) => waiters.get(page)?.(action));
 
@@ -67,7 +72,7 @@ async function main() {
     apps = await store.evaluate(() => window.App?.guideLoginApps?.() ?? null).catch(() => null);
   }
   stopStore();
-  if (!apps) { console.log("앱스토어 로그인을 확인하지 못했어요. 다시 실행해 주세요."); return 1; }
+  if (!apps) { console.log(closed || store.isClosed() ? "창을 닫아서 멈췄어요. 아무것도 올리지 않았어요." : "20분 동안 앱스토어 로그인이 확인되지 않아 멈췄어요. 다시 실행해 주세요."); return 1; }
   const storeOrigin = new URL(STORE).origin;
   apps = apps.filter(a => { try { return new URL(a.url).origin !== storeOrigin; } catch { return false; } });
   if (!apps.length) { console.log("로그인이 필요한 앱이 없어요. 할 일이 없네요!"); return 0; }
@@ -120,7 +125,7 @@ async function main() {
 
 let code = 0;
 try { code = await main(); }
-catch (e) { console.log("문제가 생겼어요: " + String(e?.message || e).split("\n")[0]); code = 1; }
+catch (e) { console.log(closed ? "창을 닫아서 멈췄어요. 아무것도 올리지 않았어요." : "문제가 생겼어요: " + String(e?.message || e).split("\n")[0]); code = 1; }
 finally {
   await ctx.close().catch(() => {});
   rmSync(dir, { recursive: true, force: true });           // 내 컴퓨터에 남은 로그인 흔적 지우기
