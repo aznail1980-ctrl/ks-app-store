@@ -53,9 +53,8 @@ jobs:
         timeout-minutes: 10
         run: |
           mkdir -p ~/.local/share/fonts
-          if curl -fsSL --retry 3 --max-time 120 -o ~/.local/share/fonts/NotoSansKR.ttf "https://github.com/google/fonts/raw/main/ofl/notosanskr/NotoSansKR%5Bwght%5D.ttf"; then
-            curl -fsSL --retry 3 --max-time 120 -o ~/.local/share/fonts/NotoColorEmoji.ttf "https://github.com/googlefonts/noto-emoji/raw/main/fonts/NotoColorEmoji.ttf" || true
-          else
+          # 이모지 글꼴은 위 '준비물 설치'(playwright --with-deps)가 함께 설치함
+          if ! curl -fsSL --retry 3 --max-time 120 -o ~/.local/share/fonts/NotoSansKR.ttf "https://github.com/google/fonts/raw/main/ofl/notosanskr/NotoSansKR%5Bwght%5D.ttf"; then
             sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends fonts-noto-cjk > /dev/null
           fi
           fc-cache -f > /dev/null
