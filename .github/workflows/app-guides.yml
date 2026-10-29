@@ -31,25 +31,35 @@ concurrency:
 
 jobs:
   guides:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # 2026-10-27: ubuntu-latest 가 26.04로 바뀌며 화면 찍는 도구(Playwright) 준비가 실패 → 지원되는 24.04로 고정
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
 
-      - name: 한글 글꼴 설치 (화면 사진의 한글이 네모로 깨지지 않게)
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq fonts-noto-cjk fonts-noto-color-emoji > /dev/null
-
       - name: 준비물 설치
         working-directory: scripts
+        timeout-minutes: 15
         run: |
           npm install --no-audit --no-fund --loglevel=error
           npx playwright install --with-deps chromium > /dev/null
+
+      # 2026-10-26: apt 로 한글 글꼴을 받다가 23분이 걸려 시간 초과 → 글꼴 파일만 바로 받음 (몇 초). 실패할 때만 apt 로
+      - name: 한글 글꼴 설치 (화면 사진의 한글이 네모로 깨지지 않게)
+        timeout-minutes: 10
+        run: |
+          mkdir -p ~/.local/share/fonts
+          if curl -fsSL --retry 3 --max-time 120 -o ~/.local/share/fonts/NotoSansKR.ttf "https://github.com/google/fonts/raw/main/ofl/notosanskr/NotoSansKR%5Bwght%5D.ttf"; then
+            curl -fsSL --retry 3 --max-time 120 -o ~/.local/share/fonts/NotoColorEmoji.ttf "https://github.com/googlefonts/noto-emoji/raw/main/fonts/NotoColorEmoji.ttf" || true
+          else
+            sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends fonts-noto-cjk > /dev/null
+          fi
+          fc-cache -f > /dev/null
+          if fc-list | grep -qi "Noto Sans KR\|Noto Sans CJK"; then echo "한글 글꼴 준비됨"; else echo "::warning::한글 글꼴을 찾지 못했어요. 사진의 한글이 깨질 수 있어요."; fi
 
       - name: 가이드 만들기
         working-directory: scripts
